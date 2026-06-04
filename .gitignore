@@ -9,7 +9,6 @@ build/
 coverage/
 .nyc_output/
 *.tsbuildinfo
-pnpm-lock.yaml
 data/
 *.db
 *.db-journal
