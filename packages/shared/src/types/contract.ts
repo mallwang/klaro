@@ -23,6 +23,21 @@ export const ContractStatus = {
 
 export type ContractStatus = (typeof ContractStatus)[keyof typeof ContractStatus];
 
+export const CancellationPeriodUnit = {
+  DAYS: 'DAYS',
+  WEEKS: 'WEEKS',
+  MONTHS: 'MONTHS',
+} as const;
+
+export type CancellationPeriodUnit =
+  (typeof CancellationPeriodUnit)[keyof typeof CancellationPeriodUnit];
+
+export const CANCELLATION_PERIOD_UNIT_LABELS: Record<CancellationPeriodUnit, string> = {
+  DAYS: 'Days',
+  WEEKS: 'Weeks',
+  MONTHS: 'Months',
+};
+
 export const BillingInterval = {
   WEEKLY: 'WEEKLY',
   MONTHLY: 'MONTHLY',
@@ -49,6 +64,10 @@ export interface Contract {
   billingInterval: BillingInterval;
   status: ContractStatus;
   endDate: string | null;
+  startDate: string | null;
+  details: string | null;
+  serviceUrl: string | null;
+  cancellationPeriod: { value: number; unit: CancellationPeriodUnit } | null;
   createdAt: string;
   updatedAt: string;
 }

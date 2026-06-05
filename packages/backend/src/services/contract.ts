@@ -1,9 +1,22 @@
 import { randomUUID } from 'node:crypto';
 import type Database from 'better-sqlite3';
-import type { ContractData, CreateContractBody, UpdateContractBody } from '@pcm/shared';
+import type {
+  ContractData,
+  CreateContractBody,
+  UpdateContractBody,
+  CancellationPeriodUnit,
+} from '@pcm/shared';
 import type { ContractRow } from '../db/client.js';
 
 function rowToContract(row: ContractRow): ContractData {
+  const cancellationPeriod =
+    row.cancellation_period_value !== null && row.cancellation_period_unit !== null
+      ? {
+          value: row.cancellation_period_value,
+          unit: row.cancellation_period_unit as CancellationPeriodUnit,
+        }
+      : null;
+
   return {
     id: row.id,
     name: row.name,
@@ -12,6 +25,10 @@ function rowToContract(row: ContractRow): ContractData {
     billingInterval: row.billing_interval as ContractData['billingInterval'],
     status: row.status as ContractData['status'],
     endDate: row.end_date,
+    startDate: row.start_date,
+    details: row.details,
+    serviceUrl: row.service_url,
+    cancellationPeriod,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
@@ -32,8 +49,14 @@ export class ContractService {
     const id = randomUUID();
     this.db
       .prepare(
-        `INSERT INTO contracts (id, name, category, amount, billing_interval, status, end_date, created_at, updated_at)
-         VALUES (@id, @name, @category, @amount, @billing_interval, @status, @end_date, @created_at, @updated_at)`,
+        `INSERT INTO contracts (id, name, category, amount, billing_interval, status, end_date,
+                                start_date, details, service_url,
+                                cancellation_period_value, cancellation_period_unit,
+                                created_at, updated_at)
+         VALUES (@id, @name, @category, @amount, @billing_interval, @status, @end_date,
+                 @start_date, @details, @service_url,
+                 @cancellation_period_value, @cancellation_period_unit,
+                 @created_at, @updated_at)`,
       )
       .run({
         id,
@@ -43,6 +66,11 @@ export class ContractService {
         billing_interval: body.billingInterval,
         status: body.status ?? 'ACTIVE',
         end_date: body.endDate ?? null,
+        start_date: body.startDate ?? null,
+        details: body.details ?? null,
+        service_url: body.serviceUrl ?? null,
+        cancellation_period_value: body.cancellationPeriod?.value ?? null,
+        cancellation_period_unit: body.cancellationPeriod?.unit ?? null,
         created_at: now,
         updated_at: now,
       });
@@ -67,6 +95,17 @@ export class ContractService {
       billing_interval: body.billingInterval ?? existing.billing_interval,
       status: body.status ?? existing.status,
       end_date: body.endDate !== undefined ? (body.endDate ?? null) : existing.end_date,
+      start_date: body.startDate !== undefined ? (body.startDate ?? null) : existing.start_date,
+      details: body.details !== undefined ? (body.details ?? null) : existing.details,
+      service_url: body.serviceUrl !== undefined ? (body.serviceUrl ?? null) : existing.service_url,
+      cancellation_period_value:
+        body.cancellationPeriod !== undefined
+          ? (body.cancellationPeriod?.value ?? null)
+          : existing.cancellation_period_value,
+      cancellation_period_unit:
+        body.cancellationPeriod !== undefined
+          ? (body.cancellationPeriod?.unit ?? null)
+          : existing.cancellation_period_unit,
       updated_at: now,
     };
     this.db
@@ -74,7 +113,11 @@ export class ContractService {
         `UPDATE contracts
          SET name = @name, category = @category, amount = @amount,
              billing_interval = @billing_interval, status = @status,
-             end_date = @end_date, updated_at = @updated_at
+             end_date = @end_date,
+             start_date = @start_date, details = @details, service_url = @service_url,
+             cancellation_period_value = @cancellation_period_value,
+             cancellation_period_unit = @cancellation_period_unit,
+             updated_at = @updated_at
          WHERE id = @id`,
       )
       .run(updated);

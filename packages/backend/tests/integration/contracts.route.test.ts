@@ -82,6 +82,17 @@ describe('GET /api/contracts', () => {
     expect(body[0]).not.toHaveProperty('monthlyAmount');
   });
 
+  it('returns null for new fields on contracts that were created without them', async () => {
+    insertContract(db, { name: 'Legacy' });
+    const res = await app.inject({ method: 'GET', url: '/api/contracts' });
+    expect(res.statusCode).toBe(200);
+    const body = res.json<Array<Record<string, unknown>>>();
+    expect(body[0]?.startDate).toBeNull();
+    expect(body[0]?.details).toBeNull();
+    expect(body[0]?.serviceUrl).toBeNull();
+    expect(body[0]?.cancellationPeriod).toBeNull();
+  });
+
   it('returns contracts sorted by name ascending', async () => {
     insertContract(db, { name: 'Zebra' });
     insertContract(db, { name: 'Apple' });
@@ -209,6 +220,82 @@ describe('POST /api/contracts', () => {
     expect(res.statusCode).toBe(400);
   });
 
+  it('creates a contract with all four new fields and returns them in the 201 response', async () => {
+    const res = await app.inject({
+      method: 'POST',
+      url: '/api/contracts',
+      payload: {
+        name: 'Spotify',
+        category: 'SUBSCRIPTIONS',
+        amount: 9.99,
+        billingInterval: 'MONTHLY',
+        status: 'ACTIVE',
+        startDate: '2024-03-01',
+        details: 'Auto-renews annually',
+        serviceUrl: 'https://spotify.com',
+        cancellationPeriod: { value: 30, unit: 'DAYS' },
+      },
+    });
+    expect(res.statusCode).toBe(201);
+    const body = res.json<Record<string, unknown>>();
+    expect(body.startDate).toBe('2024-03-01');
+    expect(body.details).toBe('Auto-renews annually');
+    expect(body.serviceUrl).toBe('https://spotify.com');
+    expect(body.cancellationPeriod).toEqual({ value: 30, unit: 'DAYS' });
+  });
+
+  it('creates a contract without new fields and returns null for each', async () => {
+    const res = await app.inject({
+      method: 'POST',
+      url: '/api/contracts',
+      payload: {
+        name: 'Basic',
+        category: 'OTHER',
+        amount: 5,
+        billingInterval: 'MONTHLY',
+        status: 'ACTIVE',
+      },
+    });
+    expect(res.statusCode).toBe(201);
+    const body = res.json<Record<string, unknown>>();
+    expect(body.startDate).toBeNull();
+    expect(body.details).toBeNull();
+    expect(body.serviceUrl).toBeNull();
+    expect(body.cancellationPeriod).toBeNull();
+  });
+
+  it('returns 400 when serviceUrl is malformed', async () => {
+    const res = await app.inject({
+      method: 'POST',
+      url: '/api/contracts',
+      payload: {
+        name: 'Bad URL',
+        category: 'OTHER',
+        amount: 5,
+        billingInterval: 'MONTHLY',
+        status: 'ACTIVE',
+        serviceUrl: 'not-a-url',
+      },
+    });
+    expect(res.statusCode).toBe(400);
+  });
+
+  it('returns 400 when details exceeds 2000 characters', async () => {
+    const res = await app.inject({
+      method: 'POST',
+      url: '/api/contracts',
+      payload: {
+        name: 'Long Notes',
+        category: 'OTHER',
+        amount: 5,
+        billingInterval: 'MONTHLY',
+        status: 'ACTIVE',
+        details: 'x'.repeat(2001),
+      },
+    });
+    expect(res.statusCode).toBe(400);
+  });
+
   it('returns 400 when category is unknown', async () => {
     const res = await app.inject({
       method: 'POST',
@@ -282,6 +369,48 @@ describe('PUT /api/contracts/:id', () => {
       method: 'PUT',
       url: `/api/contracts/${row.id}`,
       payload: {},
+    });
+    expect(res.statusCode).toBe(400);
+  });
+
+  it('updates cancellationPeriod and returns the new value', async () => {
+    const row = insertContract(db);
+    const res = await app.inject({
+      method: 'PUT',
+      url: `/api/contracts/${row.id}`,
+      payload: { cancellationPeriod: { value: 14, unit: 'WEEKS' } },
+    });
+    expect(res.statusCode).toBe(200);
+    expect(res.json<Record<string, unknown>>().cancellationPeriod).toEqual({
+      value: 14,
+      unit: 'WEEKS',
+    });
+  });
+
+  it('clears cancellationPeriod when set to null', async () => {
+    // First set it
+    const row = insertContract(db);
+    await app.inject({
+      method: 'PUT',
+      url: `/api/contracts/${row.id}`,
+      payload: { cancellationPeriod: { value: 30, unit: 'DAYS' } },
+    });
+    // Then clear it
+    const res = await app.inject({
+      method: 'PUT',
+      url: `/api/contracts/${row.id}`,
+      payload: { cancellationPeriod: null },
+    });
+    expect(res.statusCode).toBe(200);
+    expect(res.json<Record<string, unknown>>().cancellationPeriod).toBeNull();
+  });
+
+  it('returns 400 when serviceUrl in PUT is malformed', async () => {
+    const row = insertContract(db);
+    const res = await app.inject({
+      method: 'PUT',
+      url: `/api/contracts/${row.id}`,
+      payload: { serviceUrl: 'not-a-url' },
     });
     expect(res.statusCode).toBe(400);
   });

@@ -5,7 +5,7 @@
 branch_numbering: sequential
 
 # Commit message used by `git commit` during repository initialization
-init_commit_message: "[Spec Kit] Initial commit"
+init_commit_message: "docs(spec-kit): initial commit"
 
 # Auto-commit before/after core commands.
 # Set "default" to enable for all commands, then override per-command.
@@ -14,49 +14,49 @@ auto_commit:
   default: false
   before_clarify:
     enabled: false
-    message: "[Spec Kit] Save progress before clarification"
+    message: "docs(spec-kit): save progress before clarification"
   before_plan:
     enabled: false
-    message: "[Spec Kit] Save progress before planning"
+    message: "docs(spec-kit): save progress before planning"
   before_tasks:
     enabled: false
-    message: "[Spec Kit] Save progress before task generation"
+    message: "docs(spec-kit): save progress before task generation"
   before_implement:
     enabled: false
-    message: "[Spec Kit] Save progress before implementation"
+    message: "docs(spec-kit): save progress before implementation"
   before_checklist:
     enabled: false
-    message: "[Spec Kit] Save progress before checklist"
+    message: "docs(spec-kit): save progress before checklist"
   before_analyze:
     enabled: false
-    message: "[Spec Kit] Save progress before analysis"
+    message: "docs(spec-kit): save progress before analysis"
   before_taskstoissues:
     enabled: false
-    message: "[Spec Kit] Save progress before issue sync"
+    message: "docs(spec-kit): save progress before issue sync"
   after_constitution:
     enabled: true
-    message: "[Spec Kit] Add project constitution"
+    message: "docs(spec-kit): add project constitution"
   after_specify:
     enabled: true
-    message: "[Spec Kit] Add specification"
+    message: "docs(spec-kit): add specification"
   after_clarify:
     enabled: true
-    message: "[Spec Kit] Clarify specification"
+    message: "docs(spec-kit): clarify specification"
   after_plan:
     enabled: true
-    message: "[Spec Kit] Add implementation plan"
+    message: "docs(spec-kit): add implementation plan"
   after_tasks:
     enabled: true
-    message: "[Spec Kit] Add tasks"
+    message: "docs(spec-kit): add tasks"
   after_implement:
     enabled: true
-    message: "[Spec Kit] Implementation progress"
+    message: "docs(spec-kit): implementation progress"
   after_checklist:
     enabled: true
-    message: "[Spec Kit] Add checklist"
+    message: "docs(spec-kit): add checklist"
   after_analyze:
     enabled: true
-    message: "[Spec Kit] Add analysis report"
+    message: "docs(spec-kit): add analysis report"
   after_taskstoissues:
     enabled: false
-    message: "[Spec Kit] Sync tasks to issues"
+    message: "docs(spec-kit): sync tasks to issues"

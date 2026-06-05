@@ -16,8 +16,20 @@ const sampleContract: ContractData = {
   billingInterval: 'MONTHLY',
   status: 'ACTIVE',
   endDate: null,
+  startDate: null,
+  details: null,
+  serviceUrl: null,
+  cancellationPeriod: null,
   createdAt: '2026-01-01T00:00:00.000Z',
   updatedAt: '2026-01-01T00:00:00.000Z',
+};
+
+const sampleContractWithNewFields: ContractData = {
+  ...sampleContract,
+  startDate: '2024-01-15',
+  details: 'Test notes',
+  serviceUrl: 'https://example.com',
+  cancellationPeriod: { value: 30, unit: 'DAYS' },
 };
 
 function createWrapper(initialPath: string) {
@@ -111,6 +123,25 @@ describe('ContractEdit', () => {
     await user.click(screen.getByRole('button', { name: /save changes/i }));
 
     await waitFor(() => expect(screen.getByText('contract list')).toBeInTheDocument());
+  });
+
+  it('pre-populates new fields when contract has them set', async () => {
+    vi.mocked(fetch).mockResolvedValueOnce({
+      ok: true,
+      json: async () => [sampleContractWithNewFields],
+    } as Response);
+
+    render(<ContractEdit />, {
+      wrapper: createWrapper(`/contracts/${sampleContractWithNewFields.id}/edit`),
+    });
+
+    await waitFor(() => expect(screen.getByDisplayValue('Netflix')).toBeInTheDocument());
+    expect(screen.getByDisplayValue('2024-01-15')).toBeInTheDocument();
+    expect(screen.getByDisplayValue('Test notes')).toBeInTheDocument();
+    expect(screen.getByDisplayValue('https://example.com')).toBeInTheDocument();
+    expect(screen.getByDisplayValue('30')).toBeInTheDocument();
+    const unitSelect = screen.getByLabelText(/cancellation unit/i) as HTMLSelectElement;
+    expect(unitSelect.value).toBe('DAYS');
   });
 
   it('navigates to /contracts when Cancel is clicked', async () => {
