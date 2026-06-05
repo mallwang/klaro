@@ -22,7 +22,7 @@
 
 **⚠️ Note**: No new packages, no new env vars, no new project structure. The `packages/frontend/src/data/` directory is created implicitly by writing `fantasyNames.ts`.
 
-- [ ] T001 Add `@keyframes nameFlip` (scaleX 1→0→1) and `.animate-name-flip` CSS class to `packages/frontend/src/index.css`
+- [x] T001 Add `@keyframes nameFlip` (scaleX 1→0→1) and `.animate-name-flip` CSS class to `packages/frontend/src/index.css`
 
 ---
 
@@ -32,8 +32,8 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete.
 
-- [ ] T002 Add `anonymize: boolean` to the `Contract` interface in `packages/shared/src/types/contract.ts`
-- [ ] T003 Add `anonymize: z.boolean().default(false)` to `ContractSchema` and optional `anonymize: z.boolean().optional()` to `CreateContractBodySchema` in `packages/shared/src/schemas/contract.ts` (depends on T002)
+- [x] T002 Add `anonymize: boolean` to the `Contract` interface in `packages/shared/src/types/contract.ts`
+- [x] T003 Add `anonymize: z.boolean().default(false)` to `ContractSchema` and optional `anonymize: z.boolean().optional()` to `CreateContractBodySchema` in `packages/shared/src/schemas/contract.ts` (depends on T002)
 
 **Checkpoint**: Shared types updated — frontend hook and backend service can now reference `contract.anonymize`.
 
@@ -47,20 +47,20 @@
 
 ### Tests for User Story 1 ⚠️ Write first — confirm FAILING before implementing
 
-- [ ] T004 [P] [US1] Write failing unit tests for `getFantasyName(id, names)` — deterministic output, same ID always returns same name, cycling when list exhausted — in `packages/frontend/tests/unit/fantasyNames.test.ts` (new file)
-- [ ] T005 [P] [US1] Write failing unit tests for `useAnonymization` hook — initial state from localStorage, `toggleAnonymization` flips and persists, `getDisplayName` returns fantasy name when active and real name when inactive — in `packages/frontend/tests/unit/useAnonymization.test.ts` (new file)
-- [ ] T006 [P] [US1] Write failing unit tests for `AnonymizationToggle` component — renders button, calls `onToggle` on click, reflects `isActive` via aria-pressed or visual state — in `packages/frontend/tests/unit/AnonymizationToggle.test.tsx` (new file)
-- [ ] T007 [P] [US1] Write failing unit tests for updated `ContractTable` — when `isAnonymized=true` name cell shows fantasy name not real name; when `isAnonymized=false` shows real name; animation class applied on toggle — in `packages/frontend/tests/unit/ContractTable.test.tsx` (extend existing file)
-- [ ] T008 [P] [US1] Write failing E2E test for global toggle flow: activate toggle → all names show fantasy names → deactivate → real names restored → refresh → state persists — in `packages/frontend/tests/e2e/anonymization.spec.ts` (new file)
+- [x] T004 [P] [US1] Write failing unit tests for `getFantasyName(id, names)` — deterministic output, same ID always returns same name, cycling when list exhausted — in `packages/frontend/tests/unit/fantasyNames.test.ts` (new file)
+- [x] T005 [P] [US1] Write failing unit tests for `useAnonymization` hook — initial state from localStorage, `toggleAnonymization` flips and persists, `getDisplayName` returns fantasy name when active and real name when inactive — in `packages/frontend/tests/unit/useAnonymization.test.ts` (new file)
+- [x] T006 [P] [US1] Write failing unit tests for `AnonymizationToggle` component — renders button, calls `onToggle` on click, reflects `isActive` via aria-pressed or visual state — in `packages/frontend/tests/unit/AnonymizationToggle.test.tsx` (new file)
+- [x] T007 [P] [US1] Write failing unit tests for updated `ContractTable` — when `isAnonymized=true` name cell shows fantasy name not real name; when `isAnonymized=false` shows real name; animation class applied on toggle — in `packages/frontend/tests/unit/ContractTable.test.tsx` (extend existing file)
+- [x] T008 [P] [US1] Write failing E2E test for global toggle flow: activate toggle → all names show fantasy names → deactivate → real names restored → refresh → state persists — in `packages/frontend/tests/e2e/anonymization.spec.ts` (new file)
 
 ### Implementation for User Story 1
 
-- [ ] T009 [P] [US1] Create fantasy names static list (`readonly string[]`, ~50 fictional company names) and `getFantasyName(id: string, names: readonly string[]): string` (char-code hash modulo length) in `packages/frontend/src/data/fantasyNames.ts` (new file)
-- [ ] T010 [US1] Create `useAnonymization` hook: reads/writes `localStorage` key `pcm-anonymize`, exposes `isAnonymized: boolean`, `toggleAnonymization: () => void`, `getDisplayName: (contract: ContractData) => string` (checks both global state and `contract.anonymize`) in `packages/frontend/src/hooks/useAnonymization.ts` (new file; depends on T009, T002)
-- [ ] T011 [P] [US1] Create `AnonymizationToggle` component: button with translated label, `isActive` prop controls visual state (active/inactive appearance), calls `onToggle` callback on click in `packages/frontend/src/components/AnonymizationToggle.tsx` (new file)
-- [ ] T012 [US1] Update `ContractTable` to accept `isAnonymized: boolean` and `getDisplayName: (contract: ContractData) => string` props; add `isFlipping` state, `useEffect` watching `isAnonymized` that sets `isFlipping=true`, swaps `displayAnonymized` at 200ms midpoint via `setTimeout`, clears `isFlipping` at 400ms; name cell conditionally applies `.animate-name-flip` class in `packages/frontend/src/components/ContractTable.tsx` (extend existing; depends on T001)
-- [ ] T013 [US1] Update `ContractList` page to use `useAnonymization` hook, render `AnonymizationToggle` in the header, pass `isAnonymized` and `getDisplayName` to `ContractTable` in `packages/frontend/src/pages/ContractList.tsx` (extend existing; depends on T010, T011, T012)
-- [ ] T014 [P] [US1] Add anonymization i18n keys to `packages/frontend/src/i18n/locales/en.json` and `packages/frontend/src/i18n/locales/de.json`: `anonymization.showReal`, `anonymization.hideReal`, `anonymization.toggleAriaLabel`
+- [x] T009 [P] [US1] Create fantasy names static list (`readonly string[]`, ~50 fictional company names) and `getFantasyName(id: string, names: readonly string[]): string` (char-code hash modulo length) in `packages/frontend/src/data/fantasyNames.ts` (new file)
+- [x] T010 [US1] Create `useAnonymization` hook: reads/writes `localStorage` key `pcm-anonymize`, exposes `isAnonymized: boolean`, `toggleAnonymization: () => void`, `getDisplayName: (contract: ContractData) => string` (checks both global state and `contract.anonymize`) in `packages/frontend/src/hooks/useAnonymization.ts` (new file; depends on T009, T002)
+- [x] T011 [P] [US1] Create `AnonymizationToggle` component: button with translated label, `isActive` prop controls visual state (active/inactive appearance), calls `onToggle` callback on click in `packages/frontend/src/components/AnonymizationToggle.tsx` (new file)
+- [x] T012 [US1] Update `ContractTable` to accept `isAnonymized: boolean` and `getDisplayName: (contract: ContractData) => string` props; add `isFlipping` state, `useEffect` watching `isAnonymized` that sets `isFlipping=true`, swaps `displayAnonymized` at 200ms midpoint via `setTimeout`, clears `isFlipping` at 400ms; name cell conditionally applies `.animate-name-flip` class in `packages/frontend/src/components/ContractTable.tsx` (extend existing; depends on T001)
+- [x] T013 [US1] Update `ContractList` page to use `useAnonymization` hook, render `AnonymizationToggle` in the header, pass `isAnonymized` and `getDisplayName` to `ContractTable` in `packages/frontend/src/pages/ContractList.tsx` (extend existing; depends on T010, T011, T012)
+- [x] T014 [P] [US1] Add anonymization i18n keys to `packages/frontend/src/i18n/locales/en.json` and `packages/frontend/src/i18n/locales/de.json`: `anonymization.showReal`, `anonymization.hideReal`, `anonymization.toggleAriaLabel`
 
 **Checkpoint**: Global toggle fully functional — one click hides/shows all contract names with animation; state persists across refresh.
 
@@ -74,19 +74,19 @@
 
 ### Tests for User Story 2 ⚠️ Write first — confirm FAILING before implementing
 
-- [ ] T015 [P] [US2] Write failing backend unit tests for contract service `anonymize` field: `create` stores field, `update` patches field, `list` maps field, `rowToContract` converts `0/1` to `boolean` — in `packages/backend/tests/unit/contract.service.test.ts` (extend existing file)
-- [ ] T016 [P] [US2] Write failing backend integration tests for `anonymize` field in contract routes: `POST /contracts` accepts and returns `anonymize`, `PUT /contracts/:id` patches `anonymize`, `GET /contracts` includes `anonymize` in response — in `packages/backend/tests/integration/contracts.route.test.ts` (extend existing file)
-- [ ] T017 [P] [US2] Write failing frontend unit tests for `ContractForm` with `anonymize` field: checkbox renders with correct label, defaults to `false`, passes `true` to `onSubmit` when checked, `defaultValues.anonymize=true` pre-checks the checkbox — in `packages/frontend/tests/unit/ContractForm.test.tsx` (extend existing file)
-- [ ] T018 [P] [US2] Write failing E2E test for per-contract flow: edit contract → check "Anonymize" → save → return to list → confirm that contract shows fantasy name with global toggle OFF → global toggle ON → still shows fantasy name → edit → uncheck → save → real name shown — in `packages/frontend/tests/e2e/anonymization.spec.ts` (extend existing file from T008)
+- [x] T015 [P] [US2] Write failing backend unit tests for contract service `anonymize` field: `create` stores field, `update` patches field, `list` maps field, `rowToContract` converts `0/1` to `boolean` — in `packages/backend/tests/unit/contract.service.test.ts` (extend existing file)
+- [x] T016 [P] [US2] Write failing backend integration tests for `anonymize` field in contract routes: `POST /contracts` accepts and returns `anonymize`, `PUT /contracts/:id` patches `anonymize`, `GET /contracts` includes `anonymize` in response — in `packages/backend/tests/integration/contracts.route.test.ts` (extend existing file)
+- [x] T017 [P] [US2] Write failing frontend unit tests for `ContractForm` with `anonymize` field: checkbox renders with correct label, defaults to `false`, passes `true` to `onSubmit` when checked, `defaultValues.anonymize=true` pre-checks the checkbox — in `packages/frontend/tests/unit/ContractForm.test.tsx` (extend existing file)
+- [x] T018 [P] [US2] Write failing E2E test for per-contract flow: edit contract → check "Anonymize" → save → return to list → confirm that contract shows fantasy name with global toggle OFF → global toggle ON → still shows fantasy name → edit → uncheck → save → real name shown — in `packages/frontend/tests/e2e/anonymization.spec.ts` (extend existing file from T008)
 
 ### Implementation for User Story 2
 
-- [ ] T019 [US2] Add `anonymize: number` to `ContractRow` interface and add migration guard in `runMigrations`: check for column via `PRAGMA table_info`, run `ALTER TABLE contracts ADD COLUMN anonymize INTEGER NOT NULL DEFAULT 0` if absent — in `packages/backend/src/db/client.ts` (extend existing)
-- [ ] T020 [P] [US2] Add `anonymize INTEGER NOT NULL DEFAULT 0` column definition to `packages/backend/src/db/schema.sql` for fresh database creation (depends on T019 for context)
-- [ ] T021 [US2] Update `rowToContract` to map `row.anonymize !== 0` → `boolean`; update `create` INSERT and params to include `anonymize: body.anonymize ?? false`; update `update` to patch `anonymize` field in UPDATE statement — in `packages/backend/src/services/contract.ts` (extend existing; depends on T019, T002, T003)
-- [ ] T022 [US2] Add `anonymize: boolean` to `ContractFormValues`; add anonymize `<input type="checkbox">` field to form UI; include `anonymize: values.anonymize` in `onSubmit` call — in `packages/frontend/src/components/ContractForm.tsx` (extend existing; depends on T002)
-- [ ] T023 [US2] Pass `anonymize: contract.anonymize` in `defaultValues` to `ContractForm` — in `packages/frontend/src/pages/ContractEdit.tsx` (extend existing; depends on T022)
-- [ ] T024 [P] [US2] Add per-contract anonymize i18n keys to `packages/frontend/src/i18n/locales/en.json` and `packages/frontend/src/i18n/locales/de.json`: `contractForm.anonymizeLabel`, `contractForm.anonymizeHint`
+- [x] T019 [US2] Add `anonymize: number` to `ContractRow` interface and add migration guard in `runMigrations`: check for column via `PRAGMA table_info`, run `ALTER TABLE contracts ADD COLUMN anonymize INTEGER NOT NULL DEFAULT 0` if absent — in `packages/backend/src/db/client.ts` (extend existing)
+- [x] T020 [P] [US2] Add `anonymize INTEGER NOT NULL DEFAULT 0` column definition to `packages/backend/src/db/schema.sql` for fresh database creation (depends on T019 for context)
+- [x] T021 [US2] Update `rowToContract` to map `row.anonymize !== 0` → `boolean`; update `create` INSERT and params to include `anonymize: body.anonymize ?? false`; update `update` to patch `anonymize` field in UPDATE statement — in `packages/backend/src/services/contract.ts` (extend existing; depends on T019, T002, T003)
+- [x] T022 [US2] Add `anonymize: boolean` to `ContractFormValues`; add anonymize `<input type="checkbox">` field to form UI; include `anonymize: values.anonymize` in `onSubmit` call — in `packages/frontend/src/components/ContractForm.tsx` (extend existing; depends on T002)
+- [x] T023 [US2] Pass `anonymize: contract.anonymize` in `defaultValues` to `ContractForm` — in `packages/frontend/src/pages/ContractEdit.tsx` (extend existing; depends on T022)
+- [x] T024 [P] [US2] Add per-contract anonymize i18n keys to `packages/frontend/src/i18n/locales/en.json` and `packages/frontend/src/i18n/locales/de.json`: `contractForm.anonymizeLabel`, `contractForm.anonymizeHint`
 
 **Checkpoint**: Per-contract anonymization fully functional — individual contracts stay hidden independently of global toggle; setting persists through backend DB.
 
@@ -100,7 +100,7 @@
 
 ### Tests for User Story 3 ⚠️ Write first — confirm FAILING before implementing
 
-- [ ] T025 [US3] Extend `packages/frontend/tests/unit/fantasyNames.test.ts` with stability assertions: same ID called 100× always returns same name; list of 200 contracts produces no undefined/empty results; different IDs produce acceptably varied distribution (not all same index)
+- [x] T025 [US3] Extend `packages/frontend/tests/unit/fantasyNames.test.ts` with stability assertions: same ID called 100× always returns same name; list of 200 contracts produces no undefined/empty results; different IDs produce acceptably varied distribution (not all same index)
 
 ### Implementation for User Story 3
 
@@ -114,9 +114,9 @@ No new production code required — the hash function implemented in T009 alread
 
 **Purpose**: Final validation, cleanup, and i18n consistency check.
 
-- [ ] T026 [P] Run quickstart.md Scenario 1–4 manually against dev server to confirm all acceptance criteria pass
-- [ ] T027 [P] Run full type check across all packages: `pnpm typecheck` — zero errors expected
-- [ ] T028 Run complete test suite: `pnpm --filter backend test && pnpm --filter frontend test:unit && pnpm --filter frontend test:e2e` — all green
+- [x] T026 [P] Run quickstart.md Scenario 1–4 manually against dev server to confirm all acceptance criteria pass
+- [x] T027 [P] Run full type check across all packages: `pnpm typecheck` — zero errors expected
+- [x] T028 Run complete test suite: `pnpm --filter backend test && pnpm --filter frontend test:unit && pnpm --filter frontend test:e2e` — all green
 
 ---
 
