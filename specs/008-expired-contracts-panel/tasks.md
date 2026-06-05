@@ -25,10 +25,10 @@ description: "Task list for Expired Contracts Dashboard Panel"
 
 **⚠️ CRITICAL**: Phases 2–4 are blocked until this phase is complete and `pnpm --filter shared build` succeeds.
 
-- [ ] T001 Add `ExpiredContractSchema` Zod schema (id, name, category, endDate, daysOverdue) to `packages/shared/src/schemas/dashboard.ts`
-- [ ] T002 Extend `DashboardResponseSchema` with `expiredContracts: z.array(ExpiredContractSchema)` in `packages/shared/src/schemas/dashboard.ts`
-- [ ] T003 Export `ExpiredContract` type and `ExpiredContractSchema` from `packages/shared/src/index.ts`
-- [ ] T004 Rebuild shared package by running `pnpm --filter shared build` to regenerate `packages/shared/dist/`
+- [x] T001 Add `ExpiredContractSchema` Zod schema (id, name, category, endDate, daysOverdue) to `packages/shared/src/schemas/dashboard.ts`
+- [x] T002 Extend `DashboardResponseSchema` with `expiredContracts: z.array(ExpiredContractSchema)` in `packages/shared/src/schemas/dashboard.ts`
+- [x] T003 Export `ExpiredContract` type and `ExpiredContractSchema` from `packages/shared/src/index.ts`
+- [x] T004 Rebuild shared package by running `pnpm --filter shared build` to regenerate `packages/shared/dist/`
 
 **Checkpoint**: `pnpm --filter shared build` succeeds; `ExpiredContract` is importable from `@pcm/shared`
 
@@ -42,7 +42,7 @@ description: "Task list for Expired Contracts Dashboard Panel"
 
 ### Tests for User Story 1 (write FIRST — confirm FAILING before T007)
 
-- [ ] T005 Write failing backend unit tests for `DashboardService.expiredContracts` in `packages/backend/tests/unit/dashboard.service.test.ts`:
+- [x] T005 Write failing backend unit tests for `DashboardService.expiredContracts` in `packages/backend/tests/unit/dashboard.service.test.ts`:
   - Returns `[]` when no contracts have a past end date
   - Returns contracts whose `end_date` is strictly before today
   - Excludes contracts with `end_date IS NULL`
@@ -50,7 +50,7 @@ description: "Task list for Expired Contracts Dashboard Panel"
   - Includes both `ACTIVE` and `INACTIVE` status contracts
   - Orders by `end_date DESC` (most-recently-expired first)
   - Computes `daysOverdue` correctly (positive integer, calendar-day granularity)
-- [ ] T006 [P] Write failing frontend unit tests for `ExpiredContracts` component in `packages/frontend/tests/unit/ExpiredContracts.test.tsx`:
+- [x] T006 [P] Write failing frontend unit tests for `ExpiredContracts` component in `packages/frontend/tests/unit/ExpiredContracts.test.tsx`:
   - Renders a heading "Expired Contracts"
   - Renders the contract name for each entry
   - Renders the end date for each entry
@@ -58,12 +58,12 @@ description: "Task list for Expired Contracts Dashboard Panel"
 
 ### Implementation for User Story 1
 
-- [ ] T007 Add `getExpiredContracts()` private method to `DashboardService` in `packages/backend/src/services/dashboard.ts` using SQL: `WHERE end_date IS NOT NULL AND billing_interval != 'LIFETIME' AND end_date < DATE('now') ORDER BY end_date DESC`; compute `daysOverdue` via `Math.round((today - end) / 86_400_000)`
-- [ ] T008 Add `expiredContracts: this.getExpiredContracts()` to the `getDashboardData()` return object in `packages/backend/src/services/dashboard.ts`
-- [ ] T009 [P] Add English i18n keys to `packages/frontend/src/i18n/locales/en.json` under `"dashboard"`: `expiredContracts`, `noExpiredContracts`, `daysOverdue`
-- [ ] T010 [P] Add German i18n keys to `packages/frontend/src/i18n/locales/de.json` under `"dashboard"`: `expiredContracts`, `noExpiredContracts`, `daysOverdue`
-- [ ] T011 Create `packages/frontend/src/components/ExpiredContracts.tsx`: `Card` with amber styling (`border-amber-200 bg-amber-50`) when list non-empty; `AlertTriangle` icon header; `<ul>` of entries showing name, category, end date, and `<Badge variant="warning">` for `daysOverdue`; list wrapper uses `max-h-64 overflow-y-auto`; neutral empty state when list is empty
-- [ ] T012 Import `ExpiredContracts` and add `<section aria-label={t('dashboard.expiredContracts')} className="sm:col-span-3">` with `<ExpiredContracts expiredContracts={data.expiredContracts} />` to `packages/frontend/src/pages/Dashboard.tsx` below the upcoming renewals section
+- [x] T007 Add `getExpiredContracts()` private method to `DashboardService` in `packages/backend/src/services/dashboard.ts` using SQL: `WHERE end_date IS NOT NULL AND billing_interval != 'LIFETIME' AND end_date < DATE('now') ORDER BY end_date DESC`; compute `daysOverdue` via `Math.round((today - end) / 86_400_000)`
+- [x] T008 Add `expiredContracts: this.getExpiredContracts()` to the `getDashboardData()` return object in `packages/backend/src/services/dashboard.ts`
+- [x] T009 [P] Add English i18n keys to `packages/frontend/src/i18n/locales/en.json` under `"dashboard"`: `expiredContracts`, `noExpiredContracts`, `daysOverdue`
+- [x] T010 [P] Add German i18n keys to `packages/frontend/src/i18n/locales/de.json` under `"dashboard"`: `expiredContracts`, `noExpiredContracts`, `daysOverdue`
+- [x] T011 Create `packages/frontend/src/components/ExpiredContracts.tsx`: `Card` with amber styling (`border-amber-200 bg-amber-50`) when list non-empty; `AlertTriangle` icon header; `<ul>` of entries showing name, category, end date, and `<Badge variant="warning">` for `daysOverdue`; list wrapper uses `max-h-64 overflow-y-auto`; neutral empty state when list is empty
+- [x] T012 Import `ExpiredContracts` and add `<section aria-label={t('dashboard.expiredContracts')} className="sm:col-span-3">` with `<ExpiredContracts expiredContracts={data.expiredContracts} />` to `packages/frontend/src/pages/Dashboard.tsx` below the upcoming renewals section
 
 **Checkpoint**: Dashboard renders expired contracts panel with amber background; `pnpm --filter backend test` passes all new unit tests
 
@@ -77,11 +77,11 @@ description: "Task list for Expired Contracts Dashboard Panel"
 
 ### Tests for User Story 2 (write FIRST — confirm FAILING before T014)
 
-- [ ] T013 Add failing unit test to `packages/frontend/tests/unit/ExpiredContracts.test.tsx`: contract entries are rendered inside an element with an `href` pointing to `/contracts/<id>/edit`
+- [x] T013 Add failing unit test to `packages/frontend/tests/unit/ExpiredContracts.test.tsx`: contract entries are rendered inside an element with an `href` pointing to `/contracts/<id>/edit`
 
 ### Implementation for User Story 2
 
-- [ ] T014 Wrap each expired contract `<li>` entry in `<Link to={/contracts/${contract.id}/edit}>` in `packages/frontend/src/components/ExpiredContracts.tsx` (React Router v6 `<Link>`)
+- [x] T014 Wrap each expired contract `<li>` entry in `<Link to={/contracts/${contract.id}/edit}>` in `packages/frontend/src/components/ExpiredContracts.tsx` (React Router v6 `<Link>`)
 
 **Checkpoint**: Clicking any entry in the expired panel routes to the contract edit page; T013 passes
 
@@ -95,11 +95,11 @@ description: "Task list for Expired Contracts Dashboard Panel"
 
 ### Tests for User Story 3 (write FIRST — confirm FAILING before T016)
 
-- [ ] T015 Add failing unit test to `packages/frontend/tests/unit/ExpiredContracts.test.tsx`: when `expiredContracts` prop is `[]`, the component renders the empty-state message and does NOT apply amber border/background classes to the card
+- [x] T015 Add failing unit test to `packages/frontend/tests/unit/ExpiredContracts.test.tsx`: when `expiredContracts` prop is `[]`, the component renders the empty-state message and does NOT apply amber border/background classes to the card
 
 ### Implementation for User Story 3
 
-- [ ] T016 Make amber `Card` classes (`border-amber-200 bg-amber-50`) conditional on `expiredContracts.length > 0` in `packages/frontend/src/components/ExpiredContracts.tsx`; when empty, render a neutral `<Card>` with the `t('dashboard.noExpiredContracts')` message in muted text
+- [x] T016 Make amber `Card` classes (`border-amber-200 bg-amber-50`) conditional on `expiredContracts.length > 0` in `packages/frontend/src/components/ExpiredContracts.tsx`; when empty, render a neutral `<Card>` with the `t('dashboard.noExpiredContracts')` message in muted text
 
 **Checkpoint**: All three user story panels work correctly; `pnpm --filter frontend test` passes all unit tests
 
@@ -109,10 +109,10 @@ description: "Task list for Expired Contracts Dashboard Panel"
 
 **Purpose**: Integration and e2e test coverage, final validation.
 
-- [ ] T017 Update the existing "returns a valid DashboardResponse shape with empty data" test to also assert `expiredContracts: []` in `packages/backend/tests/integration/dashboard.route.test.ts`
-- [ ] T018 [P] Add new integration tests for `expiredContracts` in `packages/backend/tests/integration/dashboard.route.test.ts`: (a) returns contracts with a past end date; (b) excludes LIFETIME contracts
-- [ ] T019 Add e2e tests for the expired contracts panel in `packages/frontend/tests/e2e/dashboard.spec.ts` per `quickstart.md` Scenarios 1–6: panel visible with amber styling when expired contract exists; neutral empty state when no expired contracts; click navigates to edit page; LIFETIME contracts excluded; anonymization toggle respected
-- [ ] T020 Run full build and test suite: `pnpm --filter shared build && pnpm --recursive test && pnpm lint` — confirm all 0 failures and 0 lint errors
+- [x] T017 Update the existing "returns a valid DashboardResponse shape with empty data" test to also assert `expiredContracts: []` in `packages/backend/tests/integration/dashboard.route.test.ts`
+- [x] T018 [P] Add new integration tests for `expiredContracts` in `packages/backend/tests/integration/dashboard.route.test.ts`: (a) returns contracts with a past end date; (b) excludes LIFETIME contracts
+- [x] T019 Add e2e tests for the expired contracts panel in `packages/frontend/tests/e2e/dashboard.spec.ts` per `quickstart.md` Scenarios 1–6: panel visible with amber styling when expired contract exists; neutral empty state when no expired contracts; click navigates to edit page; LIFETIME contracts excluded; anonymization toggle respected
+- [x] T020 Run full build and test suite: `pnpm --filter shared build && pnpm --recursive test && pnpm lint` — confirm all 0 failures and 0 lint errors
 
 ---
 
