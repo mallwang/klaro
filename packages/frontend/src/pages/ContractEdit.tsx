@@ -50,6 +50,13 @@ export function ContractEdit() {
               billingInterval: contract.billingInterval,
               status: contract.status,
               endDate: contract.endDate ?? '',
+              startDate: contract.startDate ?? '',
+              details: contract.details ?? '',
+              serviceUrl: contract.serviceUrl ?? '',
+              cancellationPeriodValue: contract.cancellationPeriod
+                ? String(contract.cancellationPeriod.value)
+                : '',
+              cancellationPeriodUnit: contract.cancellationPeriod?.unit ?? 'MONTHS',
             }}
             onSubmit={(data) =>
               updateContract(

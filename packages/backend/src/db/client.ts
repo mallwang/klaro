@@ -45,6 +45,24 @@ export function runMigrations(instance: Database.Database): void {
       ALTER TABLE contracts DROP COLUMN monthly_amount;
     `);
   }
+
+  const hasNewFields = instance
+    .prepare<[], { name: string }>(`PRAGMA table_info(contracts)`)
+    .all()
+    .some((col) => col.name === 'start_date');
+
+  if (!hasNewFields) {
+    instance.exec(`
+      ALTER TABLE contracts ADD COLUMN start_date TEXT;
+      ALTER TABLE contracts ADD COLUMN details TEXT CHECK(details IS NULL OR length(details) <= 2000);
+      ALTER TABLE contracts ADD COLUMN service_url TEXT;
+      ALTER TABLE contracts ADD COLUMN cancellation_period_value INTEGER;
+      ALTER TABLE contracts ADD COLUMN cancellation_period_unit TEXT CHECK(
+        cancellation_period_unit IS NULL
+        OR cancellation_period_unit IN ('DAYS','WEEKS','MONTHS')
+      );
+    `);
+  }
 }
 
 export interface ContractRow {
@@ -55,6 +73,11 @@ export interface ContractRow {
   billing_interval: string;
   status: string;
   end_date: string | null;
+  start_date: string | null;
+  details: string | null;
+  service_url: string | null;
+  cancellation_period_value: number | null;
+  cancellation_period_unit: string | null;
   created_at: string;
   updated_at: string;
 }

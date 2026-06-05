@@ -230,6 +230,98 @@ describe('ContractService – update', () => {
   });
 });
 
+describe('ContractService – new fields (create)', () => {
+  let db: Database.Database;
+  let service: ContractService;
+
+  beforeEach(() => {
+    db = makeDb();
+    service = new ContractService(db);
+  });
+
+  it('creates a contract with all four new fields populated and returns them', () => {
+    const result = service.create({
+      name: 'Spotify',
+      category: 'SUBSCRIPTIONS',
+      amount: 9.99,
+      billingInterval: 'MONTHLY',
+      status: 'ACTIVE',
+      startDate: '2024-01-15',
+      details: 'Annual subscription auto-renews',
+      serviceUrl: 'https://spotify.com',
+      cancellationPeriod: { value: 30, unit: 'DAYS' },
+    });
+    expect(result.startDate).toBe('2024-01-15');
+    expect(result.details).toBe('Annual subscription auto-renews');
+    expect(result.serviceUrl).toBe('https://spotify.com');
+    expect(result.cancellationPeriod).toEqual({ value: 30, unit: 'DAYS' });
+  });
+
+  it('creates a contract with all four new fields null and succeeds without error', () => {
+    const result = service.create({
+      name: 'No Extras',
+      category: 'OTHER',
+      amount: 0,
+      billingInterval: 'MONTHLY',
+      status: 'ACTIVE',
+    });
+    expect(result.startDate).toBeNull();
+    expect(result.details).toBeNull();
+    expect(result.serviceUrl).toBeNull();
+    expect(result.cancellationPeriod).toBeNull();
+  });
+
+  it('returns null for cancellationPeriod when only one column is set', () => {
+    const result = service.create({
+      name: 'Partial',
+      category: 'OTHER',
+      amount: 1,
+      billingInterval: 'MONTHLY',
+      status: 'ACTIVE',
+    });
+    // Directly set only value without unit via raw SQL to simulate edge case
+    db.prepare(`UPDATE contracts SET cancellation_period_value = 14 WHERE id = ?`).run(result.id);
+    const listed = service.list().find((c) => c.id === result.id)!;
+    expect(listed.cancellationPeriod).toBeNull();
+  });
+});
+
+describe('ContractService – new fields (update)', () => {
+  let db: Database.Database;
+  let service: ContractService;
+
+  beforeEach(() => {
+    db = makeDb();
+    service = new ContractService(db);
+  });
+
+  it('updates serviceUrl and returns the updated value', () => {
+    const created = service.create({
+      name: 'Netflix',
+      category: 'SUBSCRIPTIONS',
+      amount: 15.99,
+      billingInterval: 'MONTHLY',
+      status: 'ACTIVE',
+    });
+    const updated = service.update(created.id, { serviceUrl: 'https://netflix.com' })!;
+    expect(updated.serviceUrl).toBe('https://netflix.com');
+  });
+
+  it('clears cancellationPeriod when updated to null', () => {
+    const created = service.create({
+      name: 'Gym',
+      category: 'OTHER',
+      amount: 40,
+      billingInterval: 'MONTHLY',
+      status: 'ACTIVE',
+      cancellationPeriod: { value: 14, unit: 'DAYS' },
+    });
+    expect(created.cancellationPeriod).toEqual({ value: 14, unit: 'DAYS' });
+    const updated = service.update(created.id, { cancellationPeriod: null })!;
+    expect(updated.cancellationPeriod).toBeNull();
+  });
+});
+
 describe('ContractService – delete', () => {
   let db: Database.Database;
   let service: ContractService;

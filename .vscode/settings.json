@@ -1,0 +1,5 @@
+{
+    "chat.notifyWindowOnConfirmation": "always",
+    "chat.notifyWindowOnResponseReceived": "always",
+    "git.showPushSuccessNotification": true
+}

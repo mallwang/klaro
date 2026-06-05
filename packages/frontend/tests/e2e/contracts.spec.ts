@@ -112,6 +112,70 @@ test.describe('Contract List & CRUD', () => {
     await expect(updatedRow.getByText(/Yearly/)).toBeVisible();
   });
 
+  test('US1-new-fields – create a contract with all four new fields and see it in the list', async ({
+    page,
+  }) => {
+    const uniqueName = `New Fields ${Date.now()}`;
+
+    await page.getByRole('link', { name: /add contract/i }).click();
+    await page.getByLabel(/^name/i).fill(uniqueName);
+    await page.getByLabel(/^amount/i).fill('12.99');
+    await page.getByLabel(/start date/i).fill('2024-01-15');
+    await page.getByLabel(/details/i).fill('Auto-renews each year');
+    await page.getByLabel(/service url/i).fill('https://example.com');
+    await page.getByLabel(/cancellation period/i).fill('30');
+    await page.getByLabel(/cancellation unit/i).selectOption('DAYS');
+    await page.getByRole('button', { name: /add contract/i }).click();
+
+    await expect(page).toHaveURL(/\/contracts$/);
+    await expect(page.locator('tr').filter({ hasText: uniqueName })).toBeVisible();
+  });
+
+  test('US2-new-fields – edit round-trip preserves all four new fields', async ({ page }) => {
+    const uniqueName = `Edit Fields ${Date.now()}`;
+
+    // Create with new fields
+    await page.getByRole('link', { name: /add contract/i }).click();
+    await page.getByLabel(/^name/i).fill(uniqueName);
+    await page.getByLabel(/^amount/i).fill('9.99');
+    await page.getByLabel(/start date/i).fill('2024-03-01');
+    await page.getByLabel(/details/i).fill('Test notes');
+    await page.getByLabel(/service url/i).fill('https://spotify.com');
+    await page.getByLabel(/cancellation period/i).fill('14');
+    await page.getByLabel(/cancellation unit/i).selectOption('WEEKS');
+    await page.getByRole('button', { name: /add contract/i }).click();
+    await expect(page).toHaveURL(/\/contracts$/);
+
+    // Open edit
+    const row = page.locator('tr').filter({ hasText: uniqueName });
+    await row.getByRole('link', { name: /edit/i }).click();
+    await expect(page).toHaveURL(/\/contracts\/.+\/edit/);
+
+    // Assert all four new fields are pre-filled
+    await expect(page.getByLabel(/start date/i)).toHaveValue('2024-03-01');
+    await expect(page.getByLabel(/details/i)).toHaveValue('Test notes');
+    await expect(page.getByLabel(/service url/i)).toHaveValue('https://spotify.com');
+    await expect(page.getByLabel(/cancellation period/i)).toHaveValue('14');
+    const unitSelect = page.getByLabel(/cancellation unit/i);
+    await expect(unitSelect).toHaveValue('WEEKS');
+
+    // Save and confirm no error
+    await page.getByRole('button', { name: /save changes/i }).click();
+    await expect(page).toHaveURL(/\/contracts$/);
+  });
+
+  test('US1-new-fields – malformed service URL shows validation error', async ({ page }) => {
+    await page.getByRole('link', { name: /add contract/i }).click();
+    await page.getByLabel(/^name/i).fill(`Bad URL ${Date.now()}`);
+    await page.getByLabel(/^amount/i).fill('5');
+    await page.getByLabel(/service url/i).fill('bad-url');
+    await page.getByRole('button', { name: /add contract/i }).click();
+
+    // Should stay on the new contract page with an error
+    await expect(page).toHaveURL(/\/contracts\/new/);
+    await expect(page.getByRole('alert')).toBeVisible();
+  });
+
   test('US4 – delete contract with Cancel keeps it in the list', async ({ page }) => {
     const uniqueName = `Delete Cancel ${Date.now()}`;
     await page.getByRole('link', { name: /add contract/i }).click();
