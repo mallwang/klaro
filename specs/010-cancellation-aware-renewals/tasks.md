@@ -21,7 +21,7 @@ and testing of each story.
 
 **Purpose**: Establish baseline before making changes.
 
-- [ ] T001 Run `pnpm tsc --noEmit` across all packages and note any pre-existing errors that are not part of this feature
+- [x] T001 Run `pnpm tsc --noEmit` across all packages and note any pre-existing errors that are not part of this feature
 
 ---
 
@@ -34,11 +34,11 @@ be fully complete before any user story implementation begins.
 will report downstream errors (frontend component, backend service) after T004 — that is
 expected and resolved in later phases.
 
-- [ ] T002 Add `YEARS: 'YEARS'` to `CancellationPeriodUnit` and `'Years'` to `CANCELLATION_PERIOD_UNIT_LABELS` in `packages/shared/src/types/contract.ts`
-- [ ] T003 [P] Add `CancellationPeriodUnit.YEARS` to `CancellationPeriodUnitSchema` in `packages/shared/src/schemas/contract.ts`
-- [ ] T004 [P] Add `"YEARS": "Years"` under `cancellationUnit` in `packages/frontend/src/i18n/locales/en.json` and `"YEARS": "Jahre"` in `packages/frontend/src/i18n/locales/de.json`
-- [ ] T005 Replace `daysRemaining: z.number().int().nonnegative()` with `cancellationDeadline: z.string().regex(...)` and `daysUntilCancellationDeadline: z.number().int()` in `UpcomingRenewalSchema` in `packages/shared/src/schemas/dashboard.ts`; update derived `UpcomingRenewal` type export
-- [ ] T006 [P] Add YEARS migration step to `runMigrations()` in `packages/backend/src/db/client.ts`: query `sqlite_master` for `contracts` table SQL; if `'YEARS'` not in constraint, rebuild table with updated `CHECK(cancellation_period_unit IS NULL OR cancellation_period_unit IN ('DAYS','WEEKS','MONTHS','YEARS'))`
+- [x] T002 Add `YEARS: 'YEARS'` to `CancellationPeriodUnit` and `'Years'` to `CANCELLATION_PERIOD_UNIT_LABELS` in `packages/shared/src/types/contract.ts`
+- [x] T003 [P] Add `CancellationPeriodUnit.YEARS` to `CancellationPeriodUnitSchema` in `packages/shared/src/schemas/contract.ts`
+- [x] T004 [P] Add `"YEARS": "Years"` under `cancellationUnit` in `packages/frontend/src/i18n/locales/en.json` and `"YEARS": "Jahre"` in `packages/frontend/src/i18n/locales/de.json`
+- [x] T005 Replace `daysRemaining: z.number().int().nonnegative()` with `cancellationDeadline: z.string().regex(...)` and `daysUntilCancellationDeadline: z.number().int()` in `UpcomingRenewalSchema` in `packages/shared/src/schemas/dashboard.ts`; update derived `UpcomingRenewal` type export
+- [x] T006 [P] Add YEARS migration step to `runMigrations()` in `packages/backend/src/db/client.ts`: query `sqlite_master` for `contracts` table SQL; if `'YEARS'` not in constraint, rebuild table with updated `CHECK(cancellation_period_unit IS NULL OR cancellation_period_unit IN ('DAYS','WEEKS','MONTHS','YEARS'))`
 
 **Checkpoint**: Foundational types updated. Backend tests will fail (expected — `getUpcomingRenewals` still returns old shape). User story phases can now begin.
 
@@ -56,7 +56,7 @@ and the new fields appear in `GET /api/dashboard`.
 
 ### Tests — Write FIRST, confirm failing before implementing T010–T011
 
-- [ ] T007 [US1] Extend `insertContract` helper in `packages/backend/tests/unit/dashboard.service.test.ts` to accept `cancellation_period_value: number | null` and `cancellation_period_unit: string | null` overrides; rewrite the `DashboardService – upcomingRenewals` test suite with these failing cases:
+- [x] T007 [US1] Extend `insertContract` helper in `packages/backend/tests/unit/dashboard.service.test.ts` to accept `cancellation_period_value: number | null` and `cancellation_period_unit: string | null` overrides; rewrite the `DashboardService – upcomingRenewals` test suite with these failing cases:
   - Contract with 3-month cancellation, end date 4 months out → included
   - Contract with 3-month cancellation, end date 6 months out → excluded
   - Contract with no cancellation period, end date 20 days out → included (default window)
@@ -67,13 +67,13 @@ and the new fields appear in `GET /api/dashboard`.
   - Two contracts: sort by `daysUntilCancellationDeadline` ascending; name as tiebreaker
   - LIFETIME contract excluded regardless of end date
   - Already-ended contract excluded
-- [ ] T008 [P] [US1] Extend `insertContract` helper in `packages/backend/tests/integration/dashboard.route.test.ts` to accept `cancellation_period_value` and `cancellation_period_unit`; update `upcomingRenewals` test assertions to expect `cancellationDeadline` and `daysUntilCancellationDeadline` (remove `daysRemaining` assertions); add a test: contract with 3-month cancellation + 4-month end date is included in response
+- [x] T008 [P] [US1] Extend `insertContract` helper in `packages/backend/tests/integration/dashboard.route.test.ts` to accept `cancellation_period_value` and `cancellation_period_unit`; update `upcomingRenewals` test assertions to expect `cancellationDeadline` and `daysUntilCancellationDeadline` (remove `daysRemaining` assertions); add a test: contract with 3-month cancellation + 4-month end date is included in response
 
 ### Implementation
 
-- [ ] T009 [US1] Implement pure helper `computeCancellationDeadline(endDate: Date, period: { value: number; unit: CancellationPeriodUnit } | null): Date` in `packages/backend/src/services/dashboard.ts` — returns `endDate` if period is null; subtracts calendar-accurately for DAYS/WEEKS/MONTHS/YEARS
-- [ ] T010 [US1] Rewrite `getUpcomingRenewals()` in `packages/backend/src/services/dashboard.ts`: (1) SELECT all non-LIFETIME contracts with non-null future `end_date`, including `cancellation_period_value` + `cancellation_period_unit`; (2) compute `cancellationDeadline` and `panelEntryDate` per row via `computeCancellationDeadline`; (3) filter `today >= panelEntryDate`; (4) compute `daysUntilCancellationDeadline`; (5) sort ascending by `daysUntilCancellationDeadline` then `name`; (6) return new `UpcomingRenewal` shape
-- [ ] T011 [US1] Run `pnpm --filter @pcm/backend run test`; confirm all unit and integration tests pass green
+- [x] T009 [US1] Implement pure helper `computeCancellationDeadline(endDate: Date, period: { value: number; unit: CancellationPeriodUnit } | null): Date` in `packages/backend/src/services/dashboard.ts` — returns `endDate` if period is null; subtracts calendar-accurately for DAYS/WEEKS/MONTHS/YEARS
+- [x] T010 [US1] Rewrite `getUpcomingRenewals()` in `packages/backend/src/services/dashboard.ts`: (1) SELECT all non-LIFETIME contracts with non-null future `end_date`, including `cancellation_period_value` + `cancellation_period_unit`; (2) compute `cancellationDeadline` and `panelEntryDate` per row via `computeCancellationDeadline`; (3) filter `today >= panelEntryDate`; (4) compute `daysUntilCancellationDeadline`; (5) sort ascending by `daysUntilCancellationDeadline` then `name`; (6) return new `UpcomingRenewal` shape
+- [x] T011 [US1] Run `pnpm --filter @pcm/backend run test`; confirm all unit and integration tests pass green
 
 **Checkpoint**: Backend fully functional. `GET /api/dashboard` returns new `UpcomingRenewal` shape.
 Frontend component will have TypeScript errors until Phase 4 — expected.
@@ -91,13 +91,13 @@ style and displays the overdue day count.
 
 ### Tests — Write FIRST, confirm failing before implementing T015
 
-- [ ] T012 [US2] Add failing E2E test to `packages/frontend/tests/e2e/dashboard.spec.ts`: given an API response where `daysUntilCancellationDeadline` is negative, the panel entry renders an overdue badge with destructive styling (e.g. check for a CSS class or `data-testid` indicating overdue state) and shows a days-overdue count
+- [x] T012 [US2] Add failing E2E test to `packages/frontend/tests/e2e/dashboard.spec.ts`: given an API response where `daysUntilCancellationDeadline` is negative, the panel entry renders an overdue badge with destructive styling (e.g. check for a CSS class or `data-testid` indicating overdue state) and shows a days-overdue count
 
 ### Implementation
 
-- [ ] T013 [P] [US2] Add i18n keys to `packages/frontend/src/i18n/locales/en.json` under `dashboard`: `"cancelBy"`, `"endsOn"`, `"dueToday"`, `"daysOverdue"` (e.g. `"{{count}} days overdue"`)
-- [ ] T014 [P] [US2] Add German equivalents for the same keys in `packages/frontend/src/i18n/locales/de.json`
-- [ ] T015 [US2] Update `packages/frontend/src/components/UpcomingRenewals.tsx`: (1) consume new `UpcomingRenewal` shape (`cancellationDeadline`, `daysUntilCancellationDeadline`); (2) update `urgencyVariant` — destructive when `< 0`, warning when `<= 7`, secondary otherwise; (3) update badge text — use `daysOverdue` key when negative, `dueToday` when 0, `daysRemaining` when positive
+- [x] T013 [P] [US2] Add i18n keys to `packages/frontend/src/i18n/locales/en.json` under `dashboard`: `"cancelBy"`, `"endsOn"`, `"dueToday"`, `"daysOverdue"` (e.g. `"{{count}} days overdue"`)
+- [x] T014 [P] [US2] Add German equivalents for the same keys in `packages/frontend/src/i18n/locales/de.json`
+- [x] T015 [US2] Update `packages/frontend/src/components/UpcomingRenewals.tsx`: (1) consume new `UpcomingRenewal` shape (`cancellationDeadline`, `daysUntilCancellationDeadline`); (2) update `urgencyVariant` — destructive when `< 0`, warning when `<= 7`, secondary otherwise; (3) update badge text — use `daysOverdue` key when negative, `dueToday` when 0, `daysRemaining` when positive
 
 **Checkpoint**: Urgency badges render correctly for all three states (overdue, due-today, remaining).
 
@@ -113,12 +113,12 @@ they display different dates for contracts with a non-zero cancellation period.
 
 ### Tests — Write FIRST, confirm failing before implementing T018
 
-- [ ] T016 [US3] Add failing E2E test to `packages/frontend/tests/e2e/dashboard.spec.ts`: a panel entry for a contract with a cancellation period shows a "Cancel by" labelled date and an "Ends" labelled date; verify both are visible and different
+- [x] T016 [US3] Add failing E2E test to `packages/frontend/tests/e2e/dashboard.spec.ts`: a panel entry for a contract with a cancellation period shows a "Cancel by" labelled date and an "Ends" labelled date; verify both are visible and different
 
 ### Implementation
 
-- [ ] T017 [US3] Update `packages/frontend/src/components/UpcomingRenewals.tsx`: replace the single date display with two labelled rows — `t('dashboard.cancelBy')` + formatted `cancellationDeadline` and `t('dashboard.endsOn')` + formatted `endDate`; remove any remaining `daysRemaining` usage
-- [ ] T018 [US3] Run `pnpm --filter @pcm/frontend run test:e2e`; confirm US2 and US3 E2E tests pass green
+- [x] T017 [US3] Update `packages/frontend/src/components/UpcomingRenewals.tsx`: replace the single date display with two labelled rows — `t('dashboard.cancelBy')` + formatted `cancellationDeadline` and `t('dashboard.endsOn')` + formatted `endDate`; remove any remaining `daysRemaining` usage
+- [x] T018 [US3] Run `pnpm --filter @pcm/frontend run test:e2e`; confirm US2 and US3 E2E tests pass green
 
 **Checkpoint**: All three user stories fully functional and independently verifiable.
 
@@ -128,9 +128,9 @@ they display different dates for contracts with a non-zero cancellation period.
 
 **Purpose**: Final verification pass across the full stack.
 
-- [ ] T019 [P] Run `pnpm tsc --noEmit` across all packages; resolve any remaining type errors
-- [ ] T020 [P] Run complete test suite: `pnpm --filter @pcm/backend run test` and `pnpm --filter @pcm/frontend run test:e2e`; confirm fully green
-- [ ] T021 Manually validate quickstart.md scenarios 1–8 against the running application
+- [x] T019 [P] Run `pnpm tsc --noEmit` across all packages; resolve any remaining type errors
+- [x] T020 [P] Run complete test suite: `pnpm --filter @pcm/backend run test` and `pnpm --filter @pcm/frontend run test:e2e`; confirm fully green
+- [x] T021 Manually validate quickstart.md scenarios 1–8 against the running application
 
 ---
 

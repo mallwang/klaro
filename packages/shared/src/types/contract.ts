@@ -27,6 +27,7 @@ export const CancellationPeriodUnit = {
   DAYS: 'DAYS',
   WEEKS: 'WEEKS',
   MONTHS: 'MONTHS',
+  YEARS: 'YEARS',
 } as const;
 
 export type CancellationPeriodUnit =
@@ -36,6 +37,7 @@ export const CANCELLATION_PERIOD_UNIT_LABELS: Record<CancellationPeriodUnit, str
   DAYS: 'Days',
   WEEKS: 'Weeks',
   MONTHS: 'Months',
+  YEARS: 'Years',
 };
 
 export const BillingInterval = {

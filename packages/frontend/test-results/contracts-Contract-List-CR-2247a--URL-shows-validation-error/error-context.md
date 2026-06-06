@@ -32,9 +32,10 @@ Call log:
 - main:
     - heading "Add Contract" [level=1]
     - text: Name *
+    - img
     - textbox "Name *":
         - /placeholder: e.g. Netflix
-        - text: Bad URL 1780669956806
+        - text: Bad URL 1780769172868
     - text: Category *
     - combobox "Category *":
         - option "Utilities"
@@ -72,6 +73,7 @@ Call log:
         - option "Days"
         - option "Weeks"
         - option "Months" [selected]
+        - option "Years"
     - checkbox "Anonymize this contract"
     - text: Anonymize this contract Always hide the name of this contract in the list view
     - button "Add Contract"

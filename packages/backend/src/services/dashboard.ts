@@ -5,7 +5,36 @@ import type {
   UpcomingRenewal,
   ExpiredContract,
 } from '@pcm/shared';
-import { CATEGORY_LABELS, type Category } from '@pcm/shared';
+import { CATEGORY_LABELS, type Category, type CancellationPeriodUnit } from '@pcm/shared';
+
+const GRACE_PERIOD_DAYS = 30;
+
+function computeCancellationDeadline(
+  endDate: Date,
+  period: { value: number; unit: CancellationPeriodUnit } | null,
+): Date {
+  if (!period) return new Date(endDate);
+  const result = new Date(endDate);
+  switch (period.unit) {
+    case 'DAYS':
+      result.setUTCDate(result.getUTCDate() - period.value);
+      break;
+    case 'WEEKS':
+      result.setUTCDate(result.getUTCDate() - period.value * 7);
+      break;
+    case 'MONTHS':
+      result.setUTCMonth(result.getUTCMonth() - period.value);
+      break;
+    case 'YEARS':
+      result.setUTCFullYear(result.getUTCFullYear() - period.value);
+      break;
+  }
+  return result;
+}
+
+function toDateString(d: Date): string {
+  return d.toISOString().slice(0, 10);
+}
 
 const MONTHLY_FACTOR_SQL = `
   amount * CASE billing_interval
@@ -62,32 +91,74 @@ export class DashboardService {
 
   private getUpcomingRenewals(): UpcomingRenewal[] {
     const rows = this.db
-      .prepare<[], { id: string; name: string; category: string; end_date: string }>(
-        `SELECT id, name, category, end_date
+      .prepare<
+        [],
+        {
+          id: string;
+          name: string;
+          category: string;
+          end_date: string;
+          cancellation_period_value: number | null;
+          cancellation_period_unit: string | null;
+          anonymize: number;
+        }
+      >(
+        `SELECT id, name, category, end_date,
+                cancellation_period_value, cancellation_period_unit, anonymize
          FROM contracts
          WHERE end_date IS NOT NULL
            AND billing_interval != 'LIFETIME'
-           AND end_date >= DATE('now')
-           AND end_date <= DATE('now', '+30 days')
-         ORDER BY end_date ASC`,
+           AND end_date >= DATE('now')`,
       )
       .all();
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    const now = new Date();
+    const today = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
 
-    return rows.map((row) => {
-      const end = new Date(row.end_date);
-      end.setHours(0, 0, 0, 0);
-      const daysRemaining = Math.round((end.getTime() - today.getTime()) / 86_400_000);
-      return {
+    const results: UpcomingRenewal[] = [];
+
+    for (const row of rows) {
+      // Parse date-only strings as UTC midnight to avoid local-timezone shifts
+      const endDate = new Date(row.end_date + 'T00:00:00Z');
+
+      const period =
+        row.cancellation_period_value !== null && row.cancellation_period_unit !== null
+          ? {
+              value: row.cancellation_period_value,
+              unit: row.cancellation_period_unit as CancellationPeriodUnit,
+            }
+          : null;
+
+      const cancellationDeadline = computeCancellationDeadline(endDate, period);
+
+      const panelEntryDate = new Date(cancellationDeadline);
+      panelEntryDate.setUTCDate(panelEntryDate.getUTCDate() - GRACE_PERIOD_DAYS);
+
+      if (today < panelEntryDate) continue;
+
+      const daysUntilCancellationDeadline = Math.round(
+        (cancellationDeadline.getTime() - today.getTime()) / 86_400_000,
+      );
+
+      results.push({
         id: row.id,
         name: row.name,
         category: row.category as Category,
         endDate: row.end_date,
-        daysRemaining,
-      };
+        cancellationDeadline: toDateString(cancellationDeadline),
+        daysUntilCancellationDeadline,
+        anonymize: row.anonymize !== 0,
+      });
+    }
+
+    results.sort((a, b) => {
+      if (a.daysUntilCancellationDeadline !== b.daysUntilCancellationDeadline) {
+        return a.daysUntilCancellationDeadline - b.daysUntilCancellationDeadline;
+      }
+      return a.name.localeCompare(b.name);
     });
+
+    return results;
   }
 
   private getExpiredContracts(): ExpiredContract[] {

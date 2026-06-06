@@ -6,22 +6,22 @@
 
 # Test info
 
-- Name: dashboard.spec.ts >> Welcome Dashboard >> US2 – shows contracts grouped by category
-- Location: tests/e2e/dashboard.spec.ts:56:3
+- Name: dashboard.spec.ts >> Welcome Dashboard >> US4 – expired contracts panel has neutral empty state when no contracts are expired
+- Location: tests/e2e/dashboard.spec.ts:91:3
 
 # Error details
 
 ```
 Error: expect(locator).toBeVisible() failed
 
-Locator: getByRole('region', { name: 'Contracts by category' }).getByRole('heading', { name: /by category/i })
+Locator: getByText(/no expired contracts/i)
 Expected: visible
 Timeout: 5000ms
 Error: element(s) not found
 
 Call log:
   - Expect "toBeVisible" with timeout 5000ms
-  - waiting for getByRole('region', { name: 'Contracts by category' }).getByRole('heading', { name: /by category/i })
+  - waiting for getByText(/no expired contracts/i)
 
 ```
 
@@ -39,7 +39,7 @@ Call log:
             - text: Monthly Spending
             - button "Monthly spending calculation info"
             - tooltip "Average monthly cost across all active contracts. Yearly amounts ÷ 12, quarterly ÷ 3, weekly × 4.3. One-time (lifetime) contracts are excluded."
-        - paragraph: €152.50
+        - paragraph: €233.81
         - paragraph: across all active contracts
     - region "By Category":
         - heading "By Category" [level=2]
@@ -50,10 +50,10 @@ Call log:
                     - columnheader "Contracts"
                     - columnheader "Monthly Total"
             - rowgroup:
-                - row "Subscriptions 14 €89.50":
+                - row "Subscriptions 19 €170.81":
                     - cell "Subscriptions"
-                    - cell "14"
-                    - cell "€89.50"
+                    - cell "19"
+                    - cell "€170.81"
                 - row "Housing 2 €63.00":
                     - cell "Housing"
                     - cell "2"
@@ -132,8 +132,7 @@ Call log:
   55 |
   56 |   test('US2 – shows contracts grouped by category', async ({ page }) => {
   57 |     const section = page.getByRole('region', { name: 'Contracts by category' });
-> 58 |     await expect(section.getByRole('heading', { name: /by category/i })).toBeVisible();
-     |                                                                          ^ Error: expect(locator).toBeVisible() failed
+  58 |     await expect(section.getByRole('heading', { name: /by category/i })).toBeVisible();
   59 |     await expect(section.getByText('Housing')).toBeVisible();
   60 |     await expect(section.getByText('Utilities')).toBeVisible();
   61 |     await expect(section.getByText('Subscriptions')).toBeVisible();
@@ -169,7 +168,8 @@ Call log:
   91 |   test('US4 – expired contracts panel has neutral empty state when no contracts are expired', async ({
   92 |     page,
   93 |   }) => {
-  94 |     await expect(page.getByText(/no expired contracts/i)).toBeVisible();
+> 94 |     await expect(page.getByText(/no expired contracts/i)).toBeVisible();
+     |                                                           ^ Error: expect(locator).toBeVisible() failed
   95 |     const section = page.getByRole('region', { name: /expired contracts/i });
   96 |     await expect(section.locator('.border-amber-200')).toHaveCount(0);
   97 |   });
