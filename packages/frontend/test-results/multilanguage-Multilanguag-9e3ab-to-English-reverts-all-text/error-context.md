@@ -53,7 +53,7 @@ Call log:
                                     - tooltip "Durchschnittliche monatliche Kosten aller aktiven Verträge. Jährliche Beträge ÷ 12, vierteljährliche ÷ 3, wöchentliche × 4,3. Einmalige Verträge werden nicht berücksichtigt."
                         - img [ref=e24]
                     - generic [ref=e27]:
-                        - paragraph [ref=e28]: 2.065,87 €
+                        - paragraph [ref=e28]: 202,49 €
                         - paragraph [ref=e29]: über alle aktiven Verträge
             - region "Nach Kategorie" [ref=e30]:
                 - generic [ref=e31]:
@@ -65,37 +65,44 @@ Call log:
                                 - columnheader "Verträge" [ref=e39]
                                 - columnheader "Monatssumme" [ref=e40]
                         - rowgroup [ref=e41]:
-                            - row "Housing 1 1.200,00 €" [ref=e42]:
-                                - cell "Housing" [ref=e43]
-                                - cell "1" [ref=e44]
-                                - cell "1.200,00 €" [ref=e45]
-                            - row "Subscriptions 43 775,87 €" [ref=e46]:
-                                - cell "Subscriptions" [ref=e47]
-                                - cell "43" [ref=e48]
-                                - cell "775,87 €" [ref=e49]
-                            - row "Utilities 2 90,00 €" [ref=e50]:
-                                - cell "Utilities" [ref=e51]
-                                - cell "2" [ref=e52]
-                                - cell "90,00 €" [ref=e53]
-            - region "Bevorstehende Verlängerungen" [ref=e54]:
-                - generic [ref=e55]:
-                    - generic [ref=e56]:
-                        - heading "Bevorstehende Verlängerungen" [level=2] [ref=e57]
-                        - img [ref=e58]
-                    - list [ref=e63]:
-                        - listitem [ref=e64]:
-                            - generic [ref=e65]:
-                                - generic [ref=e66]: Netflix
-                                - generic [ref=e67]: Abonnements
-                            - generic [ref=e68]:
-                                - generic [ref=e69]: 20.06.2026
-                                - generic [ref=e70]: 15 Tage verbleibend
-            - region "Abgelaufene Verträge" [ref=e71]:
-                - generic [ref=e72]:
-                    - generic [ref=e73]:
-                        - heading "Abgelaufene Verträge" [level=2] [ref=e74]
-                        - img [ref=e75]
-                    - paragraph [ref=e78]: Keine abgelaufenen Verträge.
+                            - row "Subscriptions 16 139,49 €" [ref=e42]:
+                                - cell "Subscriptions" [ref=e43]
+                                - cell "16" [ref=e44]
+                                - cell "139,49 €" [ref=e45]
+                            - row "Housing 2 63,00 €" [ref=e46]:
+                                - cell "Housing" [ref=e47]
+                                - cell "2" [ref=e48]
+                                - cell "63,00 €" [ref=e49]
+            - region "Bevorstehende Verlängerungen" [ref=e50]:
+                - generic [ref=e51]:
+                    - generic [ref=e52]:
+                        - heading "Bevorstehende Verlängerungen" [level=2] [ref=e53]
+                        - img [ref=e54]
+                    - paragraph [ref=e59]: Keine bevorstehenden Verlängerungen.
+            - region "Abgelaufene Verträge" [ref=e60]:
+                - generic [ref=e61]:
+                    - generic [ref=e62]:
+                        - heading "Abgelaufene Verträge" [level=2] [ref=e63]
+                        - img [ref=e64]
+                    - list [ref=e67]:
+                        - listitem [ref=e68]:
+                            - link "Embervault GmbH Abonnements 27.05.2026 10 Tage überfällig" [ref=e69] [cursor=pointer]:
+                                - /url: /contracts/e6eae28a-edcb-409f-b521-ca30a5b9595a/edit
+                                - generic [ref=e70]:
+                                    - generic [ref=e71]: Embervault GmbH
+                                    - generic [ref=e72]: Abonnements
+                                - generic [ref=e73]:
+                                    - generic [ref=e74]: 27.05.2026
+                                    - generic [ref=e75]: 10 Tage überfällig
+                        - listitem [ref=e76]:
+                            - link "Paramount+ Abonnements 22.03.2026 76 Tage überfällig" [ref=e77] [cursor=pointer]:
+                                - /url: /contracts/697f1b1f-4e7c-4657-858a-7935196f42f9/edit
+                                - generic [ref=e78]:
+                                    - generic [ref=e79]: Paramount+
+                                    - generic [ref=e80]: Abonnements
+                                - generic [ref=e81]:
+                                    - generic [ref=e82]: 22.03.2026
+                                    - generic [ref=e83]: 76 Tage überfällig
 ```
 
 # Test source

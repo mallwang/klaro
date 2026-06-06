@@ -16,6 +16,8 @@ function insertContract(
     status: string;
     end_date: string | null;
     anonymize: number;
+    cancellation_period_value: number | null;
+    cancellation_period_unit: string | null;
   }> = {},
 ) {
   const row = {
@@ -27,13 +29,15 @@ function insertContract(
     status: 'ACTIVE',
     end_date: null,
     anonymize: 0,
+    cancellation_period_value: null,
+    cancellation_period_unit: null,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
     ...overrides,
   };
   db.prepare(
-    `INSERT INTO contracts (id, name, category, amount, billing_interval, status, end_date, anonymize, created_at, updated_at)
-     VALUES (@id, @name, @category, @amount, @billing_interval, @status, @end_date, @anonymize, @created_at, @updated_at)`,
+    `INSERT INTO contracts (id, name, category, amount, billing_interval, status, end_date, anonymize, cancellation_period_value, cancellation_period_unit, created_at, updated_at)
+     VALUES (@id, @name, @category, @amount, @billing_interval, @status, @end_date, @anonymize, @cancellation_period_value, @cancellation_period_unit, @created_at, @updated_at)`,
   ).run(row);
 }
 
@@ -140,15 +144,44 @@ describe('GET /api/dashboard', () => {
     expect(subs?.monthlyTotal).toBeCloseTo(25, 2);
   });
 
-  it('returns upcomingRenewals for contracts expiring within 30 days', async () => {
+  it('returns upcomingRenewals for contracts in their action window (no cancellation period: 30-day default)', async () => {
     insertContract(db, { name: 'Soon', end_date: daysFromNow(10), status: 'ACTIVE' });
     insertContract(db, { name: 'Far', end_date: daysFromNow(60), status: 'ACTIVE' });
     insertContract(db, { name: 'NoDate', end_date: null, status: 'ACTIVE' });
     const res = await app.inject({ method: 'GET', url: '/api/dashboard' });
-    const body = res.json<{ upcomingRenewals: Array<{ name: string; daysRemaining: number }> }>();
+    const body = res.json<{
+      upcomingRenewals: Array<{
+        name: string;
+        cancellationDeadline: string;
+        daysUntilCancellationDeadline: number;
+        endDate: string;
+      }>;
+    }>();
     expect(body.upcomingRenewals).toHaveLength(1);
     expect(body.upcomingRenewals[0]?.name).toBe('Soon');
-    expect(body.upcomingRenewals[0]?.daysRemaining).toBeLessThanOrEqual(10);
+    expect(body.upcomingRenewals[0]?.daysUntilCancellationDeadline).toBeLessThanOrEqual(10);
+    expect(body.upcomingRenewals[0]?.cancellationDeadline).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    expect(body.upcomingRenewals[0]?.endDate).toBe(daysFromNow(10));
+  });
+
+  it('returns upcomingRenewals for contract with 3-month cancellation and 4-month end date', async () => {
+    const endDate = new Date();
+    endDate.setMonth(endDate.getMonth() + 4);
+    const endDateStr = endDate.toISOString().slice(0, 10);
+    insertContract(db, {
+      name: '3MonthCancellation',
+      end_date: endDateStr,
+      cancellation_period_value: 3,
+      cancellation_period_unit: 'MONTHS',
+    });
+    const res = await app.inject({ method: 'GET', url: '/api/dashboard' });
+    const body = res.json<{
+      upcomingRenewals: Array<{ name: string; daysUntilCancellationDeadline: number }>;
+    }>();
+    expect(body.upcomingRenewals).toHaveLength(1);
+    expect(body.upcomingRenewals[0]?.name).toBe('3MonthCancellation');
+    expect(body.upcomingRenewals[0]?.daysUntilCancellationDeadline).toBeGreaterThanOrEqual(25);
+    expect(body.upcomingRenewals[0]?.daysUntilCancellationDeadline).toBeLessThanOrEqual(35);
   });
 
   it('excludes LIFETIME contracts from upcomingRenewals even with imminent end_date', async () => {

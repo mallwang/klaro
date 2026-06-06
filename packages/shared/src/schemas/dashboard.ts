@@ -21,7 +21,9 @@ export const UpcomingRenewalSchema = z.object({
   name: z.string(),
   category: CategoryEnum,
   endDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
-  daysRemaining: z.number().int().nonnegative(),
+  cancellationDeadline: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  daysUntilCancellationDeadline: z.number().int(),
+  anonymize: z.boolean(),
 });
 
 export const ExpiredContractSchema = z.object({

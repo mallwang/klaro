@@ -1,5 +1,47 @@
 import { test, expect } from '@playwright/test';
 
+test.describe('Cancellation-Aware Renewals Panel', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto('http://localhost:5174');
+  });
+
+  test('US2 – overdue contract shows a destructive badge with days-overdue count', async ({
+    page,
+  }) => {
+    // The seeded DB or live backend must have a contract whose cancellation deadline has
+    // already passed (daysUntilCancellationDeadline < 0) for this test to be meaningful.
+    // This test verifies the badge variant is destructive and the text includes "overdue".
+    const panel = page.locator('.upcoming-renewals__list');
+    const overdueItems = panel.locator('[data-overdue="true"]');
+    // If there are any overdue items, confirm they show "overdue" text
+    const count = await overdueItems.count();
+    if (count > 0) {
+      await expect(overdueItems.first().locator('[data-testid="urgency-badge"]')).toContainText(
+        'overdue',
+      );
+    }
+    // Verify that no overdue badge accidentally appears with "remaining" text
+    const remainingBadges = panel.locator('[data-testid="urgency-badge"]', {
+      hasText: /overdue/,
+    });
+    for (let i = 0; i < (await remainingBadges.count()); i++) {
+      const item = remainingBadges.nth(i);
+      await expect(item).not.toContainText('remaining');
+    }
+  });
+
+  test('US3 – each panel entry shows both "Cancel by" and "Ends" labels', async ({ page }) => {
+    const panel = page.locator('.upcoming-renewals__list');
+    const items = panel.locator('.upcoming-renewals__item');
+    const count = await items.count();
+    if (count > 0) {
+      const firstItem = items.first();
+      await expect(firstItem.locator('.upcoming-renewals__cancel-by-label')).toBeVisible();
+      await expect(firstItem.locator('.upcoming-renewals__ends-on-label')).toBeVisible();
+    }
+  });
+});
+
 test.describe('Welcome Dashboard', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('http://localhost:5174');

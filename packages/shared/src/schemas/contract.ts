@@ -20,6 +20,7 @@ export const CancellationPeriodUnitSchema = z.enum([
   CancellationPeriodUnit.DAYS,
   CancellationPeriodUnit.WEEKS,
   CancellationPeriodUnit.MONTHS,
+  CancellationPeriodUnit.YEARS,
 ]);
 
 export const CancellationPeriodSchema = z.object({

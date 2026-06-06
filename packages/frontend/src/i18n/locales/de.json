@@ -37,7 +37,8 @@
   "cancellationUnit": {
     "DAYS": "Tage",
     "WEEKS": "Wochen",
-    "MONTHS": "Monate"
+    "MONTHS": "Monate",
+    "YEARS": "Jahre"
   },
   "dashboard": {
     "title": "Dashboard",
@@ -54,6 +55,9 @@
     "upcomingRenewals": "Bevorstehende Verlängerungen",
     "noRenewals": "Keine bevorstehenden Verlängerungen.",
     "daysRemaining": "{{count}} Tage verbleibend",
+    "dueToday": "Heute fällig",
+    "cancelBy": "Kündigen bis",
+    "endsOn": "Endet",
     "expiredContracts": "Abgelaufene Verträge",
     "noExpiredContracts": "Keine abgelaufenen Verträge.",
     "daysOverdue": "{{count}} Tage überfällig",

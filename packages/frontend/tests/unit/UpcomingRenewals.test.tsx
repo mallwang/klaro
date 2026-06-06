@@ -9,14 +9,30 @@ const sampleData: UpcomingRenewal[] = [
     name: 'Netflix',
     category: 'SUBSCRIPTIONS',
     endDate: '2026-06-19',
-    daysRemaining: 15,
+    cancellationDeadline: '2026-06-12',
+    daysUntilCancellationDeadline: 6,
+    anonymize: false,
   },
   {
     id: 'b2c3d4e5-f6a7-8901-bcde-f12345678901',
     name: 'Adobe CC',
     category: 'SUBSCRIPTIONS',
-    endDate: '2026-06-25',
-    daysRemaining: 21,
+    endDate: '2026-07-25',
+    cancellationDeadline: '2026-06-25',
+    daysUntilCancellationDeadline: 19,
+    anonymize: false,
+  },
+];
+
+const overdueData: UpcomingRenewal[] = [
+  {
+    id: 'c3d4e5f6-a7b8-9012-cdef-123456789012',
+    name: 'Home Insurance',
+    category: 'INSURANCE',
+    endDate: '2026-08-01',
+    cancellationDeadline: '2026-05-01',
+    daysUntilCancellationDeadline: -36,
+    anonymize: false,
   },
 ];
 
@@ -32,24 +48,55 @@ describe('UpcomingRenewals', () => {
     expect(screen.getByText('Adobe CC')).toBeInTheDocument();
   });
 
-  it('renders the days remaining for each contract', () => {
+  it('renders days remaining badge for contracts with positive daysUntilCancellationDeadline', () => {
     render(<UpcomingRenewals upcomingRenewals={sampleData} />);
-    expect(screen.getByText(/15 days/i)).toBeInTheDocument();
-    expect(screen.getByText(/21 days/i)).toBeInTheDocument();
+    expect(screen.getByText(/6 days remaining/i)).toBeInTheDocument();
+    expect(screen.getByText(/19 days remaining/i)).toBeInTheDocument();
   });
 
-  it('renders the end date for each contract formatted for the active locale', () => {
+  it('renders an overdue badge for contracts with negative daysUntilCancellationDeadline', () => {
+    render(<UpcomingRenewals upcomingRenewals={overdueData} />);
+    expect(screen.getByText(/36 days overdue/i)).toBeInTheDocument();
+  });
+
+  it('renders "Cancel by" label for each contract', () => {
+    render(<UpcomingRenewals upcomingRenewals={sampleData} />);
+    expect(screen.getAllByText(/cancel by/i).length).toBeGreaterThan(0);
+  });
+
+  it('renders "Ends" label for each contract', () => {
+    render(<UpcomingRenewals upcomingRenewals={sampleData} />);
+    expect(screen.getAllByText(/ends/i).length).toBeGreaterThan(0);
+  });
+
+  it('renders the cancellation deadline date formatted for the active locale', () => {
     render(<UpcomingRenewals upcomingRenewals={sampleData} />);
     const formatted = new Intl.DateTimeFormat('en', {
       day: '2-digit',
       month: '2-digit',
       year: 'numeric',
-    }).format(new Date('2026-06-19'));
-    expect(screen.getByText(formatted)).toBeInTheDocument();
+    }).format(new Date('2026-06-12'));
+    expect(screen.getByText(new RegExp(formatted.replace(/[/.]/g, '\\$&')))).toBeInTheDocument();
   });
 
   it('renders empty-state message when array is empty', () => {
     render(<UpcomingRenewals upcomingRenewals={[]} />);
     expect(screen.getByText(/no renewals due soon/i)).toBeInTheDocument();
+  });
+
+  it('hides real name and shows a fantasy name when contract anonymize is true', () => {
+    const anonymizedData: UpcomingRenewal[] = [
+      {
+        id: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
+        name: 'Netflix',
+        category: 'SUBSCRIPTIONS',
+        endDate: '2026-06-19',
+        cancellationDeadline: '2026-06-12',
+        daysUntilCancellationDeadline: 6,
+        anonymize: true,
+      },
+    ];
+    render(<UpcomingRenewals upcomingRenewals={anonymizedData} />);
+    expect(screen.queryByText('Netflix')).not.toBeInTheDocument();
   });
 });
