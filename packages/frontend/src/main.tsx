@@ -8,6 +8,7 @@ import { Dashboard } from './pages/Dashboard.js';
 import { ContractList } from './pages/ContractList.js';
 import { ContractNew } from './pages/ContractNew.js';
 import { ContractEdit } from './pages/ContractEdit.js';
+import { ContractImport } from './pages/ContractImport.js';
 import { Layout } from './components/Layout.js';
 
 const queryClient = new QueryClient({
@@ -31,6 +32,7 @@ createRoot(root).render(
             <Route path="/" element={<Dashboard />} />
             <Route path="/contracts" element={<ContractList />} />
             <Route path="/contracts/new" element={<ContractNew />} />
+            <Route path="/contracts/import" element={<ContractImport />} />
             <Route path="/contracts/:id/edit" element={<ContractEdit />} />
           </Routes>
         </Layout>

@@ -4,7 +4,8 @@
     "contracts": "Contracts",
     "addContract": "Add Contract",
     "manageContracts": "Manage Contracts",
-    "backToDashboard": "← Dashboard"
+    "backToDashboard": "← Dashboard",
+    "backToContracts": "← Contracts"
   },
   "common": {
     "loading": "Loading…",
@@ -101,6 +102,38 @@
     "saveChanges": "Save Changes",
     "loadError": "Failed to load contracts.",
     "notFound": "Contract not found."
+  },
+  "export": {
+    "buttonLabel": "Export",
+    "toJson": "Export to JSON",
+    "toExcel": "Export to Excel"
+  },
+  "import": {
+    "title": "Import Contracts",
+    "linkLabel": "Import",
+    "uploadLabel": "Select a file to import",
+    "uploadHint": "Supports .json and .xlsx files up to 5 MB",
+    "fileInputLabel": "Choose import file",
+    "mappingHint": "Review the column mapping below. {{count}} row(s) will be imported.",
+    "columnHeader": {
+      "source": "Source Column",
+      "target": "Maps To"
+    },
+    "fields": "Fields",
+    "skip": "— Skip this column —",
+    "mappingSelectLabel": "Map column",
+    "requiredFieldsMissing": "Required fields (name, amount, billingInterval, category) must be mapped before confirming.",
+    "parseError": "Could not read the file. Please check the format and try again.",
+    "importing": "Importing…",
+    "result": {
+      "summary": "Import complete: {{created}} of {{total}} contract(s) created, {{failed}} failed.",
+      "total": "Total",
+      "created": "Created",
+      "failed": "Failed",
+      "errors": "Errors",
+      "row": "Row",
+      "importAnother": "Import another file"
+    }
   },
   "anonymization": {
     "showReal": "Show Names",
