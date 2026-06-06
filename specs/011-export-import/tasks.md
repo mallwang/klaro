@@ -19,9 +19,9 @@
 
 **Purpose**: Install the one new dependency and add the import route before any feature work begins.
 
-- [ ] T001 Add `xlsx` dependency to `packages/frontend/package.json` and run `pnpm install`
-- [ ] T002 [P] Add `/contracts/import` route to the router in `packages/frontend/src/main.tsx` (lazy-import `ContractImport` page; page file need not exist yet)
-- [ ] T003 [P] Define `TargetField`, `ColumnMapping`, `ParsedImportFile`, and `ImportResult` TypeScript types in `packages/frontend/src/utils/columnMapping.ts`
+- [X] T001 Add `xlsx` dependency to `packages/frontend/package.json` and run `pnpm install`
+- [X] T002 [P] Add `/contracts/import` route to the router in `packages/frontend/src/main.tsx` (lazy-import `ContractImport` page; page file need not exist yet)
+- [X] T003 [P] Define `TargetField`, `ColumnMapping`, `ParsedImportFile`, and `ImportResult` TypeScript types in `packages/frontend/src/utils/columnMapping.ts`
 
 ---
 
@@ -31,8 +31,8 @@
 
 **⚠️ CRITICAL**: US2 and US3 cannot begin until this phase is complete.
 
-- [ ] T004 Write failing unit tests for `normalizeColumn` and `inferMapping` covering exact synonym matches, case-insensitive variants, unknown columns (→ null), and system fields (id, createdAt, updatedAt → auto-skip) in `packages/frontend/tests/unit/columnMapping.test.ts`
-- [ ] T005 Implement `normalizeColumn` (trim + lowercase) and `inferMapping` (synonym table lookup → `ColumnMapping[]`) in `packages/frontend/src/utils/columnMapping.ts` — tests from T004 must pass; no `any` types
+- [X] T004 Write failing unit tests for `normalizeColumn` and `inferMapping` covering exact synonym matches, case-insensitive variants, unknown columns (→ null), and system fields (id, createdAt, updatedAt → auto-skip) in `packages/frontend/tests/unit/columnMapping.test.ts`
+- [X] T005 Implement `normalizeColumn` (trim + lowercase) and `inferMapping` (synonym table lookup → `ColumnMapping[]`) in `packages/frontend/src/utils/columnMapping.ts` — tests from T004 must pass; no `any` types
 
 **Checkpoint**: `pnpm --filter frontend test -- columnMapping` passes. Foundation ready for all user stories.
 
@@ -46,14 +46,14 @@
 
 ### Tests (write first — must fail before implementing)
 
-- [ ] T006 [P] [US1] Write failing unit tests for `exportToJson` (JSON array, nested `cancellationPeriod`) and `exportToExcel` (flat row, dot-notation columns, column order) in `packages/frontend/tests/unit/exportService.test.ts`
-- [ ] T007 [P] [US1] Write failing Playwright e2e test: click Export → JSON, assert download; click Export → Excel, assert download — create `packages/frontend/tests/e2e/exportImport.spec.ts`
+- [X] T006 [P] [US1] Write failing unit tests for `exportToJson` (JSON array, nested `cancellationPeriod`) and `exportToExcel` (flat row, dot-notation columns, column order) in `packages/frontend/tests/unit/exportService.test.ts`
+- [X] T007 [P] [US1] Write failing Playwright e2e test: click Export → JSON, assert download; click Export → Excel, assert download — create `packages/frontend/tests/e2e/exportImport.spec.ts`
 
 ### Implementation
 
-- [ ] T008 [US1] Implement `exportToJson(contracts: ContractData[]): void` and `exportToExcel(contracts: ContractData[]): void` in `packages/frontend/src/services/export.ts`; include `cancellationPeriod` flattening for Excel; trigger browser download via `URL.createObjectURL`; make T006 pass
-- [ ] T009 [US1] Implement `ExportMenu` component (dropdown with "Export to JSON" and "Export to Excel" items, calls export functions from T008) in `packages/frontend/src/components/ExportMenu.tsx`
-- [ ] T010 [US1] Add `ExportMenu` to the header of `packages/frontend/src/pages/ContractList.tsx` next to the "Add contract" button; verify T007 e2e test passes
+- [X] T008 [US1] Implement `exportToJson(contracts: ContractData[]): void` and `exportToExcel(contracts: ContractData[]): void` in `packages/frontend/src/services/export.ts`; include `cancellationPeriod` flattening for Excel; trigger browser download via `URL.createObjectURL`; make T006 pass
+- [X] T009 [US1] Implement `ExportMenu` component (dropdown with "Export to JSON" and "Export to Excel" items, calls export functions from T008) in `packages/frontend/src/components/ExportMenu.tsx`
+- [X] T010 [US1] Add `ExportMenu` to the header of `packages/frontend/src/pages/ContractList.tsx` next to the "Add contract" button; verify T007 e2e test passes
 
 **Checkpoint**: Both export formats work in the browser. `pnpm --filter frontend test` and T007 e2e pass. User Story 1 is independently functional.
 
@@ -67,16 +67,16 @@
 
 ### Tests (write first — must fail before implementing)
 
-- [ ] T011 [P] [US2] Write failing unit tests for `parseExcelFile`, `parseJsonFile` (columns extracted, rows as string records, multi-sheet warning), `buildCreateContractBody` (valid row → `CreateContractBody`; missing required field → error), and `runImport` (partial failure: valid rows created, invalid rows collected into `ImportResult`) in `packages/frontend/tests/unit/importParsing.test.ts`
-- [ ] T012 [P] [US2] Add failing Playwright e2e test to `packages/frontend/tests/e2e/exportImport.spec.ts`: upload a JSON file with non-standard column names, assert mapping preview is shown, confirm, assert result summary shows 1 created
+- [X] T011 [P] [US2] Write failing unit tests for `parseExcelFile`, `parseJsonFile` (columns extracted, rows as string records, multi-sheet warning), `buildCreateContractBody` (valid row → `CreateContractBody`; missing required field → error), and `runImport` (partial failure: valid rows created, invalid rows collected into `ImportResult`) in `packages/frontend/tests/unit/importParsing.test.ts`
+- [X] T012 [P] [US2] Add failing Playwright e2e test to `packages/frontend/tests/e2e/exportImport.spec.ts`: upload a JSON file with non-standard column names, assert mapping preview is shown, confirm, assert result summary shows 1 created
 
 ### Implementation
 
-- [ ] T013 [US2] Implement `parseExcelFile(file: File): Promise<ParsedImportFile>` and `parseJsonFile(file: File): Promise<ParsedImportFile>` in `packages/frontend/src/services/importParsing.ts`; use `xlsx` for Excel; reject files > 5 MB; add warning when multiple sheets detected; make T011 parsing tests pass
-- [ ] T014 [US2] Implement `buildCreateContractBody(row, mappings): CreateContractBody | Error` and `runImport(rows, mappings, createFn): Promise<ImportResult>` in `packages/frontend/src/services/importParsing.ts`; reassemble `cancellationPeriod` from `.value` / `.unit` columns; normalise `anonymize` (true/1/yes → true); make T011 import tests pass
-- [ ] T015 [P] [US2] Implement read-only `ColumnMappingTable` component (table of source column → target field label; "Unmapped" for null; uses `ColumnMapping[]` prop) in `packages/frontend/src/components/ColumnMappingTable.tsx`
-- [ ] T016 [P] [US2] Implement `ImportResultSummary` component (shows total / created / failed count; lists failed row numbers with messages; "Import another file" reset button) in `packages/frontend/src/components/ImportResultSummary.tsx`
-- [ ] T017 [US2] Implement `ContractImport` page in `packages/frontend/src/pages/ContractImport.tsx` with state machine: Idle → file input → Parsing → MappingReview (shows `ColumnMappingTable` + Confirm button) → Importing (calls `runImport` using `useCreateContract`) → Done (shows `ImportResultSummary`); verify T012 e2e passes
+- [X] T013 [US2] Implement `parseExcelFile(file: File): Promise<ParsedImportFile>` and `parseJsonFile(file: File): Promise<ParsedImportFile>` in `packages/frontend/src/services/importParsing.ts`; use `xlsx` for Excel; reject files > 5 MB; add warning when multiple sheets detected; make T011 parsing tests pass
+- [X] T014 [US2] Implement `buildCreateContractBody(row, mappings): CreateContractBody | Error` and `runImport(rows, mappings, createFn): Promise<ImportResult>` in `packages/frontend/src/services/importParsing.ts`; reassemble `cancellationPeriod` from `.value` / `.unit` columns; normalise `anonymize` (true/1/yes → true); make T011 import tests pass
+- [X] T015 [P] [US2] Implement read-only `ColumnMappingTable` component (table of source column → target field label; "Unmapped" for null; uses `ColumnMapping[]` prop) in `packages/frontend/src/components/ColumnMappingTable.tsx`
+- [X] T016 [P] [US2] Implement `ImportResultSummary` component (shows total / created / failed count; lists failed row numbers with messages; "Import another file" reset button) in `packages/frontend/src/components/ImportResultSummary.tsx`
+- [X] T017 [US2] Implement `ContractImport` page in `packages/frontend/src/pages/ContractImport.tsx` with state machine: Idle → file input → Parsing → MappingReview (shows `ColumnMappingTable` + Confirm button) → Importing (calls `runImport` using `useCreateContract`) → Done (shows `ImportResultSummary`); verify T012 e2e passes
 
 **Checkpoint**: Full import flow works for files with non-standard headers. `pnpm --filter frontend test` and T012 e2e pass. User Story 2 is independently functional.
 
@@ -90,14 +90,14 @@
 
 ### Tests (write first — must fail before implementing)
 
-- [ ] T018 [P] [US3] Add failing unit tests to `packages/frontend/tests/unit/columnMapping.test.ts` for the `REQUIRED_TARGET_FIELDS` constant and an `isMappingComplete(mappings: ColumnMapping[]): boolean` helper
-- [ ] T019 [P] [US3] Add failing Playwright e2e tests to `packages/frontend/tests/e2e/exportImport.spec.ts`: (a) change a field assignment via dropdown and confirm correct import; (b) mark a column Skip and confirm it is excluded; (c) unmap a required field and assert Confirm is disabled
+- [X] T018 [P] [US3] Add failing unit tests to `packages/frontend/tests/unit/columnMapping.test.ts` for the `REQUIRED_TARGET_FIELDS` constant and an `isMappingComplete(mappings: ColumnMapping[]): boolean` helper
+- [X] T019 [P] [US3] Add failing Playwright e2e tests to `packages/frontend/tests/e2e/exportImport.spec.ts`: (a) change a field assignment via dropdown and confirm correct import; (b) mark a column Skip and confirm it is excluded; (c) unmap a required field and assert Confirm is disabled
 
 ### Implementation
 
-- [ ] T020 [US3] Add `REQUIRED_TARGET_FIELDS` constant and `isMappingComplete` helper to `packages/frontend/src/utils/columnMapping.ts`; make T018 pass
-- [ ] T021 [US3] Upgrade `ColumnMappingTable` in `packages/frontend/src/components/ColumnMappingTable.tsx` to accept an `onChange(updated: ColumnMapping[]): void` prop; render a `<select>` per row with all `TargetField` options plus "Unmapped" and "Skip"; make T019a and T019b pass
-- [ ] T022 [US3] Wire `ColumnMappingTable` onChange into `ContractImport` state in `packages/frontend/src/pages/ContractImport.tsx`; disable Confirm button when `!isMappingComplete(mappings)`; make T019c pass
+- [X] T020 [US3] Add `REQUIRED_TARGET_FIELDS` constant and `isMappingComplete` helper to `packages/frontend/src/utils/columnMapping.ts`; make T018 pass
+- [X] T021 [US3] Upgrade `ColumnMappingTable` in `packages/frontend/src/components/ColumnMappingTable.tsx` to accept an `onChange(updated: ColumnMapping[]): void` prop; render a `<select>` per row with all `TargetField` options plus "Unmapped" and "Skip"; make T019a and T019b pass
+- [X] T022 [US3] Wire `ColumnMappingTable` onChange into `ContractImport` state in `packages/frontend/src/pages/ContractImport.tsx`; disable Confirm button when `!isMappingComplete(mappings)`; make T019c pass
 
 **Checkpoint**: Mapping override and required-field blocking work. All T018–T019 tests pass. User Story 3 complete.
 
@@ -107,9 +107,9 @@
 
 **Purpose**: i18n strings, edge-case hardening, and round-trip validation.
 
-- [ ] T023 [P] Add i18n translation keys for all export/import UI strings (button labels, mapping table headers, result summary, error messages) to `packages/frontend/src/i18n/locales/en.json` and `packages/frontend/src/i18n/locales/de.json`; update all new components to use `useTranslation()`
-- [ ] T024 [P] Add Playwright round-trip e2e test to `packages/frontend/tests/e2e/exportImport.spec.ts`: export to JSON → import that JSON file → assert all columns auto-map at confidence 1.0 → confirm → verify contracts are created
-- [ ] T025 Run full test suite (`pnpm test`) and manually work through all six scenarios in `specs/011-export-import/quickstart.md`; fix any failures before declaring feature complete
+- [X] T023 [P] Add i18n translation keys for all export/import UI strings (button labels, mapping table headers, result summary, error messages) to `packages/frontend/src/i18n/locales/en.json` and `packages/frontend/src/i18n/locales/de.json`; update all new components to use `useTranslation()`
+- [X] T024 [P] Add Playwright round-trip e2e test to `packages/frontend/tests/e2e/exportImport.spec.ts`: export to JSON → import that JSON file → assert all columns auto-map at confidence 1.0 → confirm → verify contracts are created
+- [X] T025 Run full test suite (`pnpm test`) and manually work through all six scenarios in `specs/011-export-import/quickstart.md`; fix any failures before declaring feature complete
 
 ---
 

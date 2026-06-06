@@ -4,7 +4,8 @@
     "contracts": "Verträge",
     "addContract": "Vertrag hinzufügen",
     "manageContracts": "Verträge verwalten",
-    "backToDashboard": "← Dashboard"
+    "backToDashboard": "← Dashboard",
+    "backToContracts": "← Verträge"
   },
   "common": {
     "loading": "Laden…",
@@ -101,6 +102,38 @@
     "saveChanges": "Änderungen speichern",
     "loadError": "Verträge konnten nicht geladen werden.",
     "notFound": "Vertrag nicht gefunden."
+  },
+  "export": {
+    "buttonLabel": "Exportieren",
+    "toJson": "Als JSON exportieren",
+    "toExcel": "Als Excel exportieren"
+  },
+  "import": {
+    "title": "Verträge importieren",
+    "linkLabel": "Importieren",
+    "uploadLabel": "Datei zum Importieren auswählen",
+    "uploadHint": "Unterstützt .json und .xlsx Dateien bis 5 MB",
+    "fileInputLabel": "Importdatei auswählen",
+    "mappingHint": "Prüfen Sie die Spaltenzuordnung unten. {{count}} Zeile(n) werden importiert.",
+    "columnHeader": {
+      "source": "Quellspalte",
+      "target": "Zugeordnet zu"
+    },
+    "fields": "Felder",
+    "skip": "— Spalte überspringen —",
+    "mappingSelectLabel": "Spalte zuordnen",
+    "requiredFieldsMissing": "Pflichtfelder (name, amount, billingInterval, category) müssen zugeordnet sein.",
+    "parseError": "Datei konnte nicht gelesen werden. Bitte Format prüfen und erneut versuchen.",
+    "importing": "Importiere…",
+    "result": {
+      "summary": "Import abgeschlossen: {{created}} von {{total}} Vertrag/Verträgen erstellt, {{failed}} fehlgeschlagen.",
+      "total": "Gesamt",
+      "created": "Erstellt",
+      "failed": "Fehlgeschlagen",
+      "errors": "Fehler",
+      "row": "Zeile",
+      "importAnother": "Weitere Datei importieren"
+    }
   },
   "anonymization": {
     "showReal": "Namen anzeigen",

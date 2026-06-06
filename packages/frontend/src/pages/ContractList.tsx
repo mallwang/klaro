@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useContracts, useDeleteContract } from '../services/contracts.js';
 import { ContractTable } from '../components/ContractTable.js';
 import { AnonymizationToggle } from '../components/AnonymizationToggle.js';
+import { ExportMenu } from '../components/ExportMenu.js';
 import { useAnonymization } from '../hooks/useAnonymization.js';
 
 export function ContractList() {
@@ -25,6 +26,13 @@ export function ContractList() {
           </div>
           <div className="flex items-center gap-3">
             <AnonymizationToggle isActive={isAnonymized} onToggle={toggleAnonymization} />
+            {data && <ExportMenu contracts={data} />}
+            <Link
+              to="/contracts/import"
+              className="rounded border border-foreground/20 px-3 py-2 text-sm font-medium hover:bg-foreground/5"
+            >
+              {t('import.linkLabel')}
+            </Link>
             <Link
               to="/contracts/new"
               className="rounded bg-foreground px-4 py-2 text-sm font-medium text-background hover:opacity-90"
