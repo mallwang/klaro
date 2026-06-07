@@ -62,7 +62,11 @@
       "Bash(kill -9 51198 51199 51216)",
       "Bash(rm -f /tmp/pcm-quickstart.db* /tmp/pcm-pre013.db* /tmp/jar-*.txt /tmp/quickstart-*.log)",
       "Bash(rm -rf /tmp/pcm-test-*)",
-      "Bash(npm run *)"
+      "Bash(npm run *)",
+      "Bash(.specify/scripts/bash/setup-tasks.sh --json)",
+      "Bash(sed -n '1,35p' packages/backend/src/db/client.ts)",
+      "Bash(sed -n '178,210p' packages/backend/src/db/client.ts)",
+      "Bash(.specify/extensions/git/scripts/bash/auto-commit.sh after_tasks)"
     ],
     "additionalDirectories": [
       "/tmp"
