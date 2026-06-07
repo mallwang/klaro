@@ -26,7 +26,7 @@ This is a pnpm monorepo with `packages/backend`, `packages/frontend`, `packages/
 
 **Purpose**: Add the one new backend dependency before any implementation begins.
 
-- [ ] T001 Add `@fastify/static` to `packages/backend/package.json` dependencies and run `pnpm install` to update `pnpm-lock.yaml`
+- [X] T001 Add `@fastify/static` to `packages/backend/package.json` dependencies and run `pnpm install` to update `pnpm-lock.yaml`
 
 ---
 
@@ -36,7 +36,7 @@ This is a pnpm monorepo with `packages/backend`, `packages/frontend`, `packages/
 
 **⚠️ CRITICAL**: No US1 implementation work begins until this test exists and demonstrably fails. This is required by the project constitution.
 
-- [ ] T002 Write failing integration test for static file serving in `packages/backend/tests/integration/static.route.test.ts` — test must cover: (a) `GET /` returns fixture `index.html`, (b) `GET /dashboard` returns `index.html` (SPA fallback), (c) `GET /api/contracts` returns JSON array (API routes not intercepted). Use `buildServer(createDb(':memory:'), { staticDir: tmpDir })` pattern consistent with existing integration tests.
+- [X] T002 Write failing integration test for static file serving in `packages/backend/tests/integration/static.route.test.ts` — test must cover: (a) `GET /` returns fixture `index.html`, (b) `GET /dashboard` returns `index.html` (SPA fallback), (c) `GET /api/contracts` returns JSON array (API routes not intercepted). Use `buildServer(createDb(':memory:'), { staticDir: tmpDir })` pattern consistent with existing integration tests.
 
 **Checkpoint**: T002 test file exists and all three assertions fail — implementation can now begin
 
@@ -50,12 +50,12 @@ This is a pnpm monorepo with `packages/backend`, `packages/frontend`, `packages/
 
 ### Implementation for User Story 1
 
-- [ ] T003 [US1] Implement `@fastify/static` registration and SPA not-found handler in `packages/backend/src/server.ts` — add optional `options: { staticDir?: string }` parameter to `buildServer`, register the plugin when `staticDir` is set or `NODE_ENV=production`, set `setNotFoundHandler` to serve `index.html` for all non-API 404s. T002 test must pass green after this task.
-- [ ] T004 [P] [US1] Write `Dockerfile` at repo root — two-stage build: (1) builder stage installs pnpm 11.5.1, runs `pnpm install --frozen-lockfile`, runs `pnpm build`; (2) runtime stage copies `packages/backend/dist`, `packages/shared/dist`, `packages/frontend/dist` → `packages/backend/dist/public`, `packages/backend/src/db/schema.sql` → `packages/backend/dist/db/schema.sql`, installs production-only deps, sets `NODE_ENV=production`, exposes port 3000, runs `node packages/backend/dist/index.js`
-- [ ] T005 [P] [US1] Write `.dockerignore` at repo root — exclude `node_modules`, `**/node_modules`, `**/dist`, `.git`, `data/`, `specs/`, `.specify/`, `.claude/`, `*.db`, `*.db-shm`, `*.db-wal`
-- [ ] T006 [US1] Write `docker-compose.yml` at repo root — define `app` service with `build: .`, `image: pcm`, `ports: "3001:3000"`, `environment: NODE_ENV=production, DATABASE_PATH=/data/contracts.db`, `volumes: ./data:/data`, `restart: unless-stopped`
-- [ ] T007 [US1] Verify image builds successfully: run `docker build -t pcm .` and confirm it completes without errors and the final image is under 400 MB (`docker image ls pcm`)
-- [ ] T008 [US1] Verify full startup: run `docker compose up -d`, wait for container to be healthy, confirm `curl -s http://localhost:3001/api/contracts` returns HTTP 200 JSON, and `curl -s http://localhost:3001/` returns HTML containing `<div id="root">`
+- [X] T003 [US1] Implement `@fastify/static` registration and SPA not-found handler in `packages/backend/src/server.ts` — add optional `options: { staticDir?: string }` parameter to `buildServer`, register the plugin when `staticDir` is set or `NODE_ENV=production`, set `setNotFoundHandler` to serve `index.html` for all non-API 404s. T002 test must pass green after this task.
+- [X] T004 [P] [US1] Write `Dockerfile` at repo root — two-stage build: (1) builder stage installs pnpm 11.5.1, runs `pnpm install --frozen-lockfile`, runs `pnpm build`; (2) runtime stage copies `packages/backend/dist`, `packages/shared/dist`, `packages/frontend/dist` → `packages/backend/dist/public`, `packages/backend/src/db/schema.sql` → `packages/backend/dist/db/schema.sql`, installs production-only deps, sets `NODE_ENV=production`, exposes port 3000, runs `node packages/backend/dist/index.js`
+- [X] T005 [P] [US1] Write `.dockerignore` at repo root — exclude `node_modules`, `**/node_modules`, `**/dist`, `.git`, `data/`, `specs/`, `.specify/`, `.claude/`, `*.db`, `*.db-shm`, `*.db-wal`
+- [X] T006 [US1] Write `docker-compose.yml` at repo root — define `app` service with `build: .`, `image: pcm`, `ports: "3001:3000"`, `environment: NODE_ENV=production, DATABASE_PATH=/data/contracts.db`, `volumes: ./data:/data`, `restart: unless-stopped`
+- [X] T007 [US1] Verify image builds successfully: run `docker build -t pcm .` and confirm it completes without errors and the final image is under 400 MB (`docker image ls pcm`)
+- [X] T008 [US1] Verify full startup: run `docker compose up -d`, wait for container to be healthy, confirm `curl -s http://localhost:3001/api/contracts` returns HTTP 200 JSON, and `curl -s http://localhost:3001/` returns HTML containing `<div id="root">`
 
 **Checkpoint**: US1 complete — single-command deploy works, app is accessible in browser
 
@@ -69,9 +69,9 @@ This is a pnpm monorepo with `packages/backend`, `packages/frontend`, `packages/
 
 ### Implementation for User Story 2
 
-- [ ] T009 [US2] Validate volume persistence: follow quickstart.md Scenario 2 — add a contract via `curl -X POST`, run `docker compose down`, run `docker compose up -d`, confirm the contract is still returned by `GET /api/contracts`
-- [ ] T010 [P] [US2] Add `data/` to `.gitignore` at repo root if not already present (the SQLite files `*.db`, `*.db-shm`, `*.db-wal` must not be committed); verify `git status` does not show `data/contracts.db` as untracked
-- [ ] T011 [US2] Validate external path mounting: follow quickstart.md Scenario 3 — configure a non-default volume path in `docker-compose.yml` (e.g., `/tmp/pcm-test-data:/data`), start container, confirm `contracts.db` is created at the custom host path, stop and remove container, restart with same path, confirm data persists
+- [X] T009 [US2] Validate volume persistence: follow quickstart.md Scenario 2 — add a contract via `curl -X POST`, run `docker compose down`, run `docker compose up -d`, confirm the contract is still returned by `GET /api/contracts`
+- [X] T010 [P] [US2] Add `data/` to `.gitignore` at repo root if not already present (the SQLite files `*.db`, `*.db-shm`, `*.db-wal` must not be committed); verify `git status` does not show `data/contracts.db` as untracked
+- [X] T011 [US2] Validate external path mounting: follow quickstart.md Scenario 3 — configure a non-default volume path in `docker-compose.yml` (e.g., `/tmp/pcm-test-data:/data`), start container, confirm `contracts.db` is created at the custom host path, stop and remove container, restart with same path, confirm data persists
 
 **Checkpoint**: US2 complete — database persists on host, survives container removal, mountable from any path
 
@@ -85,8 +85,8 @@ This is a pnpm monorepo with `packages/backend`, `packages/frontend`, `packages/
 
 ### Implementation for User Story 3
 
-- [ ] T012 [US3] Validate one-line port change: follow quickstart.md Scenario 4 — change `"3001:3000"` to `"9090:3000"` in `docker-compose.yml`, restart container, confirm app is reachable on port `9090` and not on `3001`; restore `docker-compose.yml` to default `3001:3000` after validation
-- [ ] T013 [P] [US3] Add inline comment to `docker-compose.yml` on the `ports:` line documenting that only the host-side port (left of `:`) should be changed, e.g., `# Change 3001 to any available host port`
+- [X] T012 [US3] Validate one-line port change: follow quickstart.md Scenario 4 — change `"3001:3000"` to `"9090:3000"` in `docker-compose.yml`, restart container, confirm app is reachable on port `9090` and not on `3001`; restore `docker-compose.yml` to default `3001:3000` after validation
+- [X] T013 [P] [US3] Add inline comment to `docker-compose.yml` on the `ports:` line documenting that only the host-side port (left of `:`) should be changed, e.g., `# Change 3001 to any available host port`
 
 **Checkpoint**: US3 complete — port customisation is one-line edit, self-documented in compose file
 
@@ -96,10 +96,10 @@ This is a pnpm monorepo with `packages/backend`, `packages/frontend`, `packages/
 
 **Purpose**: Final validation, documentation, and cleanup across all stories.
 
-- [ ] T014 [P] Run full backend test suite: `pnpm --filter backend test` — all existing tests plus T002 static route test must pass with zero failures
-- [ ] T015 [P] Run `pnpm build` to confirm the full monorepo build still succeeds after the `@fastify/static` addition and `server.ts` changes
-- [ ] T016 Add a **Deployment** section to `README.md` with: (a) prerequisites (Docker + Docker Compose), (b) `docker build` command, (c) `docker compose up -d` command, (d) default URL `http://localhost:3001`, (e) how to change the host port (one-line edit), (f) how to point the database at a custom host path (volume line edit)
-- [ ] T017 Run all seven quickstart.md validation scenarios end-to-end and confirm each expected outcome is met; clean up (`docker compose down && docker rmi pcm`) after validation
+- [X] T014 [P] Run full backend test suite: `pnpm --filter backend test` — all existing tests plus T002 static route test must pass with zero failures
+- [X] T015 [P] Run `pnpm build` to confirm the full monorepo build still succeeds after the `@fastify/static` addition and `server.ts` changes
+- [X] T016 Add a **Deployment** section to `README.md` with: (a) prerequisites (Docker + Docker Compose), (b) `docker build` command, (c) `docker compose up -d` command, (d) default URL `http://localhost:3001`, (e) how to change the host port (one-line edit), (f) how to point the database at a custom host path (volume line edit)
+- [X] T017 Run all seven quickstart.md validation scenarios end-to-end and confirm each expected outcome is met; clean up (`docker compose down && docker rmi pcm`) after validation
 
 ---
 
