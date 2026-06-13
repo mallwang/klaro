@@ -36,7 +36,7 @@ Web application monorepo (per `plan.md`'s Structure Decision): `packages/backend
 
 **Purpose**: Add the one new dependency this feature requires
 
-- [ ] T001 Add `nodemailer` and `@types/nodemailer` to `packages/backend/package.json`
+- [X] T001 Add `nodemailer` and `@types/nodemailer` to `packages/backend/package.json`
       dependencies/devDependencies and run `pnpm install` (per `plan.md` Technical Context /
       `research.md` §2 — the only new dependency this feature introduces)
 
@@ -48,13 +48,13 @@ Web application monorepo (per `plan.md`'s Structure Decision): `packages/backend
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T002 [P] Add the `invitations` table (`token`, `email`, `invited_by`, `status`,
+- [X] T002 [P] Add the `invitations` table (`token`, `email`, `invited_by`, `status`,
       `expires_at`, `created_at`, `accepted_at`) and `idx_invitations_email` index to
       `packages/backend/src/db/schema.sql`, exactly per the DDL in `data-model.md` (uppercase
       `CHECK` enums, `TEXT` timestamps, `FOREIGN KEY ... REFERENCES users(id) ON DELETE CASCADE`
       — matching the existing `users`/`sessions` table style; no `ALTER TABLE` migration is
       needed since this is a brand-new table picked up by `runMigrations`'s `schema.sql` exec)
-- [ ] T003 [P] Add `InvitationStatus` enum to `packages/shared/src/types/invitation.ts` and
+- [X] T003 [P] Add `InvitationStatus` enum to `packages/shared/src/types/invitation.ts` and
       `InvitationSchema`, `SendInvitationBodySchema`, `AcceptInvitationBodySchema` (with inferred
       `Invitation`/`SendInvitationBody`/`AcceptInvitationBody` types) to
       `packages/shared/src/schemas/invitation.ts`, mirroring the snake_case-row /
@@ -82,62 +82,62 @@ the recipient side of the flow (User Story 2) to be exercised at all (per `spec.
 > Write these tests FIRST; confirm they FAIL for the right reason before writing implementation
 > code (Constitution Principle I).
 
-- [ ] T004 [P] [US1] Write failing unit tests for `sendInvitationEmail` — correct
+- [X] T004 [P] [US1] Write failing unit tests for `sendInvitationEmail` — correct
       recipient/subject/link/expiry rendering, and a typed error thrown (not silently swallowed)
       when the injected stub transport reports a send failure — using an injected
       `nodemailer`-shaped stub transport (no real SMTP connection), in
       `packages/backend/tests/unit/mailer.service.test.ts`
-- [ ] T005 [P] [US1] Write failing unit tests for invitation creation/list/cancel/resend in
+- [X] T005 [P] [US1] Write failing unit tests for invitation creation/list/cancel/resend in
       `packages/backend/tests/unit/invitation.service.test.ts`: token generation/format/entropy,
       7-day `expires_at` computation, duplicate-account rejection (FR-008), "resend supersedes
       the prior pending invitation for the same email" (FR-007), cancel-only-when-pending,
       list-includes-status-and-sent-at
-- [ ] T006 [P] [US1] Write failing integration tests for the admin-only invitation routes
+- [X] T006 [P] [US1] Write failing integration tests for the admin-only invitation routes
       (`POST/GET/DELETE /api/invitations`, `POST /api/invitations/:token/resend`) in
       `packages/backend/tests/integration/invitations.route.test.ts`, following the
       `buildServer(createDb(':memory:'))` pattern from `users.route.test.ts`: 201 on send with
       injected stub mailer, 409 on duplicate-account, 502 (and no lingering `PENDING` row) on
       mailer-failure, 403 for non-admin, 204/404/409 for cancel, 201/404/502 for resend
-- [ ] T007 [P] [US1] Write failing unit tests for `findByEmail(email, { includeArchived })` —
+- [X] T007 [P] [US1] Write failing unit tests for `findByEmail(email, { includeArchived })` —
       returns active accounts, returns archived accounts when requested, returns nothing for
       unknown addresses — in `packages/backend/tests/unit/user.service.test.ts`
 
 ### Implementation for User Story 1
 
-- [ ] T008 [P] [US1] Implement `packages/backend/src/services/mailer.service.ts`: wraps
+- [X] T008 [P] [US1] Implement `packages/backend/src/services/mailer.service.ts`: wraps
       `nodemailer.createTransport(...)` configured from `SMTP_HOST`/`SMTP_PORT`/`SMTP_USER`/
       `SMTP_PASSWORD`/`SMTP_FROM`, accepts an injectable transport (for tests), and exposes
       `sendInvitationEmail(to, link, expiresAt)` built from a plain template-literal
       subject/plain-text/HTML body containing the link and its expiry; throws a typed error on
       missing config or send failure (no silent queueing/retrying — FR-010) (makes T004 pass)
-- [ ] T009 [P] [US1] Add `findByEmail(email, options?: { includeArchived?: boolean })` to
+- [X] T009 [P] [US1] Add `findByEmail(email, options?: { includeArchived?: boolean })` to
       `packages/backend/src/services/user.service.ts`, querying by `email COLLATE NOCASE` and
       including `ARCHIVED` rows only when requested (makes T007 pass)
-- [ ] T010 [US1] Implement `packages/backend/src/services/invitation.service.ts`: `create(email,
+- [X] T010 [US1] Implement `packages/backend/src/services/invitation.service.ts`: `create(email,
       invitedBy)` (token via `randomBytes(32).toString('hex')` — same generation as
       `sessions.id`; `expires_at` = now + 7 days; pre-flight `findByEmail` check → reject with a
       duplicate-account error (FR-008); supersede any existing `PENDING` row for the same email
       in the same transaction (FR-007)), `list()`, `cancel(token)`, `resend(token)` (depends on:
       T002, T003, T005, T008, T009; makes T005 pass)
-- [ ] T011 [US1] Read `SMTP_HOST`/`SMTP_PORT`/`SMTP_USER`/`SMTP_PASSWORD`/`SMTP_FROM` from
+- [X] T011 [US1] Read `SMTP_HOST`/`SMTP_PORT`/`SMTP_USER`/`SMTP_PASSWORD`/`SMTP_FROM` from
       `process.env` and construct the mailer in `packages/backend/src/index.ts` (same convention
       as the existing `DATABASE_PATH`/`PORT` reads); pass it into `buildServer` and decorate the
       Fastify instance with it in `packages/backend/src/server.ts` (depends on: T008)
-- [ ] T012 [US1] Implement admin-only routes in `packages/backend/src/routes/invitations.ts` —
+- [X] T012 [US1] Implement admin-only routes in `packages/backend/src/routes/invitations.ts` —
       `POST /api/invitations` (201/400/409/502 per `contracts/api-contracts.md`),
       `GET /api/invitations` (200, array incl. status/createdAt/expiresAt),
       `DELETE /api/invitations/:token` (204/404/409),
       `POST /api/invitations/:token/resend` (201/404/502) — guarded by
       `request.user.role === 'ADMIN'` exactly like `routes/users.ts`; register the router in
       `server.ts` (depends on: T010, T011, T006; makes T006 pass)
-- [ ] T013 [P] [US1] Add `sendInvitation`, `listInvitations`, `cancelInvitation`,
+- [X] T013 [P] [US1] Add `sendInvitation`, `listInvitations`, `cancelInvitation`,
       `resendInvitation` fetch wrappers (typed against the new shared schemas) in
       `packages/frontend/src/services/invitations.ts`, mirroring
       `packages/frontend/src/services/auth.ts`'s wrapper style
-- [ ] T014 [US1] Add `useInvitations` hook (list query + send/cancel/resend mutations with
+- [X] T014 [US1] Add `useInvitations` hook (list query + send/cancel/resend mutations with
       query-cache invalidation) in `packages/frontend/src/hooks/useInvitations.ts`, mirroring
       `packages/frontend/src/hooks/useAuth.ts` (depends on: T013)
-- [ ] T015 [US1] In `packages/frontend/src/pages/admin/AccountsAdmin.tsx`, replace the
+- [X] T015 [US1] In `packages/frontend/src/pages/admin/AccountsAdmin.tsx`, replace the
       "create account with an initial password" form with an "invite by email" form (single
       email field, clear duplicate/send-failure error display) and a pending-invitations list
       showing status, sent-at, and cancel/resend actions (US1 acceptance scenarios 2–5) (depends
@@ -165,18 +165,18 @@ to also exercise the administrator's sending flow (per `spec.md`).
 > Write these tests FIRST; confirm they FAIL for the right reason before writing implementation
 > code (Constitution Principle I).
 
-- [ ] T016 [P] [US2] Extend `packages/backend/tests/unit/invitation.service.test.ts` with failing
+- [X] T016 [P] [US2] Extend `packages/backend/tests/unit/invitation.service.test.ts` with failing
       tests for `accept(token, ...)`'s validation: unknown token, already-`ACCEPTED` token
       (distinct "already used" outcome), expired `PENDING` token (distinct "expired" outcome —
       compare `now` to `expires_at`, no stored `EXPIRED` status per `data-model.md`), and
       `CANCELLED`/`SUPERSEDED` tokens (neutral "no longer valid" outcome) — each must be
       distinguishable by the caller (FR-006)
-- [ ] T017 [P] [US2] Extend `packages/backend/tests/unit/user.service.test.ts` with failing tests
+- [X] T017 [P] [US2] Extend `packages/backend/tests/unit/user.service.test.ts` with failing tests
       for `activateFromInvitation(email, password)`: creates exactly one `users` row with
       `status = 'ACTIVE'`, `role = 'MEMBER'`, a `displayName` derived from the email's local part,
       and a hash/salt produced via the existing `password.ts` utilities (no plaintext password
       stored or logged)
-- [ ] T018 [P] [US2] Extend `packages/backend/tests/integration/invitations.route.test.ts` with
+- [X] T018 [P] [US2] Extend `packages/backend/tests/integration/invitations.route.test.ts` with
       failing tests for the public `POST /api/invitations/:token/accept` endpoint: 200 with
       `Set-Cookie` + identity body and **no session/cookie required to call it**, 400 for a
       too-weak password (token remains usable afterward — FR-006 edge case), 404 for an unknown
@@ -185,20 +185,20 @@ to also exercise the administrator's sending flow (per `spec.md`).
 
 ### Implementation for User Story 2
 
-- [ ] T019 [US2] Add `accept(token, password)` to `invitation.service.ts`: looks up the token,
+- [X] T019 [US2] Add `accept(token, password)` to `invitation.service.ts`: looks up the token,
       classifies it (unknown / already-accepted / expired-by-`expires_at` / cancelled-or-superseded
       / valid-and-pending), and on success marks the row `ACCEPTED` with `accepted_at = now` in
       the same transaction that creates the account (depends on: T010, T016; makes the
       service-level part of T016 pass)
-- [ ] T020 [US2] Add `activateFromInvitation(email, password)` to `user.service.ts`: hashes the
+- [X] T020 [US2] Add `activateFromInvitation(email, password)` to `user.service.ts`: hashes the
       password via `hashPassword` from `password.ts` (unchanged, reused as-is), and inserts a
       `users` row with `status = 'ACTIVE'`, `role = 'MEMBER'` (depends on: T009, T017; makes T017
       pass)
-- [ ] T021 [US2] Add `/api/invitations/:token/accept` to the existing `onRequest` auth hook's
+- [X] T021 [US2] Add `/api/invitations/:token/accept` to the existing `onRequest` auth hook's
       public-route allowlist in `packages/backend/src/server.ts`, alongside
       `POST /api/auth/sign-in` (per `research.md` §4 — reusing the exemption mechanism 013
       already built and tested, not a new concept)
-- [ ] T022 [US2] Implement the public route `POST /api/invitations/:token/accept` in
+- [X] T022 [US2] Implement the public route `POST /api/invitations/:token/accept` in
       `packages/backend/src/routes/invitations.ts`: validates the body against
       `AcceptInvitationBodySchema` (400 on weak password without consuming the token), calls
       `invitation.service.accept` + `user.service.activateFromInvitation` in one transaction,
@@ -206,13 +206,13 @@ to also exercise the administrator's sending flow (per `spec.md`).
       returns `{ id, email, displayName, role }` with the response codes from
       `contracts/api-contracts.md` (200/400/404/410) (depends on: T019, T020, T021, T018; makes
       T018 pass)
-- [ ] T023 [P] [US2] Add an `acceptInvitation(token, password)` fetch wrapper to
+- [X] T023 [P] [US2] Add an `acceptInvitation(token, password)` fetch wrapper to
       `packages/frontend/src/services/invitations.ts`
-- [ ] T024 [US2] Implement the public `packages/frontend/src/pages/AcceptInvitation.tsx` page:
+- [X] T024 [US2] Implement the public `packages/frontend/src/pages/AcceptInvitation.tsx` page:
       reads `:token` from the route, shows the target email, a password-and-confirm form with
       strength feedback, and the three terminal states from US2 acceptance scenarios 3–4
       (already used / expired / success-and-signed-in) (depends on: T023)
-- [ ] T025 [US2] Add the public route `/invitations/:token` (outside `RequireAuth`, parallel to
+- [X] T025 [US2] Add the public route `/invitations/:token` (outside `RequireAuth`, parallel to
       `/sign-in`) in `packages/frontend/src/main.tsx` (depends on: T024)
 
 **Checkpoint**: User Story 2 is fully functional and independently testable — a freshly seeded
@@ -226,22 +226,22 @@ shows its own clear message.
 **Purpose**: Ties the two stories together end-to-end and finishes operational concerns that
 don't belong to either story alone
 
-- [ ] T026 [P] Write the Playwright e2e `packages/frontend/tests/e2e/invitation-flow.spec.ts`
+- [X] T026 [P] Write the Playwright e2e `packages/frontend/tests/e2e/invitation-flow.spec.ts`
       (extending the `multi-user-isolation.spec.ts` pattern from 013): admin sends an invitation,
       the test captures the link from the injected stub mail transport, the invitee opens it,
       sets a password, and signs in — proving US1 → US2 end-to-end (depends on: T015 and T024,
       i.e. both stories complete)
-- [ ] T027 [P] Document `SMTP_HOST`/`SMTP_PORT`/`SMTP_USER`/`SMTP_PASSWORD`/`SMTP_FROM` in the
+- [X] T027 [P] Document `SMTP_HOST`/`SMTP_PORT`/`SMTP_USER`/`SMTP_PASSWORD`/`SMTP_FROM` in the
       `environment:` block of `docker-compose.yml` and the deployment docs established by
       [012-docker-packaging](../012-docker-packaging/), alongside the existing `DATABASE_PATH`
       entry
-- [ ] T028 [P] Add a startup sweep that permanently deletes long-stale terminal
+- [X] T028 [P] Add a startup sweep that permanently deletes long-stale terminal
       (`ACCEPTED`/`CANCELLED`/`SUPERSEDED`) and expired-`PENDING` invitation rows, called
       alongside the existing `purgeExpiredArchivedAccounts` in `packages/backend/src/index.ts`,
       implemented in `packages/backend/src/db/client.ts` (storage hygiene per `data-model.md`'s
       notes — mirrors 013's archived-account purge pattern; not required by any FR, purely
       housekeeping)
-- [ ] T029 Run every scenario in `quickstart.md` against a local dev build end-to-end (incl.
+- [X] T029 Run every scenario in `quickstart.md` against a local dev build end-to-end (incl.
       Scenario 5's deliberately-misconfigured-SMTP case) and confirm each "Expected" outcome,
       as the final acceptance pass for the whole feature
 
