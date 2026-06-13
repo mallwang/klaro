@@ -18,7 +18,7 @@
 
 **Purpose**: No new dependencies or project init needed — this is a pure frontend component refactor within the existing monorepo. Setup consists of creating the new file stubs.
 
-- [ ] T001 Create empty stub files: `packages/frontend/src/components/AppShell/TopHeader.tsx` and `packages/frontend/src/components/AppShell/TopHeader.module.css`
+- [x] T001 Create empty stub files: `packages/frontend/src/components/AppShell/TopHeader.tsx` and `packages/frontend/src/components/AppShell/TopHeader.module.css`
 
 ---
 
@@ -30,12 +30,12 @@
 
 **⚠️ CRITICAL**: Run `pnpm test` after writing tests and confirm the new assertions FAIL. Do not proceed to Phase 3 until failures are confirmed.
 
-- [ ] T002 Extend `packages/frontend/tests/unit/AppShell.test.tsx` — add assertion: header renders the text "Personal Contract Management"
-- [ ] T003 Extend `packages/frontend/tests/unit/AppShell.test.tsx` — add assertion: header renders the language picker (query by visible language name, e.g. "English")
-- [ ] T004 Extend `packages/frontend/tests/unit/AppShell.test.tsx` — add assertion: header renders the theme toggle button (aria-label matching light/dark mode label)
-- [ ] T005 Extend `packages/frontend/tests/unit/AppShell.test.tsx` — add assertion: sidebar does NOT render the language picker
-- [ ] T006 Extend `packages/frontend/tests/unit/AppShell.test.tsx` — add assertion: sidebar does NOT render the theme toggle button
-- [ ] T007 Run `pnpm test` in `packages/frontend` and confirm T002–T006 assertions FAIL (required checkpoint before Phase 3)
+- [x] T002 Extend `packages/frontend/tests/unit/AppShell.test.tsx` — add assertion: header renders the text "Personal Contract Management"
+- [x] T003 Extend `packages/frontend/tests/unit/AppShell.test.tsx` — add assertion: header renders the language picker (query by visible language name, e.g. "English")
+- [x] T004 Extend `packages/frontend/tests/unit/AppShell.test.tsx` — add assertion: header renders the theme toggle button (aria-label matching light/dark mode label)
+- [x] T005 Extend `packages/frontend/tests/unit/AppShell.test.tsx` — add assertion: sidebar does NOT render the language picker
+- [x] T006 Extend `packages/frontend/tests/unit/AppShell.test.tsx` — add assertion: sidebar does NOT render the theme toggle button
+- [x] T007 Run `pnpm test` in `packages/frontend` and confirm T002–T006 assertions FAIL (required checkpoint before Phase 3)
 
 **Checkpoint**: All new assertions are failing — implementation can now begin
 
@@ -49,10 +49,10 @@
 
 ### Implementation for User Story 1
 
-- [ ] T008 [US1] Implement `packages/frontend/src/components/AppShell/TopHeader.tsx` — left section: `Burger` (hiddenFrom="sm") + `ThemeIcon` (tabler icon, e.g. `IconFileDescription`) + `Text` "Personal Contract Management"; right section: `LanguagePicker` component + theme toggle `ActionIcon` with `useMantineColorScheme`; props: `mobileOpened: boolean`, `toggleMobile: () => void`
-- [ ] T009 [US1] Implement `packages/frontend/src/components/AppShell/TopHeader.module.css` — `.header { display: flex; align-items: center; justify-content: space-between; padding: 0 var(--mantine-spacing-md); height: 100%; }`, `.left { display: flex; align-items: center; gap: var(--mantine-spacing-sm); }`, `.right { display: flex; align-items: center; gap: var(--mantine-spacing-sm); }`
-- [ ] T010 [US1] Update `packages/frontend/src/components/AppShell/AppShell.tsx` — add `header: { height: 60 }` prop to `MantineAppShell`; replace mobile-only `MantineAppShell.Header` with a full always-visible `MantineAppShell.Header` rendering `<TopHeader mobileOpened={mobileOpened} toggleMobile={toggleMobile} />`; pass `mobileOpened` state from `useDisclosure` into `TopHeader`
-- [ ] T011 [US1] Update `packages/frontend/src/components/AppShell/AppShell.module.css` — remove or update the `.header` class that was used for the mobile burger header, adjust if any styles conflict with the new always-visible header
+- [x] T008 [US1] Implement `packages/frontend/src/components/AppShell/TopHeader.tsx` — left section: `Burger` (hiddenFrom="sm") + `ThemeIcon` (tabler icon, e.g. `IconFileDescription`) + `Text` "Personal Contract Management"; right section: `LanguagePicker` component + theme toggle `ActionIcon` with `useMantineColorScheme`; props: `mobileOpened: boolean`, `toggleMobile: () => void`
+- [x] T009 [US1] Implement `packages/frontend/src/components/AppShell/TopHeader.module.css` — `.header { display: flex; align-items: center; justify-content: space-between; padding: 0 var(--mantine-spacing-md); height: 100%; }`, `.left { display: flex; align-items: center; gap: var(--mantine-spacing-sm); }`, `.right { display: flex; align-items: center; gap: var(--mantine-spacing-sm); }`
+- [x] T010 [US1] Update `packages/frontend/src/components/AppShell/AppShell.tsx` — add `header: { height: 60 }` prop to `MantineAppShell`; replace mobile-only `MantineAppShell.Header` with a full always-visible `MantineAppShell.Header` rendering `<TopHeader mobileOpened={mobileOpened} toggleMobile={toggleMobile} />`; pass `mobileOpened` state from `useDisclosure` into `TopHeader`
+- [x] T011 [US1] Update `packages/frontend/src/components/AppShell/AppShell.module.css` — remove or update the `.header` class that was used for the mobile burger header, adjust if any styles conflict with the new always-visible header
 
 **Checkpoint**: User Story 1 is complete — header renders on all authenticated pages with app name, icon, language picker, and theme toggle. Run `pnpm test` and confirm T002, T003, T004 pass.
 
@@ -66,8 +66,8 @@
 
 ### Implementation for User Story 2
 
-- [ ] T012 [US2] Update `packages/frontend/src/components/AppShell/AppShell.tsx` — add `footer: { height: 50 }` prop to `MantineAppShell`; remove `<FooterSimple />` from inside `MantineAppShell.Main`; add `<MantineAppShell.Footer><FooterSimple /></MantineAppShell.Footer>` below `MantineAppShell.Main`
-- [ ] T013 [US2] Update `packages/frontend/src/components/AppShell/FooterSimple.module.css` — remove `margin-top: auto` from `.footer` (no longer needed; Mantine Footer slot handles placement); verify `border-top` and background styles still apply correctly
+- [x] T012 [US2] Update `packages/frontend/src/components/AppShell/AppShell.tsx` — add `footer: { height: 50 }` prop to `MantineAppShell`; remove `<FooterSimple />` from inside `MantineAppShell.Main`; add `<MantineAppShell.Footer><FooterSimple /></MantineAppShell.Footer>` below `MantineAppShell.Main`
+- [x] T013 [US2] Update `packages/frontend/src/components/AppShell/FooterSimple.module.css` — remove `margin-top: auto` from `.footer` (no longer needed; Mantine Footer slot handles placement); verify `border-top` and background styles still apply correctly
 
 **Checkpoint**: User Story 2 is complete — footer anchored via Mantine slot, never overlaps content, existing `contentinfo` role assertion in tests still passes.
 
@@ -81,8 +81,8 @@
 
 ### Implementation for User Story 3
 
-- [ ] T014 [US3] Update `packages/frontend/src/components/AppShell/NavbarSegmented.tsx` — remove the `settingsSection` div and its children (`LanguagePicker`, theme toggle `ActionIcon`, `Tooltip`); remove now-unused imports: `LanguagePicker`, `useMantineColorScheme`, `IconSun`, `IconMoon`, `Tooltip`
-- [ ] T015 [US3] Update `packages/frontend/src/components/AppShell/NavbarSegmented.module.css` — remove the `.settingsSection` CSS block entirely
+- [x] T014 [US3] Update `packages/frontend/src/components/AppShell/NavbarSegmented.tsx` — remove the `settingsSection` div and its children (`LanguagePicker`, theme toggle `ActionIcon`, `Tooltip`); remove now-unused imports: `LanguagePicker`, `useMantineColorScheme`, `IconSun`, `IconMoon`, `Tooltip`
+- [x] T015 [US3] Update `packages/frontend/src/components/AppShell/NavbarSegmented.module.css` — remove the `.settingsSection` CSS block entirely
 
 **Checkpoint**: User Story 3 is complete — sidebar clean, no duplicate controls. Run `pnpm test` and confirm T005, T006 pass.
 
@@ -92,10 +92,10 @@
 
 **Purpose**: Type safety, lint, and full validation pass.
 
-- [ ] T016 [P] Run `pnpm tsc --noEmit` in `packages/frontend` — fix any TypeScript errors (expected: zero errors)
-- [ ] T017 [P] Run `pnpm lint` in `packages/frontend` — fix any ESLint warnings or errors (expected: zero)
-- [ ] T018 Run full test suite: `pnpm test` in `packages/frontend` — all tests including T002–T006 assertions must pass
-- [ ] T019 Manual validation — follow all 8 scenarios in `specs/016-global-app-shell/quickstart.md`: header on each authenticated page, footer anchored, language/theme controls work from header, sidebar clean, unauthenticated pages unaffected, mobile layout accessible
+- [x] T016 [P] Run `pnpm tsc --noEmit` in `packages/frontend` — fix any TypeScript errors (expected: zero errors)
+- [x] T017 [P] Run `pnpm lint` in `packages/frontend` — fix any ESLint warnings or errors (expected: zero)
+- [x] T018 Run full test suite: `pnpm test` in `packages/frontend` — all tests including T002–T006 assertions must pass
+- [x] T019 Manual validation — follow all 8 scenarios in `specs/016-global-app-shell/quickstart.md`: header on each authenticated page, footer anchored, language/theme controls work from header, sidebar clean, unauthenticated pages unaffected, mobile layout accessible
 
 ---
 

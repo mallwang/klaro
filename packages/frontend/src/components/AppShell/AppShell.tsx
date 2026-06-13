@@ -1,8 +1,9 @@
 import type { ReactNode } from 'react';
-import { AppShell as MantineAppShell, Burger, Box } from '@mantine/core';
+import { AppShell as MantineAppShell, Box } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { NavbarSegmented } from './NavbarSegmented.js';
 import { FooterSimple } from './FooterSimple.js';
+import { TopHeader } from './TopHeader.js';
 import classes from './AppShell.module.css';
 
 interface AppShellProps {
@@ -14,21 +15,26 @@ export function AppShell({ children }: AppShellProps) {
 
   return (
     <MantineAppShell
+      header={{ height: 60 }}
+      footer={{ height: 50 }}
       navbar={{ width: 280, breakpoint: 'sm', collapsed: { mobile: !mobileOpened } }}
       padding="md"
     >
+      <MantineAppShell.Header>
+        <TopHeader mobileOpened={mobileOpened} toggleMobile={toggleMobile} />
+      </MantineAppShell.Header>
+
       <MantineAppShell.Navbar className={classes.navbar}>
         <NavbarSegmented />
       </MantineAppShell.Navbar>
 
-      <MantineAppShell.Header hiddenFrom="sm" className={classes.header}>
-        <Burger opened={mobileOpened} onClick={toggleMobile} size="sm" />
-      </MantineAppShell.Header>
-
       <MantineAppShell.Main className={classes.main}>
         <Box className={classes.content}>{children}</Box>
-        <FooterSimple />
       </MantineAppShell.Main>
+
+      <MantineAppShell.Footer>
+        <FooterSimple />
+      </MantineAppShell.Footer>
     </MantineAppShell>
   );
 }

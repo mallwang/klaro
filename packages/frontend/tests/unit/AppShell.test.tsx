@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { MantineProvider } from '@mantine/core';
@@ -116,5 +116,41 @@ describe('AppShell', () => {
   it('renders a footer', () => {
     renderAppShell();
     expect(screen.getByRole('contentinfo')).toBeInTheDocument();
+  });
+
+  // US1: Top-level header
+  it('renders app name in the header', () => {
+    renderAppShell();
+    const header = screen.getByRole('banner');
+    expect(within(header).getByText('Personal Contract Management')).toBeInTheDocument();
+  });
+
+  it('renders language picker in the header', () => {
+    renderAppShell();
+    const header = screen.getByRole('banner');
+    expect(within(header).getByText('English')).toBeInTheDocument();
+  });
+
+  it('renders theme toggle in the header', () => {
+    renderAppShell();
+    const header = screen.getByRole('banner');
+    expect(
+      within(header).getByRole('button', { name: /dark mode|light mode/i }),
+    ).toBeInTheDocument();
+  });
+
+  // US3: Sidebar must not have duplicate controls
+  it('does not render language picker in the sidebar', () => {
+    renderAppShell();
+    const navbar = screen.getByRole('navigation');
+    expect(within(navbar).queryByText('English')).not.toBeInTheDocument();
+  });
+
+  it('does not render theme toggle in the sidebar', () => {
+    renderAppShell();
+    const navbar = screen.getByRole('navigation');
+    expect(
+      within(navbar).queryByRole('button', { name: /dark mode|light mode/i }),
+    ).not.toBeInTheDocument();
   });
 });

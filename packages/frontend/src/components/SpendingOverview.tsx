@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
-import { Paper, Text, Progress, Group, Box } from '@mantine/core';
+import { Box, Group, Paper, Progress, SimpleGrid, Text } from '@mantine/core';
+import { IconChartPie } from '@tabler/icons-react';
 import type { CategorySummary } from '@pcm/shared';
 import { useLocaleFormat } from '../hooks/useLocaleFormat.js';
 import classes from './SpendingOverview.module.css';
@@ -24,51 +25,58 @@ export function SpendingOverview({
     pct: totalMonthlySpending > 0 ? (cat.monthlyTotal / totalMonthlySpending) * 100 : 0,
   }));
 
-  return (
-    <Paper withBorder radius="md" p="md">
-      <Text className={classes.label}>{t('dashboard.monthlySpending')}</Text>
+  const progressSegments = segments.map((seg) => (
+    <Progress.Section value={seg.pct} color={seg.color} key={seg.category} aria-label={seg.label}>
+      {seg.pct > 10 && <Progress.Label>{Math.round(seg.pct)}%</Progress.Label>}
+    </Progress.Section>
+  ));
 
-      {totalMonthlySpending === 0 ? (
-        <Text mt="xs" size="sm" c="dimmed">
-          {t('dashboard.noActiveContracts')}
+  const statCards = segments.map((seg) => (
+    <Box
+      key={seg.category}
+      className={classes.stat}
+      style={{ borderBottomColor: `var(--mantine-color-${seg.color}-6)` }}
+    >
+      <Text tt="uppercase" fz="xs" c="dimmed" fw={700}>
+        {seg.label}
+      </Text>
+      <Group justify="space-between" align="flex-end" gap={0}>
+        <Text fw={700}>{formatCurrency(seg.monthlyTotal)}</Text>
+        <Text c={seg.color} fw={700} size="sm" className={classes.statCount}>
+          {Math.round(seg.pct)}%
         </Text>
-      ) : (
-        <Text className={classes.total}>{formatCurrency(totalMonthlySpending)}</Text>
-      )}
+      </Group>
+    </Box>
+  ));
 
-      <Text className={classes.description}>{t('dashboard.acrossActiveContracts')}</Text>
+  return (
+    <Paper withBorder p="md" radius="md">
+      <Group justify="space-between">
+        <Group align="flex-end" gap="xs">
+          <Text fz="xl" fw={700}>
+            {totalMonthlySpending === 0
+              ? t('dashboard.noActiveContracts')
+              : formatCurrency(totalMonthlySpending)}
+          </Text>
+          <Text c="dimmed" fz="xs" fw={700} tt="uppercase" className={classes.label} pb={3}>
+            {t('dashboard.monthlySpending')}
+          </Text>
+        </Group>
+        <IconChartPie size={22} className={classes.icon} stroke={1.5} />
+      </Group>
+
+      <Text c="dimmed" fz="sm">
+        {t('dashboard.acrossActiveContracts')}
+      </Text>
 
       {segments.length > 0 && (
         <>
-          <Progress.Root size={8} mt="sm">
-            {segments.map((seg) => (
-              <Progress.Section key={seg.category} value={seg.pct} color={seg.color} />
-            ))}
+          <Progress.Root size={34} classNames={{ label: classes.progressLabel }} mt={40}>
+            {progressSegments}
           </Progress.Root>
-
-          <Box mt="sm">
-            {segments.map((seg) => (
-              <Group
-                key={seg.category}
-                justify="space-between"
-                mt={4}
-                className={classes.segmentRow}
-              >
-                <Group gap={6}>
-                  <Box
-                    w={12}
-                    h={12}
-                    style={{
-                      borderRadius: 2,
-                      backgroundColor: `var(--mantine-color-${seg.color}-6)`,
-                    }}
-                  />
-                  <Text className={classes.segmentLabel}>{seg.label}</Text>
-                </Group>
-                <Text className={classes.segmentAmount}>{formatCurrency(seg.monthlyTotal)}</Text>
-              </Group>
-            ))}
-          </Box>
+          <SimpleGrid cols={{ base: 1, xs: 3 }} mt="xl">
+            {statCards}
+          </SimpleGrid>
         </>
       )}
     </Paper>

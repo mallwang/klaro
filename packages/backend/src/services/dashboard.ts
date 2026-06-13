@@ -178,13 +178,13 @@ export class DashboardService {
       )
       .all(ownerId);
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    const now = new Date();
+    const todayUtc = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
 
     return rows.map((row) => {
-      const end = new Date(row.end_date);
-      end.setHours(0, 0, 0, 0);
-      const daysOverdue = Math.round((today.getTime() - end.getTime()) / 86_400_000);
+      const [y, m, d] = row.end_date.split('-').map(Number) as [number, number, number];
+      const endUtc = Date.UTC(y, m - 1, d);
+      const daysOverdue = Math.round((todayUtc - endUtc) / 86_400_000);
       return {
         id: row.id,
         name: row.name,

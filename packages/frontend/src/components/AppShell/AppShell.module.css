@@ -2,13 +2,6 @@
   padding: var(--mantine-spacing-md);
 }
 
-.header {
-  display: flex;
-  align-items: center;
-  padding: 0 var(--mantine-spacing-md);
-  height: 100%;
-}
-
 .main {
   display: flex;
   flex-direction: column;
