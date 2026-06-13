@@ -32,7 +32,7 @@ const queryClient = new QueryClient({
   },
 });
 
-const theme = createTheme({});
+const theme = createTheme({ primaryColor: 'teal' });
 const colorSchemeManager = localStorageColorSchemeManager({ key: 'pcm-color-scheme' });
 
 const root = document.getElementById('root');

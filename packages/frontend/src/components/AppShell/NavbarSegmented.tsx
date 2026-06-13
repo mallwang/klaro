@@ -1,27 +1,15 @@
 import { useState } from 'react';
 import { NavLink as RouterNavLink, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import {
-  Group,
-  Text,
-  SegmentedControl,
-  Stack,
-  Tooltip,
-  ActionIcon,
-  UnstyledButton,
-} from '@mantine/core';
+import { Group, Text, SegmentedControl, Stack, Tooltip, ActionIcon } from '@mantine/core';
 import {
   IconLayoutDashboard,
   IconFileText,
   IconUser,
   IconUsers,
   IconLogout,
-  IconSun,
-  IconMoon,
 } from '@tabler/icons-react';
-import { useMantineColorScheme } from '@mantine/core';
 import { useCurrentUser, useSignOut } from '../../hooks/useAuth.js';
-import { LanguagePicker } from './LanguagePicker.js';
 import classes from './NavbarSegmented.module.css';
 
 type Segment = 'app' | 'admin';
@@ -36,7 +24,6 @@ export function NavbarSegmented() {
   const { t } = useTranslation();
   const { data: user } = useCurrentUser();
   const { mutate: signOut, isPending } = useSignOut();
-  const { colorScheme, toggleColorScheme } = useMantineColorScheme();
   const location = useLocation();
   const [segment, setSegment] = useState<Segment>('app');
 
@@ -86,24 +73,6 @@ export function NavbarSegmented() {
             </RouterNavLink>
           ))}
         </Stack>
-      </div>
-
-      <div className={classes.settingsSection}>
-        <Group justify="space-between" align="center">
-          <LanguagePicker />
-          <Tooltip
-            label={colorScheme === 'dark' ? t('settings.lightMode') : t('settings.darkMode')}
-          >
-            <ActionIcon
-              onClick={toggleColorScheme}
-              variant="default"
-              size="lg"
-              aria-label={colorScheme === 'dark' ? t('settings.lightMode') : t('settings.darkMode')}
-            >
-              {colorScheme === 'dark' ? <IconSun size={18} /> : <IconMoon size={18} />}
-            </ActionIcon>
-          </Tooltip>
-        </Group>
       </div>
 
       <div className={classes.userSection}>

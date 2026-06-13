@@ -1,28 +1,14 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useMutation } from '@tanstack/react-query';
-import {
-  Stack,
-  Title,
-  Text,
-  Paper,
-  PasswordInput,
-  Button,
-  Alert,
-  Card,
-  Switch,
-  Group,
-  Divider,
-} from '@mantine/core';
+import { Stack, Title, Text, Paper, PasswordInput, Button, Alert } from '@mantine/core';
 import { AuthError, changePassword } from '../services/auth.js';
-import { useAnonymization } from '../hooks/useAnonymization.js';
 
 export function AccountSettings() {
   const { t } = useTranslation();
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [success, setSuccess] = useState(false);
-  const { isAnonymized, toggleAnonymization } = useAnonymization();
 
   const { mutate, isPending, error } = useMutation({
     mutationFn: changePassword,
@@ -52,7 +38,7 @@ export function AccountSettings() {
   }
 
   return (
-    <Stack gap="lg" maw={480}>
+    <Stack gap="lg" maw={480} mx="auto">
       <div>
         <Title order={2}>{t('accountSettings.title')}</Title>
         <Text size="sm" c="dimmed">
@@ -99,29 +85,6 @@ export function AccountSettings() {
           </Stack>
         </form>
       </Paper>
-
-      <Card withBorder>
-        <Group justify="space-between" align="center" wrap="nowrap">
-          <div>
-            <Text fw={500} size="sm">
-              {t('anonymization.anonymizeContract')}
-            </Text>
-            <Text size="xs" c="dimmed">
-              {t('anonymization.anonymizeContractHint')}
-            </Text>
-          </div>
-          <Switch
-            checked={isAnonymized}
-            onChange={toggleAnonymization}
-            aria-label={t('anonymization.toggleAriaLabel')}
-            size="md"
-          />
-        </Group>
-        <Divider my="sm" />
-        <Text size="xs" c="dimmed">
-          {isAnonymized ? t('anonymization.hideReal') : t('anonymization.showReal')}
-        </Text>
-      </Card>
     </Stack>
   );
 }

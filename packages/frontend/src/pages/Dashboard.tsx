@@ -29,7 +29,7 @@ export function Dashboard() {
   const top3Categories = data.contractsByCategory.slice(0, 3);
 
   return (
-    <Stack gap="lg">
+    <Stack gap="lg" maw={900} mx="auto">
       <Group justify="space-between" align="flex-end">
         <div>
           <Title order={2}>{t('dashboard.title')}</Title>

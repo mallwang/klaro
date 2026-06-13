@@ -4,7 +4,7 @@ import classes from './FooterSimple.module.css';
 export function FooterSimple() {
   const year = new Date().getFullYear();
   return (
-    <footer className={classes.footer} role="contentinfo">
+    <div className={classes.footer}>
       <Container className={classes.inner}>
         <Text c="dimmed" size="sm">
           Personal Contract Management
@@ -15,6 +15,6 @@ export function FooterSimple() {
           </Text>
         </Group>
       </Container>
-    </footer>
+    </div>
   );
 }

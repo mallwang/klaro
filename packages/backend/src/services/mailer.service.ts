@@ -40,6 +40,9 @@ export class MailerService {
       port,
       secure: port === 465,
       auth: user && pass ? { user, pass } : undefined,
+      connectionTimeout: 10_000,
+      greetingTimeout: 10_000,
+      socketTimeout: 15_000,
     });
 
     return new MailerService({ transport, from });

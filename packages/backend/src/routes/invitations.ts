@@ -55,7 +55,8 @@ export async function invitationRoutes(fastify: FastifyInstance): Promise<void> 
       const appUrl = process.env['APP_URL'] ?? 'http://localhost:5173';
       const link = `${appUrl}/invitations/${invitation.token}`;
       await fastify.mailer.sendInvitationEmail(invitation.email, link, invitation.expiresAt);
-    } catch (_err) {
+    } catch (err) {
+      fastify.log.error({ err }, 'Failed to send invitation email');
       fastify.db.prepare(`DELETE FROM invitations WHERE token = ?`).run(invitation.token);
       return reply.status(502).send({
         statusCode: 502,
@@ -89,13 +90,11 @@ export async function invitationRoutes(fastify: FastifyInstance): Promise<void> 
         .send({ statusCode: 404, error: 'Not Found', message: 'Invitation not found' });
     }
     if (result === 'not-pending') {
-      return reply
-        .status(409)
-        .send({
-          statusCode: 409,
-          error: 'Conflict',
-          message: 'Invitation is not currently pending',
-        });
+      return reply.status(409).send({
+        statusCode: 409,
+        error: 'Conflict',
+        message: 'Invitation is not currently pending',
+      });
     }
     return reply.status(204).send();
   });
@@ -117,13 +116,11 @@ export async function invitationRoutes(fastify: FastifyInstance): Promise<void> 
         .send({ statusCode: 404, error: 'Not Found', message: 'Invitation not found' });
     }
     if (result === 'not-pending') {
-      return reply
-        .status(409)
-        .send({
-          statusCode: 409,
-          error: 'Conflict',
-          message: 'Invitation is not currently pending',
-        });
+      return reply.status(409).send({
+        statusCode: 409,
+        error: 'Conflict',
+        message: 'Invitation is not currently pending',
+      });
     }
 
     const invitation = result;
@@ -132,7 +129,8 @@ export async function invitationRoutes(fastify: FastifyInstance): Promise<void> 
       const appUrl = process.env['APP_URL'] ?? 'http://localhost:5173';
       const link = `${appUrl}/invitations/${invitation.token}`;
       await fastify.mailer.sendInvitationEmail(invitation.email, link, invitation.expiresAt);
-    } catch (_err) {
+    } catch (err) {
+      fastify.log.error({ err }, 'Failed to resend invitation email');
       fastify.db.prepare(`DELETE FROM invitations WHERE token = ?`).run(invitation.token);
       return reply.status(502).send({
         statusCode: 502,
@@ -173,22 +171,18 @@ export async function invitationRoutes(fastify: FastifyInstance): Promise<void> 
         .send({ statusCode: 410, error: 'Gone', message: 'This link has already been used' });
     }
     if (validation.outcome === 'expired') {
-      return reply
-        .status(410)
-        .send({
-          statusCode: 410,
-          error: 'Gone',
-          message: 'This link has expired, ask the administrator for a new one',
-        });
+      return reply.status(410).send({
+        statusCode: 410,
+        error: 'Gone',
+        message: 'This link has expired, ask the administrator for a new one',
+      });
     }
     if (validation.outcome === 'no-longer-valid') {
-      return reply
-        .status(410)
-        .send({
-          statusCode: 410,
-          error: 'Gone',
-          message: 'This invitation is no longer valid, ask the administrator for a new one',
-        });
+      return reply.status(410).send({
+        statusCode: 410,
+        error: 'Gone',
+        message: 'This invitation is no longer valid, ask the administrator for a new one',
+      });
     }
 
     const acceptAndActivate = fastify.db.transaction(() => {

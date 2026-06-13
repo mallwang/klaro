@@ -2,7 +2,6 @@
   height: 100%;
   display: flex;
   flex-direction: column;
-  border-right: 1px solid var(--mantine-color-default-border);
 }
 
 .navbarMain {
@@ -49,12 +48,4 @@
 .userSection {
   border-top: 1px solid var(--mantine-color-default-border);
   padding: var(--mantine-spacing-md);
-}
-
-.settingsSection {
-  border-top: 1px solid var(--mantine-color-default-border);
-  padding: var(--mantine-spacing-md);
-  display: flex;
-  flex-direction: column;
-  gap: var(--mantine-spacing-xs);
 }
