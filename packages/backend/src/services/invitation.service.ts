@@ -28,6 +28,7 @@ interface InvitationRow {
   expires_at: string;
   created_at: string;
   accepted_at: string | null;
+  cancelled_at: string | null;
 }
 
 const INVITATION_EXPIRY_MS = 7 * 24 * 60 * 60 * 1000;
@@ -40,6 +41,7 @@ function rowToInvitation(row: InvitationRow): Invitation {
     createdAt: row.created_at,
     expiresAt: row.expires_at,
     acceptedAt: row.accepted_at,
+    cancelledAt: row.cancelled_at,
   };
 }
 
@@ -97,7 +99,9 @@ export class InvitationService {
     if (!row) return 'not-found';
     if (row.status !== 'PENDING') return 'not-pending';
 
-    this.db.prepare(`UPDATE invitations SET status = 'CANCELLED' WHERE token = ?`).run(token);
+    this.db
+      .prepare(`UPDATE invitations SET status = 'CANCELLED', cancelled_at = ? WHERE token = ?`)
+      .run(new Date().toISOString(), token);
     return 'cancelled';
   }
 

@@ -173,6 +173,15 @@ export function runMigrations(instance: Database.Database): void {
 
     console.log('============================================================');
   }
+
+  const hasCancelledAt = instance
+    .prepare<[], { name: string }>(`PRAGMA table_info(invitations)`)
+    .all()
+    .some((col) => col.name === 'cancelled_at');
+
+  if (!hasCancelledAt) {
+    instance.exec(`ALTER TABLE invitations ADD COLUMN cancelled_at TEXT`);
+  }
 }
 
 /**
@@ -215,6 +224,7 @@ export interface InvitationRow {
   expires_at: string;
   created_at: string;
   accepted_at: string | null;
+  cancelled_at: string | null;
 }
 
 export interface ContractRow {

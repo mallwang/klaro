@@ -15,6 +15,7 @@ export const InvitationSchema = z.object({
   createdAt: z.string(),
   expiresAt: z.string(),
   acceptedAt: z.string().nullable(),
+  cancelledAt: z.string().nullable(),
 });
 
 export const SendInvitationBodySchema = z.object({

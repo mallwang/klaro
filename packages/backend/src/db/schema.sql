@@ -27,9 +27,10 @@ CREATE TABLE IF NOT EXISTS invitations (
   invited_by   TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   status       TEXT NOT NULL DEFAULT 'PENDING'
                  CHECK(status IN ('PENDING','ACCEPTED','CANCELLED','SUPERSEDED')),
-  expires_at   TEXT NOT NULL,
-  created_at   TEXT NOT NULL,
-  accepted_at  TEXT
+  expires_at    TEXT NOT NULL,
+  created_at    TEXT NOT NULL,
+  accepted_at   TEXT,
+  cancelled_at  TEXT
 );
 
 CREATE INDEX IF NOT EXISTS idx_invitations_email ON invitations(email);

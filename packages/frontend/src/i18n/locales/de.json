@@ -172,6 +172,7 @@
     "columnSentAt": "Gesendet",
     "columnDate": "Letzte Aktion",
     "acceptedOn": "Angenommen am",
+    "withdrawnOn": "Zurückgezogen am",
     "expiresOn": "Läuft ab",
     "columnInvitationStatus": "Status",
     "statusPending": "Ausstehend",

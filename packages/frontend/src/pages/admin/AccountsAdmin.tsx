@@ -163,7 +163,9 @@ function InvitationsTable() {
                 <td className="py-2 pr-4">
                   {inv.status === 'ACCEPTED' && inv.acceptedAt
                     ? `${t('accountsAdmin.acceptedOn')} ${localeDate(inv.acceptedAt)}`
-                    : `${t('accountsAdmin.expiresOn')} ${localeDate(inv.expiresAt)}`}
+                    : inv.status === 'CANCELLED' && inv.cancelledAt
+                      ? `${t('accountsAdmin.withdrawnOn')} ${localeDate(inv.cancelledAt)}`
+                      : `${t('accountsAdmin.expiresOn')} ${localeDate(inv.expiresAt)}`}
                 </td>
                 <td className="py-2 pr-4">
                   <div className="flex flex-wrap gap-2">
