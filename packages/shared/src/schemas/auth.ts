@@ -24,6 +24,16 @@ export const ChangePasswordBodySchema = z.object({
   newPassword: z.string().min(8).max(200),
 });
 
+export const RequestPasswordResetBodySchema = z.object({
+  email: z.string().email(),
+});
+
+export const ResetPasswordBodySchema = z.object({
+  password: z.string().min(8).max(200),
+});
+
 export type SignInBody = z.infer<typeof SignInBodySchema>;
 export type SessionUser = z.infer<typeof SessionUserSchema>;
 export type ChangePasswordBody = z.infer<typeof ChangePasswordBodySchema>;
+export type RequestPasswordResetBody = z.infer<typeof RequestPasswordResetBodySchema>;
+export type ResetPasswordBody = z.infer<typeof ResetPasswordBodySchema>;

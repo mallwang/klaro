@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useLocation, useNavigate, Navigate, type Location } from 'react-router-dom';
-import { Stack, TextInput, PasswordInput, Button, Alert, Paper, Title } from '@mantine/core';
+import { useLocation, useNavigate, Navigate, type Location, Link } from 'react-router-dom';
+import { Stack, TextInput, PasswordInput, Button, Alert, Anchor } from '@mantine/core';
 import { AuthError } from '../services/auth';
 import { useCurrentUser, useSignIn } from '../hooks/useAuth';
-import { PublicLayout } from '../components/PublicLayout.js';
+import { AuthCard } from '../components/AuthCard.js';
 
 /**
  * Sign-in page with email and password form. Redirects authenticated users to the dashboard
@@ -47,44 +47,43 @@ export function SignIn() {
   }
 
   return (
-    <PublicLayout>
-      <Paper withBorder shadow="md" p="xl" w={400} radius="md">
-        <Title order={2} mb="lg" ta="center">
-          {t('auth.signInTitle')}
-        </Title>
-        <form onSubmit={handleSubmit}>
-          <Stack gap="md">
-            {errorMessage() && (
-              <Alert role="alert" color="red">
-                {errorMessage()}
-              </Alert>
-            )}
+    <AuthCard title={t('auth.signInTitle')}>
+      <form onSubmit={handleSubmit}>
+        <Stack gap="md">
+          {errorMessage() && (
+            <Alert role="alert" color="red">
+              {errorMessage()}
+            </Alert>
+          )}
 
-            <TextInput
-              id="email"
-              label={t('auth.emailLabel')}
-              type="email"
-              autoComplete="username"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
+          <TextInput
+            id="email"
+            label={t('auth.emailLabel')}
+            type="email"
+            autoComplete="username"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
 
-            <PasswordInput
-              id="password"
-              label={t('auth.passwordLabel')}
-              autoComplete="current-password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
+          <PasswordInput
+            id="password"
+            label={t('auth.passwordLabel')}
+            autoComplete="current-password"
+            required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
 
-            <Button type="submit" fullWidth loading={isPending}>
-              {isPending ? t('auth.submitting') : t('auth.submitLabel')}
-            </Button>
-          </Stack>
-        </form>
-      </Paper>
-    </PublicLayout>
+          <Button type="submit" fullWidth loading={isPending}>
+            {isPending ? t('auth.submitting') : t('auth.submitLabel')}
+          </Button>
+
+          <Anchor component={Link} to="/forgot-password" size="sm" ta="center">
+            {t('auth.forgotPasswordLink')}
+          </Anchor>
+        </Stack>
+      </form>
+    </AuthCard>
   );
 }

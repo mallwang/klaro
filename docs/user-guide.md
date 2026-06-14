@@ -288,6 +288,12 @@ Open the app and you'll land on the sign-in page if you don't already have an ac
 
 If you enter the wrong password too many times in a row, the account is temporarily locked — wait a few minutes and try again with the correct password.
 
+### Forgot password
+
+If you've forgotten your password, click the **Forgot password?** link below the sign-in form. Enter your email address and click **Send reset link**. The app always shows a generic success message ("If an account exists with that email, a password reset link has been sent.") regardless of whether the email address is registered — this prevents attackers from discovering which email addresses are in use.
+
+Check your inbox for an email with a reset link. Click the link to open the **Set a new password** page. Enter a new password (at least 8 characters) and confirm it, then click **Reset password**. You'll be signed in automatically and redirected to the dashboard. The link expires after 1 hour and can only be used once. If you request another reset, any previous links are invalidated.
+
 ### The first account
 
 The very first time the app starts on a fresh installation, it automatically creates an **administrator** account and prints its email address and a one-time password to the server log (visible with `docker compose logs` or in the terminal running the backend). Sign in with those credentials and **change the password immediately** from My Account.

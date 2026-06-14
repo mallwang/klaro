@@ -525,3 +525,212 @@ describe('POST /api/auth/password — password change email (fire-and-forget)', 
     }
   });
 });
+
+describe('POST /api/auth/forgot-password', () => {
+  let db: Database.Database;
+  let app: FastifyInstance;
+  let capturedTo: string | undefined;
+  let capturedLink: string | undefined;
+
+  beforeEach(async () => {
+    db = createDb(':memory:');
+    runMigrations(db);
+    capturedTo = undefined;
+    capturedLink = undefined;
+    const stubMailer: MailerService = {
+      sendPasswordResetEmail: async (to: string, link: string) => {
+        capturedTo = to;
+        capturedLink = link;
+      },
+    } as unknown as MailerService;
+    app = await buildServer(db, { mailer: stubMailer });
+    await app.ready();
+  });
+
+  afterEach(async () => {
+    await app.close();
+    db.close();
+  });
+
+  it('returns 202 with generic message for existing email', async () => {
+    const { email } = insertUser(db);
+    const res = await app.inject({
+      method: 'POST',
+      url: '/api/auth/forgot-password',
+      payload: { email },
+    });
+    expect(res.statusCode).toBe(202);
+    const body = res.json<{ message: string }>();
+    expect(body.message).toMatch(/If an account exists/);
+    expect(capturedTo).toBe(email);
+    expect(capturedLink).toBeTruthy();
+  });
+
+  it('returns 202 with generic message for non-existent email', async () => {
+    const res = await app.inject({
+      method: 'POST',
+      url: '/api/auth/forgot-password',
+      payload: { email: 'nonexistent@example.test' },
+    });
+    expect(res.statusCode).toBe(202);
+    const body = res.json<{ message: string }>();
+    expect(body.message).toMatch(/If an account exists/);
+    expect(capturedTo).toBeUndefined();
+  });
+
+  it('returns 400 for invalid email format', async () => {
+    const res = await app.inject({
+      method: 'POST',
+      url: '/api/auth/forgot-password',
+      payload: { email: 'not-an-email' },
+    });
+    expect(res.statusCode).toBe(400);
+  });
+
+  it('sends email with reset link containing token', async () => {
+    const { email } = insertUser(db);
+    await app.inject({
+      method: 'POST',
+      url: '/api/auth/forgot-password',
+      payload: { email },
+    });
+    expect(capturedLink).toMatch(/\/reset-password\//);
+  });
+});
+
+describe('POST /api/auth/reset-password/:token', () => {
+  let db: Database.Database;
+  let app: FastifyInstance;
+
+  beforeEach(async () => {
+    db = createDb(':memory:');
+    runMigrations(db);
+    app = await buildServer(db);
+    await app.ready();
+  });
+
+  afterEach(async () => {
+    await app.close();
+    db.close();
+  });
+
+  it('returns 200, creates a session, and returns the user for valid token', async () => {
+    const { id: userId, email } = insertUser(db, { password: 'old-pass' });
+    // Request password reset to get token
+    const resetRes = await app.inject({
+      method: 'POST',
+      url: '/api/auth/forgot-password',
+      payload: { email },
+    });
+    expect(resetRes.statusCode).toBe(202);
+    // Extract token from database (since we didn't capture mailer)
+    const row = db
+      .prepare(
+        `SELECT token FROM email_verifications WHERE user_id = ? AND purpose = 'password-reset'`,
+      )
+      .get(userId) as { token: string };
+    expect(row).toBeDefined();
+    const token = row.token;
+
+    const res = await app.inject({
+      method: 'POST',
+      url: `/api/auth/reset-password/${token}`,
+      payload: { password: 'new-pass-123' },
+    });
+    expect(res.statusCode).toBe(200);
+    const body = res.json<{ id: string; email: string; displayName: string; role: string }>();
+    expect(body.email).toBe(email);
+    expect(body.id).toBe(userId);
+    // Verify session cookie was set
+    const setCookie = res.headers['set-cookie'];
+    expect(setCookie).toBeDefined();
+    expect(setCookie).toContain('session_id=');
+    // Verify new password works
+    const signIn = await app.inject({
+      method: 'POST',
+      url: '/api/auth/sign-in',
+      payload: { email, password: 'new-pass-123' },
+    });
+    expect(signIn.statusCode).toBe(200);
+  });
+
+  it('returns 404 for invalid token', async () => {
+    const res = await app.inject({
+      method: 'POST',
+      url: '/api/auth/reset-password/invalid-token',
+      payload: { password: 'new-pass-123' },
+    });
+    expect(res.statusCode).toBe(404);
+  });
+
+  it('returns 404 for expired token', async () => {
+    const { id: userId, email } = insertUser(db);
+    // Request reset
+    await app.inject({
+      method: 'POST',
+      url: '/api/auth/forgot-password',
+      payload: { email },
+    });
+    const row = db
+      .prepare(
+        `SELECT token FROM email_verifications WHERE user_id = ? AND purpose = 'password-reset'`,
+      )
+      .get(userId) as { token: string };
+    // Expire the token
+    db.prepare(
+      `UPDATE email_verifications SET expires_at = datetime('now', '-1 hour') WHERE token = ?`,
+    ).run(row.token);
+    const res = await app.inject({
+      method: 'POST',
+      url: `/api/auth/reset-password/${row.token}`,
+      payload: { password: 'new-pass-123' },
+    });
+    expect(res.statusCode).toBe(404);
+  });
+
+  it('returns 400 for weak password', async () => {
+    const { id: userId, email } = insertUser(db);
+    await app.inject({
+      method: 'POST',
+      url: '/api/auth/forgot-password',
+      payload: { email },
+    });
+    const row = db
+      .prepare(
+        `SELECT token FROM email_verifications WHERE user_id = ? AND purpose = 'password-reset'`,
+      )
+      .get(userId) as { token: string };
+    const res = await app.inject({
+      method: 'POST',
+      url: `/api/auth/reset-password/${row.token}`,
+      payload: { password: 'short' },
+    });
+    expect(res.statusCode).toBe(400);
+  });
+
+  it('token is single-use (second attempt fails)', async () => {
+    const { id: userId, email } = insertUser(db);
+    await app.inject({
+      method: 'POST',
+      url: '/api/auth/forgot-password',
+      payload: { email },
+    });
+    const row = db
+      .prepare(
+        `SELECT token FROM email_verifications WHERE user_id = ? AND purpose = 'password-reset'`,
+      )
+      .get(userId) as { token: string };
+    const res1 = await app.inject({
+      method: 'POST',
+      url: `/api/auth/reset-password/${row.token}`,
+      payload: { password: 'new-pass-123' },
+    });
+    expect(res1.statusCode).toBe(200);
+    const res2 = await app.inject({
+      method: 'POST',
+      url: `/api/auth/reset-password/${row.token}`,
+      payload: { password: 'another-pass-456' },
+    });
+    expect(res2.statusCode).toBe(404);
+  });
+});

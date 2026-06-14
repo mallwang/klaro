@@ -162,7 +162,8 @@
     "errorLocked": "Too many failed attempts. Please try again later.",
     "errorGeneric": "Sign-in failed. Please try again.",
     "signOut": "Sign out",
-    "signingOut": "Signing out…"
+    "signingOut": "Signing out…",
+    "forgotPasswordLink": "Forgot password?"
   },
   "accountsAdmin": {
     "title": "Manage accounts",
@@ -284,5 +285,30 @@
     "deleteError": "Failed to delete account. Please try again.",
     "deleting": "Deleting…",
     "soleAdminWarning": "You are the only administrator. Promote another user to admin first."
+  },
+  "forgotPassword": {
+    "title": "Reset your password",
+    "emailLabel": "Email address",
+    "submitLabel": "Send reset link",
+    "submitting": "Sending…",
+    "invalidEmail": "Please enter a valid email address",
+    "successTitle": "Check your inbox",
+    "successMessage": "If an account exists with that email, a password reset link has been sent.",
+    "errorGeneric": "Something went wrong. Please try again.",
+    "backToSignIn": "Back to sign in"
+  },
+  "resetPassword": {
+    "title": "Set a new password",
+    "passwordLabel": "New password",
+    "confirmPasswordLabel": "Confirm password",
+    "submitLabel": "Reset password",
+    "submitting": "Resetting…",
+    "passwordMismatch": "Passwords do not match",
+    "weakPassword": "Password must be at least 8 characters",
+    "successTitle": "Password reset",
+    "successMessage": "Your password has been reset.",
+    "invalidToken": "Invalid or expired reset link.",
+    "expiredToken": "This link has expired.",
+    "errorGeneric": "Something went wrong. Please try again."
   }
 }

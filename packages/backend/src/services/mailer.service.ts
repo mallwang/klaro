@@ -62,6 +62,25 @@ export class MailerService {
   }
 
   /**
+   * Dispatches an email through the configured transport.
+   *
+   * @param opts - Recipient address, subject line, plain-text body, and HTML body
+   */
+  private async send(opts: {
+    to: string;
+    subject: string;
+    text: string;
+    html: string;
+  }): Promise<void> {
+    await new Promise<void>((resolve, reject) => {
+      this.transport.sendMail({ from: this.from, ...opts }, (err) => {
+        if (err) reject(new MailerError(err.message));
+        else resolve();
+      });
+    });
+  }
+
+  /**
    * Sends a test email to verify SMTP configuration is working.
    *
    * @param to - The recipient email address
@@ -70,13 +89,7 @@ export class MailerService {
     const subject = 'Test email — SMTP configuration check';
     const text = `This is a test email sent from your Personal Contract Management app.\n\nIf you received this, your SMTP configuration is working correctly.`;
     const html = `<p>This is a test email sent from your Personal Contract Management app.</p><p>If you received this, your SMTP configuration is working correctly.</p>`;
-
-    await new Promise<void>((resolve, reject) => {
-      this.transport.sendMail({ from: this.from, to, subject, text, html }, (err) => {
-        if (err) reject(new MailerError(err.message));
-        else resolve();
-      });
-    });
+    await this.send({ to, subject, text, html });
   }
 
   /**
@@ -89,13 +102,7 @@ export class MailerService {
     const subject = 'Welcome — your account is ready';
     const text = `Your account has been activated.\n\nClick the link below to sign in:\n\n${link}\n\nWelcome aboard!`;
     const html = `<p>Your account has been activated.</p><p>Click the link below to sign in:</p><p><a href="${link}">${link}</a></p><p>Welcome aboard!</p>`;
-
-    await new Promise<void>((resolve, reject) => {
-      this.transport.sendMail({ from: this.from, to, subject, text, html }, (err) => {
-        if (err) reject(new MailerError(err.message));
-        else resolve();
-      });
-    });
+    await this.send({ to, subject, text, html });
   }
 
   /**
@@ -108,13 +115,7 @@ export class MailerService {
     const subject = 'Your password has been changed';
     const text = `Your password was successfully changed.\n\nIf you did not make this change, please contact your administrator immediately.\n\nClick the link below to sign in:\n\n${link}`;
     const html = `<p>Your password was successfully changed.</p><p>If you did not make this change, please contact your administrator immediately.</p><p>Click the link below to sign in:</p><p><a href="${link}">${link}</a></p>`;
-
-    await new Promise<void>((resolve, reject) => {
-      this.transport.sendMail({ from: this.from, to, subject, text, html }, (err) => {
-        if (err) reject(new MailerError(err.message));
-        else resolve();
-      });
-    });
+    await this.send({ to, subject, text, html });
   }
 
   /**
@@ -128,13 +129,7 @@ export class MailerService {
     const subject = 'Your email address has been updated';
     const text = `Your email address was successfully changed on ${changedDate}.\n\nIf you did not make this change, please contact your administrator immediately.`;
     const html = `<p>Your email address was successfully changed on <strong>${changedDate}</strong>.</p><p>If you did not make this change, please contact your administrator immediately.</p>`;
-
-    await new Promise<void>((resolve, reject) => {
-      this.transport.sendMail({ from: this.from, to, subject, text, html }, (err) => {
-        if (err) reject(new MailerError(err.message));
-        else resolve();
-      });
-    });
+    await this.send({ to, subject, text, html });
   }
 
   /**
@@ -149,13 +144,7 @@ export class MailerService {
     const subject = 'Verify your new email address';
     const text = `You requested an email address change.\n\nClick the link below to confirm your new email address:\n\n${link}\n\nThis link expires on ${expiryDate}. It can only be used once.\n\nIf you did not request this change, you can ignore this email.`;
     const html = `<p>You requested an email address change.</p><p>Click the link below to confirm your new email address:</p><p><a href="${link}">${link}</a></p><p>This link expires on <strong>${expiryDate}</strong>. It can only be used once.</p><p>If you did not request this change, you can ignore this email.</p>`;
-
-    await new Promise<void>((resolve, reject) => {
-      this.transport.sendMail({ from: this.from, to, subject, text, html }, (err) => {
-        if (err) reject(new MailerError(err.message));
-        else resolve();
-      });
-    });
+    await this.send({ to, subject, text, html });
   }
 
   /**
@@ -170,12 +159,21 @@ export class MailerService {
     const subject = "You've been invited";
     const text = `You've been invited to join the app.\n\nClick the link below to set up your account:\n\n${link}\n\nThis link expires on ${expiryDate}. It can only be used once.\n\nIf you did not expect this invitation, you can ignore this email.`;
     const html = `<p>You've been invited to join the app.</p><p>Click the link below to set up your account:</p><p><a href="${link}">${link}</a></p><p>This link expires on <strong>${expiryDate}</strong>. It can only be used once.</p><p>If you did not expect this invitation, you can ignore this email.</p>`;
+    await this.send({ to, subject, text, html });
+  }
 
-    await new Promise<void>((resolve, reject) => {
-      this.transport.sendMail({ from: this.from, to, subject, text, html }, (err) => {
-        if (err) reject(new MailerError(err.message));
-        else resolve();
-      });
-    });
+  /**
+   * Sends a password reset link to the user's email address.
+   *
+   * @param to - The recipient email address
+   * @param link - The one-time password reset URL
+   * @param expiresAt - ISO timestamp after which the reset link is no longer valid
+   */
+  async sendPasswordResetEmail(to: string, link: string, expiresAt: string): Promise<void> {
+    const expiryDate = new Date(expiresAt).toISOString().slice(0, 10);
+    const subject = 'Reset your password';
+    const text = `You requested a password reset.\n\nClick the link below to set a new password:\n\n${link}\n\nThis link expires on ${expiryDate}. It can only be used once.\n\nIf you did not request this change, you can ignore this email.`;
+    const html = `<p>You requested a password reset.</p><p>Click the link below to set a new password:</p><p><a href="${link}">${link}</a></p><p>This link expires on <strong>${expiryDate}</strong>. It can only be used once.</p><p>If you did not request this change, you can ignore this email.</p>`;
+    await this.send({ to, subject, text, html });
   }
 }

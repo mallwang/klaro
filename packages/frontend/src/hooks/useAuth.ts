@@ -1,6 +1,17 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import type { SessionUser, SignInBody } from '@pcm/shared';
-import { fetchCurrentUser, signIn, signOut } from '../services/auth';
+import type {
+  SessionUser,
+  SignInBody,
+  RequestPasswordResetBody,
+  ResetPasswordBody,
+} from '@pcm/shared';
+import {
+  fetchCurrentUser,
+  signIn,
+  signOut,
+  requestPasswordReset,
+  resetPassword,
+} from '../services/auth';
 
 /**
  * TanStack Query hooks for session authentication: current user, sign-in, and sign-out.
@@ -46,5 +57,24 @@ export function useSignOut() {
       queryClient.setQueryData(CURRENT_USER_QUERY_KEY, null);
       queryClient.clear();
     },
+  });
+}
+
+/**
+ * Returns a mutation for requesting a password reset email.
+ */
+export function useRequestPasswordReset() {
+  return useMutation({
+    mutationFn: (body: RequestPasswordResetBody) => requestPasswordReset(body),
+  });
+}
+
+/**
+ * Returns a mutation for resetting a password using a token.
+ */
+export function useResetPassword() {
+  return useMutation({
+    mutationFn: ({ token, body }: { token: string; body: ResetPasswordBody }) =>
+      resetPassword(token, body),
   });
 }

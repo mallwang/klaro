@@ -1,7 +1,7 @@
 import { randomBytes } from 'node:crypto';
 import type Database from 'better-sqlite3';
 import type { SessionUser } from '@pcm/shared';
-import type { UserRow, SessionRow } from '../db/client.js';
+import type { UserRow, SessionRow, EmailVerificationRow } from '../db/client.js';
 import { hashPassword, verifyPassword } from './password.js';
 
 /**
@@ -37,6 +37,15 @@ export type SignInResult =
   | { outcome: 'success'; user: UserRow; session: SessionRow }
   | { outcome: 'invalid' }
   | { outcome: 'locked'; retryAt: string };
+
+export type RequestPasswordResetResult =
+  | { outcome: 'requested'; token: string; expiresAt: string }
+  | { outcome: 'not-found' };
+
+export type ResetPasswordResult =
+  | { outcome: 'success'; userId: string }
+  | { outcome: 'not-found' }
+  | { outcome: 'expired' };
 
 /**
  * Handles credential verification, session lifecycle, and brute-force lockout.
@@ -224,5 +233,81 @@ export class AuthService {
       .prepare(`UPDATE users SET password_hash = ?, password_salt = ?, updated_at = ? WHERE id = ?`)
       .run(hash, salt, new Date().toISOString(), userId);
     return true;
+  }
+
+  /**
+   * Generates a password reset token for the given email address.
+   *
+   * @param email - The email address to send the reset link to
+   * @returns An object indicating whether a reset was requested (with token and expiry)
+   *   or the email was not found
+   */
+  requestPasswordReset(email: string): RequestPasswordResetResult {
+    const user = this.db
+      .prepare<
+        [string],
+        UserRow
+      >(`SELECT * FROM users WHERE email = ? COLLATE NOCASE AND status = 'ACTIVE'`)
+      .get(email);
+
+    if (!user) {
+      return { outcome: 'not-found' };
+    }
+
+    // Invalidate any previous password-reset tokens for this user
+    this.db
+      .prepare(`DELETE FROM email_verifications WHERE user_id = ? AND purpose = 'password-reset'`)
+      .run(user.id);
+
+    const token = randomBytes(32).toString('hex');
+    const expiresAt = new Date(Date.now() + 60 * 60 * 1000).toISOString(); // 1 hour
+    const now = new Date().toISOString();
+
+    this.db
+      .prepare(
+        `INSERT INTO email_verifications (token, user_id, new_email, purpose, expires_at, created_at)
+         VALUES (?, ?, '', 'password-reset', ?, ?)`,
+      )
+      .run(token, user.id, expiresAt, now);
+
+    return { outcome: 'requested', token, expiresAt };
+  }
+
+  /**
+   * Resets a user's password using a valid, unexpired token.
+   *
+   * @param token - The password reset token from the email link
+   * @param newPassword - The new plaintext password to store
+   * @returns An object indicating success (with userId), 'not-found' for invalid token,
+   *   or 'expired' for expired token
+   */
+  resetPassword(token: string, newPassword: string): ResetPasswordResult {
+    const row = this.db
+      .prepare<
+        [string],
+        EmailVerificationRow
+      >(`SELECT * FROM email_verifications WHERE token = ? AND purpose = 'password-reset'`)
+      .get(token);
+
+    if (!row) {
+      return { outcome: 'not-found' };
+    }
+
+    if (row.expires_at < new Date().toISOString()) {
+      // Token expired — delete it
+      this.db.prepare(`DELETE FROM email_verifications WHERE token = ?`).run(token);
+      return { outcome: 'expired' };
+    }
+
+    // Update user's password
+    const { hash, salt } = hashPassword(newPassword);
+    this.db
+      .prepare(`UPDATE users SET password_hash = ?, password_salt = ?, updated_at = ? WHERE id = ?`)
+      .run(hash, salt, new Date().toISOString(), row.user_id);
+
+    // Delete the token (single-use)
+    this.db.prepare(`DELETE FROM email_verifications WHERE token = ?`).run(token);
+
+    return { outcome: 'success', userId: row.user_id };
   }
 }

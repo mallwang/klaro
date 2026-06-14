@@ -3,6 +3,8 @@ import {
   type SessionUser,
   type SignInBody,
   type ChangePasswordBody,
+  type RequestPasswordResetBody,
+  type ResetPasswordBody,
 } from '@pcm/shared';
 
 /**
@@ -91,4 +93,43 @@ export async function changePassword(body: ChangePasswordBody): Promise<void> {
   });
   if (!res.ok)
     throw new AuthError(res.status, await readErrorMessage(res, 'Failed to change password'));
+}
+
+/**
+ * Requests a password reset link for the given email address.
+ *
+ * @param body - The email address to send the reset link to
+ * @returns A promise that resolves when the request is accepted
+ */
+export async function requestPasswordReset(body: RequestPasswordResetBody): Promise<void> {
+  const res = await fetch('/api/auth/forgot-password', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify(body),
+  });
+  if (!res.ok)
+    throw new AuthError(
+      res.status,
+      await readErrorMessage(res, 'Failed to request password reset'),
+    );
+}
+
+/**
+ * Resets a user's password using a valid token and signs in the user.
+ *
+ * @param token - The password reset token from the email link
+ * @param body - The new password to set
+ * @returns The authenticated SessionUser
+ */
+export async function resetPassword(token: string, body: ResetPasswordBody): Promise<SessionUser> {
+  const res = await fetch(`/api/auth/reset-password/${encodeURIComponent(token)}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify(body),
+  });
+  if (!res.ok)
+    throw new AuthError(res.status, await readErrorMessage(res, 'Failed to reset password'));
+  return SessionUserSchema.parse(await res.json());
 }

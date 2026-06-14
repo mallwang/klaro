@@ -23,6 +23,8 @@ import { ContractImport } from './pages/ContractImport.js';
 import { SignIn } from './pages/SignIn.js';
 import { AcceptInvitation } from './pages/AcceptInvitation.js';
 import { EmailVerifyConfirm } from './pages/EmailVerifyConfirm.js';
+import { ForgotPassword } from './pages/ForgotPassword.js';
+import { ResetPassword } from './pages/ResetPassword.js';
 import { AccountSettings } from './pages/AccountSettings.js';
 import { AccountsAdmin } from './pages/admin/AccountsAdmin.js';
 import { AppShell } from './components/AppShell/AppShell.js';
@@ -58,6 +60,8 @@ createRoot(root).render(
             <Route path="/sign-in" element={<SignIn />} />
             <Route path="/invitations/:token" element={<AcceptInvitation />} />
             <Route path="/email-change/confirm/:token" element={<EmailVerifyConfirm />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password/:token" element={<ResetPassword />} />
             <Route
               path="*"
               element={
