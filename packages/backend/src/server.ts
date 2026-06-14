@@ -41,9 +41,9 @@ function isPublicRoute(method: string, url: string): boolean {
 
 export async function buildServer(
   db: Database.Database,
-  options: { staticDir?: string; mailer?: MailerService } = {},
+  options: { staticDir?: string; mailer?: MailerService; logger?: boolean } = {},
 ): Promise<FastifyInstance> {
-  const fastify = Fastify({ logger: true });
+  const fastify = Fastify({ logger: options.logger ?? process.env['NODE_ENV'] !== 'test' });
 
   await fastify.register(cors, { origin: true });
   await fastify.register(cookie);

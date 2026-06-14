@@ -33,7 +33,12 @@ export function createDb(dbPath?: string): Database.Database {
   return instance;
 }
 
-export function runMigrations(instance: Database.Database): void {
+export interface BootstrapResult {
+  email: string;
+  password: string;
+}
+
+export function runMigrations(instance: Database.Database): BootstrapResult | null {
   const schema = readFileSync(join(__dirname, 'schema.sql'), 'utf-8');
   instance.exec(schema);
 
@@ -146,6 +151,8 @@ export function runMigrations(instance: Database.Database): void {
     instance.prepare<[], { n: number }>(`SELECT COUNT(*) AS n FROM users`).get() ?? { n: 0 }
   ).n;
 
+  let bootstrapResult: BootstrapResult | null = null;
+
   if (userCount === 0) {
     const now = new Date().toISOString();
     const id = randomUUID();
@@ -161,17 +168,9 @@ export function runMigrations(instance: Database.Database): void {
 
     instance.prepare(`UPDATE contracts SET user_id = ? WHERE user_id IS NULL`).run(id);
 
-    console.log('============================================================');
-
-    console.log(' Bootstrap administrator account created');
-
-    console.log(` Email:    ${BOOTSTRAP_ADMIN_EMAIL}`);
-
-    console.log(` Password: ${initialPassword}`);
-
-    console.log(' Sign in and change this password immediately from Account Settings.');
-
-    console.log('============================================================');
+    // Return credentials so the caller (server entrypoint) can display the banner.
+    // Tests call runMigrations too but discard the return value, keeping output clean.
+    bootstrapResult = { email: BOOTSTRAP_ADMIN_EMAIL, password: initialPassword };
   }
 
   const hasCancelledAt = instance
@@ -194,6 +193,8 @@ export function runMigrations(instance: Database.Database): void {
     CREATE UNIQUE INDEX IF NOT EXISTS idx_email_verifications_user
       ON email_verifications(user_id);
   `);
+
+  return bootstrapResult;
 }
 
 /**
