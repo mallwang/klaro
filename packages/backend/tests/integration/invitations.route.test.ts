@@ -17,6 +17,9 @@ function makeStubMailer(failWith?: Error): MailerService {
       : async () => {
           /* no-op */
         },
+    sendWelcomeEmail: async () => {
+      /* no-op */
+    },
   } as unknown as MailerService;
 }
 
@@ -471,3 +474,105 @@ describe('POST /api/invitations/:token/accept (public)', () => {
     }
   });
 });
+
+// ─── US2: welcome email after invitation acceptance ───────────────────────────
+
+describe('POST /api/invitations/:token/accept — welcome email (US2)', () => {
+  let db: Database.Database;
+  let app: FastifyInstance;
+  let adminCookie: string;
+
+  beforeEach(async () => {
+    ({ db, app, adminCookie } = await setup());
+  });
+
+  afterEach(async () => {
+    await app.close();
+    db.close();
+  });
+
+  function insertPendingInvitation(email: string) {
+    const token = 'test-token-' + randomUUID();
+    const adminRow = db
+      .prepare<[], { id: string }>(`SELECT id FROM users WHERE role='ADMIN' LIMIT 1`)
+      .get()!;
+    db.prepare(
+      `INSERT INTO invitations (token, email, invited_by, status, expires_at, created_at)
+       VALUES (?, ?, ?, 'PENDING', ?, ?)`,
+    ).run(
+      token,
+      email,
+      adminRow.id,
+      new Date(Date.now() + 7 * 86400000).toISOString(),
+      new Date().toISOString(),
+    );
+    return token;
+  }
+
+  it('calls sendWelcomeEmail after successful acceptance', async () => {
+    let welcomeEmailTo: string | undefined;
+    const trackingMailer: MailerService = {
+      sendInvitationEmail: async () => {},
+      sendWelcomeEmail: async (to: string, _link: string) => {
+        welcomeEmailTo = to;
+      },
+    } as unknown as MailerService;
+
+    const { db: tDb, app: tApp, adminCookie: tAdmin } = await setup(trackingMailer);
+    try {
+      const token = insertPendingInvitationForApp(tDb, 'welcomed@example.test');
+      const res = await tApp.inject({
+        method: 'POST',
+        url: `/api/invitations/${token}/accept`,
+        payload: { password: 'a-strong-passphrase-1' },
+      });
+      expect(res.statusCode).toBe(200);
+      await new Promise((r) => setTimeout(r, 20));
+      expect(welcomeEmailTo).toBe('welcomed@example.test');
+    } finally {
+      await tApp.close();
+      tDb.close();
+    }
+  });
+
+  it('still returns 200 when sendWelcomeEmail throws (fire-and-forget)', async () => {
+    const failMailer: MailerService = {
+      sendInvitationEmail: async () => {},
+      sendWelcomeEmail: async () => {
+        throw new MailerError('SMTP down');
+      },
+    } as unknown as MailerService;
+
+    const { db: fDb, app: fApp } = await setup(failMailer);
+    try {
+      const token = insertPendingInvitationForApp(fDb, 'failwelcome@example.test');
+      const res = await fApp.inject({
+        method: 'POST',
+        url: `/api/invitations/${token}/accept`,
+        payload: { password: 'a-strong-passphrase-1' },
+      });
+      expect(res.statusCode).toBe(200);
+    } finally {
+      await fApp.close();
+      fDb.close();
+    }
+  });
+});
+
+function insertPendingInvitationForApp(db: Database.Database, email: string) {
+  const token = 'test-token-' + randomUUID();
+  const adminRow = db
+    .prepare<[], { id: string }>(`SELECT id FROM users WHERE role='ADMIN' LIMIT 1`)
+    .get()!;
+  db.prepare(
+    `INSERT INTO invitations (token, email, invited_by, status, expires_at, created_at)
+     VALUES (?, ?, ?, 'PENDING', ?, ?)`,
+  ).run(
+    token,
+    email,
+    adminRow.id,
+    new Date(Date.now() + 7 * 86400000).toISOString(),
+    new Date().toISOString(),
+  );
+  return token;
+}

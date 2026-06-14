@@ -22,6 +22,166 @@ function makeStubTransport(failWith?: Error): Transporter<SentMessageInfo> {
   } as unknown as Transporter<SentMessageInfo>;
 }
 
+describe('MailerService.sendTestEmail', () => {
+  const from = 'noreply@example.test';
+  const to = 'admin@example.test';
+
+  it('sends to the correct recipient with a recognizable subject', async () => {
+    const captured: unknown[] = [];
+    const transport = {
+      sendMail: (opts: unknown, cb: (err: null, info: SentMessageInfo) => void) => {
+        captured.push(opts);
+        cb(null, {
+          messageId: 'x',
+          envelope: { from: '', to: [] },
+          accepted: [],
+          rejected: [],
+          pending: [],
+          response: '',
+        });
+      },
+    } as unknown as Transporter<SentMessageInfo>;
+
+    const mailer = new MailerService({ transport, from });
+    await mailer.sendTestEmail(to);
+
+    expect(captured).toHaveLength(1);
+    const msg = captured[0] as { to: string; subject: string; text: string };
+    expect(msg.to).toBe(to);
+    expect(msg.subject).toBeTruthy();
+    expect(msg.text).toBeTruthy();
+  });
+
+  it('throws a typed MailerError when the transport reports a send failure', async () => {
+    const transport = makeStubTransport(new Error('SMTP connection refused'));
+    const mailer = new MailerService({ transport, from });
+
+    await expect(mailer.sendTestEmail(to)).rejects.toBeInstanceOf(MailerError);
+  });
+});
+
+describe('MailerService.sendEmailChangeConfirmationEmail', () => {
+  const from = 'noreply@example.test';
+  const to = 'newaddress@example.test';
+  const changedAt = new Date('2026-06-14T10:00:00.000Z').toISOString();
+
+  it('sends to the correct recipient with the change date in the body', async () => {
+    const captured: unknown[] = [];
+    const transport = {
+      sendMail: (opts: unknown, cb: (err: null, info: SentMessageInfo) => void) => {
+        captured.push(opts);
+        cb(null, {
+          messageId: 'x',
+          envelope: { from: '', to: [] },
+          accepted: [],
+          rejected: [],
+          pending: [],
+          response: '',
+        });
+      },
+    } as unknown as Transporter<SentMessageInfo>;
+
+    const mailer = new MailerService({ transport, from });
+    await mailer.sendEmailChangeConfirmationEmail(to, changedAt);
+
+    expect(captured).toHaveLength(1);
+    const msg = captured[0] as { to: string; subject: string; text: string; html: string };
+    expect(msg.to).toBe(to);
+    expect(msg.subject).toBeTruthy();
+    expect(msg.text).toContain('2026-06-14');
+    expect(msg.html).toContain('2026-06-14');
+  });
+
+  it('throws a typed MailerError when the transport reports a send failure', async () => {
+    const transport = makeStubTransport(new Error('SMTP connection refused'));
+    const mailer = new MailerService({ transport, from });
+
+    await expect(mailer.sendEmailChangeConfirmationEmail(to, changedAt)).rejects.toBeInstanceOf(
+      MailerError,
+    );
+  });
+});
+
+describe('MailerService.sendWelcomeEmail', () => {
+  const from = 'noreply@example.test';
+  const to = 'newmember@example.test';
+  const link = 'http://localhost:5173/sign-in';
+
+  it('sends to the correct recipient with the sign-in link in the body', async () => {
+    const captured: unknown[] = [];
+    const transport = {
+      sendMail: (opts: unknown, cb: (err: null, info: SentMessageInfo) => void) => {
+        captured.push(opts);
+        cb(null, {
+          messageId: 'x',
+          envelope: { from: '', to: [] },
+          accepted: [],
+          rejected: [],
+          pending: [],
+          response: '',
+        });
+      },
+    } as unknown as Transporter<SentMessageInfo>;
+
+    const mailer = new MailerService({ transport, from });
+    await mailer.sendWelcomeEmail(to, link);
+
+    expect(captured).toHaveLength(1);
+    const msg = captured[0] as { to: string; subject: string; text: string; html: string };
+    expect(msg.to).toBe(to);
+    expect(msg.subject).toBeTruthy();
+    expect(msg.text).toContain(link);
+    expect(msg.html).toContain(link);
+  });
+
+  it('throws a typed MailerError when the transport reports a send failure', async () => {
+    const transport = makeStubTransport(new Error('SMTP connection refused'));
+    const mailer = new MailerService({ transport, from });
+
+    await expect(mailer.sendWelcomeEmail(to, link)).rejects.toBeInstanceOf(MailerError);
+  });
+});
+
+describe('MailerService.sendPasswordChangeEmail', () => {
+  const from = 'noreply@example.test';
+  const to = 'user@example.test';
+  const link = 'http://localhost:5173/sign-in';
+
+  it('sends to the correct recipient with the sign-in link in the body', async () => {
+    const captured: unknown[] = [];
+    const transport = {
+      sendMail: (opts: unknown, cb: (err: null, info: SentMessageInfo) => void) => {
+        captured.push(opts);
+        cb(null, {
+          messageId: 'x',
+          envelope: { from: '', to: [] },
+          accepted: [],
+          rejected: [],
+          pending: [],
+          response: '',
+        });
+      },
+    } as unknown as Transporter<SentMessageInfo>;
+
+    const mailer = new MailerService({ transport, from });
+    await mailer.sendPasswordChangeEmail(to, link);
+
+    expect(captured).toHaveLength(1);
+    const msg = captured[0] as { to: string; subject: string; text: string; html: string };
+    expect(msg.to).toBe(to);
+    expect(msg.subject).toBeTruthy();
+    expect(msg.text).toContain(link);
+    expect(msg.html).toContain(link);
+  });
+
+  it('throws a typed MailerError when the transport reports a send failure', async () => {
+    const transport = makeStubTransport(new Error('SMTP connection refused'));
+    const mailer = new MailerService({ transport, from });
+
+    await expect(mailer.sendPasswordChangeEmail(to, link)).rejects.toBeInstanceOf(MailerError);
+  });
+});
+
 describe('MailerService.sendInvitationEmail', () => {
   const from = 'noreply@example.test';
   const to = 'invitee@example.test';

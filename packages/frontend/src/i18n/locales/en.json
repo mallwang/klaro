@@ -209,7 +209,15 @@
     "deleteButton": "Delete permanently",
     "emailReassigned": "Email reassigned",
     "deleteConfirmTitle": "Delete account",
-    "deleteConfirmMessage": "This will permanently remove the account and cannot be undone."
+    "deleteConfirmMessage": "This will permanently remove the account and cannot be undone.",
+    "testEmailTitle": "Test email delivery",
+    "testEmailDescription": "Send a test email to verify your SMTP configuration is working.",
+    "testEmailRecipientLabel": "Recipient email",
+    "testEmailButton": "Send test email",
+    "testEmailSending": "Sending…",
+    "testEmailSuccess": "Test email sent successfully.",
+    "testEmailError": "Failed to send test email. Please check your SMTP configuration.",
+    "testEmailMailerError": "SMTP transport rejected the message. Please check your SMTP configuration."
   },
   "acceptInvitation": {
     "title": "Set up your account",

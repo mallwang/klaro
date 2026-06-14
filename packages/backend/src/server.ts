@@ -12,6 +12,7 @@ import { authRoutes } from './routes/auth.js';
 import { userRoutes } from './routes/users.js';
 import { invitationRoutes } from './routes/invitations.js';
 import { profileRoutes } from './routes/profile.js';
+import { adminRoutes } from './routes/admin.js';
 import { AuthService, SESSION_COOKIE_NAME, toSessionUser } from './services/auth.service.js';
 import type { MailerService } from './services/mailer.service.js';
 
@@ -85,6 +86,7 @@ export async function buildServer(
   await fastify.register(contractRoutes);
   await fastify.register(invitationRoutes);
   await fastify.register(profileRoutes);
+  await fastify.register(adminRoutes);
 
   const staticDir =
     options.staticDir ??

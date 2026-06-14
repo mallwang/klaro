@@ -9,7 +9,10 @@ export type RequestEmailChangeResult =
   | { outcome: 'duplicate' }
   | { outcome: 'not-found' };
 
-export type ConfirmEmailChangeResult = 'confirmed' | 'not-found' | 'expired';
+export type ConfirmEmailChangeResult =
+  | { outcome: 'confirmed'; newEmail: string }
+  | 'not-found'
+  | 'expired';
 
 const EMAIL_VERIFICATION_EXPIRY_MS = 24 * 60 * 60 * 1000;
 
@@ -96,6 +99,6 @@ export class ProfileService {
     });
     confirm();
 
-    return 'confirmed';
+    return { outcome: 'confirmed', newEmail: row.new_email };
   }
 }

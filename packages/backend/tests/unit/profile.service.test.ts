@@ -177,11 +177,11 @@ describe('ProfileService – confirmEmailChange', () => {
 
   afterEach(() => db.close());
 
-  it('returns "confirmed", updates the email, and deletes the token row', () => {
+  it('returns { outcome: "confirmed", newEmail }, updates the email, and deletes the token row', () => {
     const req = service.requestEmailChange(userId, 'confirmed@example.test');
     if (req.outcome !== 'requested') throw new Error('unexpected');
     const result = service.confirmEmailChange(req.token);
-    expect(result).toBe('confirmed');
+    expect(result).toEqual({ outcome: 'confirmed', newEmail: 'confirmed@example.test' });
     const user = db
       .prepare<[string], { email: string }>(`SELECT email FROM users WHERE id = ?`)
       .get(userId);
@@ -206,12 +206,12 @@ describe('ProfileService – confirmEmailChange', () => {
     expect(service.confirmEmailChange('nonexistent-token')).toBe('not-found');
   });
 
-  it('returns "confirmed" even when an archived user holds the target email', () => {
+  it('returns { outcome: "confirmed", newEmail } even when an archived user holds the target email', () => {
     insertUser(db, { email: 'target@example.test', status: 'ARCHIVED' });
     const req = service.requestEmailChange(userId, 'target@example.test');
     if (req.outcome !== 'requested') throw new Error('unexpected');
     const result = service.confirmEmailChange(req.token);
-    expect(result).toBe('confirmed');
+    expect(result).toEqual({ outcome: 'confirmed', newEmail: 'target@example.test' });
     const user = db
       .prepare<[string], { email: string }>(`SELECT email FROM users WHERE id = ?`)
       .get(userId);

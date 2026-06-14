@@ -82,6 +82,16 @@ export async function authRoutes(fastify: FastifyInstance): Promise<void> {
     if (sessionId) {
       fastify.auth.destroyOtherSessions(userId, sessionId);
     }
+
+    if (fastify.mailer) {
+      const appUrl = process.env['APP_URL'] ?? 'http://localhost:5173';
+      fastify.mailer
+        .sendPasswordChangeEmail(request.user!.email, `${appUrl}/sign-in`)
+        .catch((err) => {
+          fastify.log.error({ err }, 'Failed to send password change email');
+        });
+    }
+
     return reply.status(204).send();
   });
 }

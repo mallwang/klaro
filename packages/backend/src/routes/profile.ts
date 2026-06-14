@@ -99,6 +99,15 @@ export async function profileRoutes(fastify: FastifyInstance): Promise<void> {
         .send({ statusCode: 410, error: 'Gone', message: 'This link has expired' });
     }
 
+    const { newEmail } = result;
+    if (fastify.mailer) {
+      fastify.mailer
+        .sendEmailChangeConfirmationEmail(newEmail, new Date().toISOString())
+        .catch((err) => {
+          fastify.log.error({ err }, 'Failed to send email change confirmation email');
+        });
+    }
+
     return reply.send({ message: 'Email address updated successfully' });
   });
 }

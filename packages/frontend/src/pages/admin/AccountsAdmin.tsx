@@ -17,6 +17,8 @@ import {
 } from '@mantine/core';
 import type { Account, Invitation } from '@pcm/shared';
 import { AuthError } from '../../services/auth.js';
+import { sendTestEmail } from '../../services/users.js';
+import { useCurrentUser } from '../../hooks/useAuth.js';
 import {
   useAccounts,
   useArchiveAccount,
@@ -112,6 +114,77 @@ function InviteForm() {
             />
             <Button type="submit" loading={isPending}>
               {isPending ? t('accountsAdmin.inviting') : t('accountsAdmin.inviteButton')}
+            </Button>
+          </Group>
+        </Stack>
+      </form>
+    </Paper>
+  );
+}
+
+function TestEmailForm() {
+  const { t } = useTranslation();
+  const { data: currentUser } = useCurrentUser();
+  const [email, setEmail] = useState(currentUser?.email ?? '');
+  const [isPending, setIsPending] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setSuccess(false);
+    setError(null);
+    setIsPending(true);
+    try {
+      await sendTestEmail({ email: email.trim() });
+      setSuccess(true);
+    } catch (err) {
+      setError(err instanceof Error ? err : new Error('Unknown error'));
+    } finally {
+      setIsPending(false);
+    }
+  }
+
+  function errorMessage(): string | null {
+    if (!error) return null;
+    if (error instanceof AuthError && error.status === 502) {
+      return t('accountsAdmin.testEmailMailerError');
+    }
+    return t('accountsAdmin.testEmailError');
+  }
+
+  return (
+    <Paper withBorder p="md">
+      <Text fw={600} mb={4}>
+        {t('accountsAdmin.testEmailTitle')}
+      </Text>
+      <Text size="sm" c="dimmed" mb="sm">
+        {t('accountsAdmin.testEmailDescription')}
+      </Text>
+      <form onSubmit={handleSubmit}>
+        <Stack gap="sm">
+          {errorMessage() && (
+            <Alert role="alert" color="red">
+              {errorMessage()}
+            </Alert>
+          )}
+          {success && !error && (
+            <Alert role="status" color="green">
+              {t('accountsAdmin.testEmailSuccess')}
+            </Alert>
+          )}
+          <Group align="flex-end" gap="sm">
+            <TextInput
+              id="test-email-recipient"
+              label={t('accountsAdmin.testEmailRecipientLabel')}
+              type="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              style={{ flex: 1 }}
+            />
+            <Button type="submit" loading={isPending}>
+              {isPending ? t('accountsAdmin.testEmailSending') : t('accountsAdmin.testEmailButton')}
             </Button>
           </Group>
         </Stack>
@@ -255,6 +328,7 @@ export function AccountsAdmin() {
       </div>
 
       <InviteForm />
+      <TestEmailForm />
       <InvitationsTable />
 
       {(archiveError || reactivateError || deleteError || roleError) && (

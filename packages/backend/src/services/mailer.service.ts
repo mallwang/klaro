@@ -50,6 +50,59 @@ export class MailerService {
     return new MailerService({ transport, from });
   }
 
+  async sendTestEmail(to: string): Promise<void> {
+    const subject = 'Test email — SMTP configuration check';
+    const text = `This is a test email sent from your Personal Contract Management app.\n\nIf you received this, your SMTP configuration is working correctly.`;
+    const html = `<p>This is a test email sent from your Personal Contract Management app.</p><p>If you received this, your SMTP configuration is working correctly.</p>`;
+
+    await new Promise<void>((resolve, reject) => {
+      this.transport.sendMail({ from: this.from, to, subject, text, html }, (err) => {
+        if (err) reject(new MailerError(err.message));
+        else resolve();
+      });
+    });
+  }
+
+  async sendWelcomeEmail(to: string, link: string): Promise<void> {
+    const subject = 'Welcome — your account is ready';
+    const text = `Your account has been activated.\n\nClick the link below to sign in:\n\n${link}\n\nWelcome aboard!`;
+    const html = `<p>Your account has been activated.</p><p>Click the link below to sign in:</p><p><a href="${link}">${link}</a></p><p>Welcome aboard!</p>`;
+
+    await new Promise<void>((resolve, reject) => {
+      this.transport.sendMail({ from: this.from, to, subject, text, html }, (err) => {
+        if (err) reject(new MailerError(err.message));
+        else resolve();
+      });
+    });
+  }
+
+  async sendPasswordChangeEmail(to: string, link: string): Promise<void> {
+    const subject = 'Your password has been changed';
+    const text = `Your password was successfully changed.\n\nIf you did not make this change, please contact your administrator immediately.\n\nClick the link below to sign in:\n\n${link}`;
+    const html = `<p>Your password was successfully changed.</p><p>If you did not make this change, please contact your administrator immediately.</p><p>Click the link below to sign in:</p><p><a href="${link}">${link}</a></p>`;
+
+    await new Promise<void>((resolve, reject) => {
+      this.transport.sendMail({ from: this.from, to, subject, text, html }, (err) => {
+        if (err) reject(new MailerError(err.message));
+        else resolve();
+      });
+    });
+  }
+
+  async sendEmailChangeConfirmationEmail(to: string, changedAt: string): Promise<void> {
+    const changedDate = new Date(changedAt).toISOString().slice(0, 10);
+    const subject = 'Your email address has been updated';
+    const text = `Your email address was successfully changed on ${changedDate}.\n\nIf you did not make this change, please contact your administrator immediately.`;
+    const html = `<p>Your email address was successfully changed on <strong>${changedDate}</strong>.</p><p>If you did not make this change, please contact your administrator immediately.</p>`;
+
+    await new Promise<void>((resolve, reject) => {
+      this.transport.sendMail({ from: this.from, to, subject, text, html }, (err) => {
+        if (err) reject(new MailerError(err.message));
+        else resolve();
+      });
+    });
+  }
+
   async sendEmailVerificationEmail(to: string, link: string, expiresAt: string): Promise<void> {
     const expiryDate = new Date(expiresAt).toISOString().slice(0, 10);
     const subject = 'Verify your new email address';

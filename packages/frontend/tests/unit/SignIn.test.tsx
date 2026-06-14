@@ -10,6 +10,9 @@ function createWrapper() {
   const qc = new QueryClient({
     defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
   });
+  // Pre-seed the session cache as null so SignIn renders the form immediately
+  // without waiting for a GET /api/auth/me round-trip.
+  qc.setQueryData(['auth', 'me'], null);
   return ({ children }: { children: React.ReactNode }) => (
     <MantineProvider>
       <QueryClientProvider client={qc}>
