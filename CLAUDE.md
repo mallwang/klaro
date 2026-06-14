@@ -46,5 +46,5 @@ One or two sentences maximum. Describes the module's role, not its contents.
 <!-- SPECKIT START -->
 For additional context about technologies to be used, project structure,
 shell commands, and other important information, read the current plan
-at specs/019-delete-account/plan.md
+at specs/020-enhance-jsdoc-docs/plan.md
 <!-- SPECKIT END -->
