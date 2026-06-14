@@ -266,5 +266,23 @@
     "notFound": "This link is not valid.",
     "toDashboard": "Go to dashboard",
     "redirecting": "Redirecting automatically in a few seconds…"
+  },
+  "dangerZone": {
+    "title": "Danger Zone",
+    "description": "Permanently delete your account and all associated contracts. This action cannot be undone.",
+    "deleteButton": "Delete Account"
+  },
+  "deleteModal": {
+    "title": "Delete Account",
+    "warningText": "This will permanently and irreversibly delete your account and all associated contracts.",
+    "exportButton": "Download contracts as JSON",
+    "skipButton": "Skip, delete without downloading",
+    "emptyContractsNotice": "No contracts to export.",
+    "confirmTitle": "Confirm permanent deletion",
+    "confirmButton": "Permanently Delete My Account",
+    "cancelButton": "Cancel",
+    "deleteError": "Failed to delete account. Please try again.",
+    "deleting": "Deleting…",
+    "soleAdminWarning": "You are the only administrator. Promote another user to admin first."
   }
 }

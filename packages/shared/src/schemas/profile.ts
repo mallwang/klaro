@@ -1,5 +1,8 @@
 import { z } from 'zod';
 
+export const DeleteSelfResultSchema = z.union([z.literal('deleted'), z.literal('last-admin')]);
+export type DeleteSelfResult = z.infer<typeof DeleteSelfResultSchema>;
+
 export const UpdateDisplayNameBodySchema = z.object({
   displayName: z.string().min(1).max(100),
 });

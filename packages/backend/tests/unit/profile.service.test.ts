@@ -218,3 +218,61 @@ describe('ProfileService – confirmEmailChange', () => {
     expect(user?.email).toBe('target@example.test');
   });
 });
+
+// ─── deleteSelf ───────────────────────────────────────────────────────────────
+
+describe('ProfileService – deleteSelf', () => {
+  let db: Database.Database;
+  let service: ProfileService;
+
+  function insertUserWithRole(role: 'ADMIN' | 'MEMBER', email: string): string {
+    const id = randomUUID();
+    const now = new Date().toISOString();
+    const { hash, salt } = hashPassword('password');
+    db.prepare(
+      `INSERT INTO users (id, email, display_name, password_hash, password_salt, role, status, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, 'ACTIVE', ?, ?)`,
+    ).run(id, email, 'Test User', hash, salt, role, now, now);
+    return id;
+  }
+
+  beforeEach(() => {
+    db = createDb(':memory:');
+    runMigrations(db);
+    db.prepare(`DELETE FROM users WHERE email = 'admin@localhost.local'`).run();
+    service = new ProfileService(db);
+  });
+
+  afterEach(() => db.close());
+
+  it('returns "deleted" and removes the user row for a MEMBER', () => {
+    const memberId = insertUserWithRole('MEMBER', 'member@example.test');
+    const result = service.deleteSelf(memberId);
+    expect(result).toBe('deleted');
+    const row = db
+      .prepare<[string], { id: string }>(`SELECT id FROM users WHERE id = ?`)
+      .get(memberId);
+    expect(row).toBeUndefined();
+  });
+
+  it('returns "last-admin" and leaves the user row intact when the sole ADMIN tries to delete', () => {
+    const adminId = insertUserWithRole('ADMIN', 'admin@example.test');
+    const result = service.deleteSelf(adminId);
+    expect(result).toBe('last-admin');
+    const row = db
+      .prepare<[string], { id: string }>(`SELECT id FROM users WHERE id = ?`)
+      .get(adminId);
+    expect(row).toBeDefined();
+  });
+
+  it('returns "deleted" for an ADMIN when another ADMIN exists', () => {
+    const adminId = insertUserWithRole('ADMIN', 'admin1@example.test');
+    insertUserWithRole('ADMIN', 'admin2@example.test');
+    const result = service.deleteSelf(adminId);
+    expect(result).toBe('deleted');
+    const row = db
+      .prepare<[string], { id: string }>(`SELECT id FROM users WHERE id = ?`)
+      .get(adminId);
+    expect(row).toBeUndefined();
+  });
+});
