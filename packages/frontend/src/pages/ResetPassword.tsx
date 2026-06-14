@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useQueryClient } from '@tanstack/react-query';
-import { Paper, Title, Stack, PasswordInput, Button, Alert, Text } from '@mantine/core';
-import { PublicLayout } from '../components/PublicLayout.js';
+import { Stack, PasswordInput, Button, Alert, Text } from '@mantine/core';
+import { AuthCard } from '../components/AuthCard.js';
 import { AuthError } from '../services/auth.js';
 import { useResetPassword, CURRENT_USER_QUERY_KEY } from '../hooks/useAuth.js';
 
@@ -13,6 +13,16 @@ import { useResetPassword, CURRENT_USER_QUERY_KEY } from '../hooks/useAuth.js';
  */
 
 type TerminalState = 'invalid' | 'expired' | null;
+
+/**
+ * Determines the terminal state for a 404 token error by inspecting the error message.
+ *
+ * @param err - The AuthError received from the reset-password endpoint
+ * @returns 'expired' if the message indicates an expired token, 'invalid' otherwise
+ */
+function terminalStateFor404(err: { message: string }): TerminalState {
+  return err.message.toLowerCase().includes('expired') ? 'expired' : 'invalid';
+}
 
 export function ResetPassword() {
   const { t } = useTranslation();
@@ -54,9 +64,7 @@ export function ResetPassword() {
     } catch (err) {
       if (err instanceof AuthError) {
         if (err.status === 404) {
-          const msg = err.message.toLowerCase();
-          if (msg.includes('expired')) setTerminalState('expired');
-          else setTerminalState('invalid');
+          setTerminalState(terminalStateFor404(err));
         } else if (err.status === 410) {
           setTerminalState('expired');
         } else if (err.status === 400) {
@@ -78,62 +86,56 @@ export function ResetPassword() {
   };
 
   return (
-    <PublicLayout>
-      <Paper withBorder shadow="md" p="xl" w={400} radius="md">
-        <Title order={2} mb="lg" ta="center">
-          {t('resetPassword.title')}
-        </Title>
+    <AuthCard title={t('resetPassword.title')}>
+      {success && (
+        <Alert color="green" mb="md">
+          <Text fw={600}>{t('resetPassword.successTitle')}</Text>
+          <Text size="sm">{t('resetPassword.successMessage')}</Text>
+        </Alert>
+      )}
 
-        {success && (
-          <Alert color="green" mb="md">
-            <Text fw={600}>{t('resetPassword.successTitle')}</Text>
-            <Text size="sm">{t('resetPassword.successMessage')}</Text>
-          </Alert>
-        )}
+      {terminalState && (
+        <Alert color="yellow" mb="md">
+          {terminalMessages[terminalState]}
+        </Alert>
+      )}
 
-        {terminalState && (
-          <Alert color="yellow" mb="md">
-            {terminalMessages[terminalState]}
-          </Alert>
-        )}
+      {!success && !terminalState && (
+        <form onSubmit={handleSubmit}>
+          <Stack gap="md">
+            {genericError && (
+              <Alert role="alert" color="red">
+                {genericError}
+              </Alert>
+            )}
 
-        {!success && !terminalState && (
-          <form onSubmit={handleSubmit}>
-            <Stack gap="md">
-              {genericError && (
-                <Alert role="alert" color="red">
-                  {genericError}
-                </Alert>
-              )}
+            <PasswordInput
+              id="reset-password"
+              label={t('resetPassword.passwordLabel')}
+              autoComplete="new-password"
+              required
+              minLength={8}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
 
-              <PasswordInput
-                id="reset-password"
-                label={t('resetPassword.passwordLabel')}
-                autoComplete="new-password"
-                required
-                minLength={8}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
+            <PasswordInput
+              id="reset-confirm"
+              label={t('resetPassword.confirmPasswordLabel')}
+              autoComplete="new-password"
+              required
+              minLength={8}
+              value={confirm}
+              onChange={(e) => setConfirm(e.target.value)}
+              error={validationError}
+            />
 
-              <PasswordInput
-                id="reset-confirm"
-                label={t('resetPassword.confirmPasswordLabel')}
-                autoComplete="new-password"
-                required
-                minLength={8}
-                value={confirm}
-                onChange={(e) => setConfirm(e.target.value)}
-                error={validationError}
-              />
-
-              <Button type="submit" fullWidth loading={isPending}>
-                {isPending ? t('resetPassword.submitting') : t('resetPassword.submitLabel')}
-              </Button>
-            </Stack>
-          </form>
-        )}
-      </Paper>
-    </PublicLayout>
+            <Button type="submit" fullWidth loading={isPending}>
+              {isPending ? t('resetPassword.submitting') : t('resetPassword.submitLabel')}
+            </Button>
+          </Stack>
+        </form>
+      )}
+    </AuthCard>
   );
 }

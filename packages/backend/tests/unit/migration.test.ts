@@ -302,40 +302,44 @@ describe('purgeExpiredArchivedAccounts (FR-012/FR-013)', () => {
   });
 });
 
-describe('runMigrations – email_verifications purpose column', () => {
-  function makeOldEmailVerificationsDb(): Database.Database {
-    const db = new Database(':memory:');
-    db.pragma('journal_mode = WAL');
-    db.pragma('foreign_keys = ON');
-    // Create users table (required for foreign key)
-    db.exec(`
-      CREATE TABLE IF NOT EXISTS users (
-        id               TEXT PRIMARY KEY,
-        email            TEXT NOT NULL UNIQUE,
-        display_name     TEXT NOT NULL,
-        password_hash    TEXT NOT NULL,
-        password_salt    TEXT NOT NULL,
-        role             TEXT NOT NULL DEFAULT 'MEMBER',
-        status           TEXT NOT NULL DEFAULT 'ACTIVE',
-        created_at       TEXT NOT NULL,
-        updated_at       TEXT NOT NULL
-      );
-    `);
-    // Create email_verifications table WITHOUT purpose column
-    db.exec(`
-      CREATE TABLE IF NOT EXISTS email_verifications (
-        token       TEXT PRIMARY KEY,
-        user_id     TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-        new_email   TEXT NOT NULL,
-        expires_at  TEXT NOT NULL,
-        created_at  TEXT NOT NULL
-      );
-      CREATE UNIQUE INDEX IF NOT EXISTS idx_email_verifications_user
-        ON email_verifications(user_id);
-    `);
-    return db;
-  }
+/**
+ * Creates an in-memory SQLite database with the pre-migration email_verifications schema,
+ * without the purpose column added by the migration under test.
+ *
+ * @returns An open Database instance with old schema applied
+ */
+function makeOldEmailVerificationsDb(): Database.Database {
+  const db = new Database(':memory:');
+  db.pragma('journal_mode = WAL');
+  db.pragma('foreign_keys = ON');
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS users (
+      id               TEXT PRIMARY KEY,
+      email            TEXT NOT NULL UNIQUE,
+      display_name     TEXT NOT NULL,
+      password_hash    TEXT NOT NULL,
+      password_salt    TEXT NOT NULL,
+      role             TEXT NOT NULL DEFAULT 'MEMBER',
+      status           TEXT NOT NULL DEFAULT 'ACTIVE',
+      created_at       TEXT NOT NULL,
+      updated_at       TEXT NOT NULL
+    );
+  `);
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS email_verifications (
+      token       TEXT PRIMARY KEY,
+      user_id     TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      new_email   TEXT NOT NULL,
+      expires_at  TEXT NOT NULL,
+      created_at  TEXT NOT NULL
+    );
+    CREATE UNIQUE INDEX IF NOT EXISTS idx_email_verifications_user
+      ON email_verifications(user_id);
+  `);
+  return db;
+}
 
+describe('runMigrations – email_verifications purpose column', () => {
   it('adds purpose column to email_verifications table', () => {
     const db = makeOldEmailVerificationsDb();
     runMigrations(db);

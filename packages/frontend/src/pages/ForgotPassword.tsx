@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import { Paper, Title, Stack, TextInput, Button, Alert, Text, Anchor } from '@mantine/core';
-import { PublicLayout } from '../components/PublicLayout.js';
+import { Stack, TextInput, Button, Alert, Text, Anchor } from '@mantine/core';
+import { AuthCard } from '../components/AuthCard.js';
 import { AuthError } from '../services/auth.js';
 import { useRequestPasswordReset } from '../hooks/useAuth.js';
 
@@ -46,50 +46,44 @@ export function ForgotPassword() {
   }
 
   return (
-    <PublicLayout>
-      <Paper withBorder shadow="md" p="xl" w={400} radius="md">
-        <Title order={2} mb="lg" ta="center">
-          {t('forgotPassword.title')}
-        </Title>
+    <AuthCard title={t('forgotPassword.title')}>
+      {success && (
+        <Alert color="green" mb="md">
+          <Text fw={600}>{t('forgotPassword.successTitle')}</Text>
+          <Text size="sm">{t('forgotPassword.successMessage')}</Text>
+        </Alert>
+      )}
 
-        {success && (
-          <Alert color="green" mb="md">
-            <Text fw={600}>{t('forgotPassword.successTitle')}</Text>
-            <Text size="sm">{t('forgotPassword.successMessage')}</Text>
-          </Alert>
-        )}
+      {!success && (
+        <form onSubmit={handleSubmit}>
+          <Stack gap="md">
+            {genericError && (
+              <Alert role="alert" color="red">
+                {genericError}
+              </Alert>
+            )}
 
-        {!success && (
-          <form onSubmit={handleSubmit}>
-            <Stack gap="md">
-              {genericError && (
-                <Alert role="alert" color="red">
-                  {genericError}
-                </Alert>
-              )}
+            <TextInput
+              id="forgot-email"
+              label={t('forgotPassword.emailLabel')}
+              type="email"
+              autoComplete="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              error={validationError}
+            />
 
-              <TextInput
-                id="forgot-email"
-                label={t('forgotPassword.emailLabel')}
-                type="email"
-                autoComplete="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                error={validationError}
-              />
+            <Button type="submit" fullWidth loading={isPending}>
+              {isPending ? t('forgotPassword.submitting') : t('forgotPassword.submitLabel')}
+            </Button>
+          </Stack>
+        </form>
+      )}
 
-              <Button type="submit" fullWidth loading={isPending}>
-                {isPending ? t('forgotPassword.submitting') : t('forgotPassword.submitLabel')}
-              </Button>
-            </Stack>
-          </form>
-        )}
-
-        <Anchor component={Link} to="/sign-in" size="sm" ta="center" mt="md" display="block">
-          {t('forgotPassword.backToSignIn')}
-        </Anchor>
-      </Paper>
-    </PublicLayout>
+      <Anchor component={Link} to="/sign-in" size="sm" ta="center" mt="md" display="block">
+        {t('forgotPassword.backToSignIn')}
+      </Anchor>
+    </AuthCard>
   );
 }

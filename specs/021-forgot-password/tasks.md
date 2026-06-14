@@ -101,16 +101,16 @@
 - `packages/backend/tests/integration/auth.route.test.ts` — verify endpoint behavior
 
 **Acceptance criteria**:
-- [ ] `POST /api/auth/forgot-password` returns 202 with generic message
-- [ ] `POST /api/auth/forgot-password` returns 400 for invalid email
-- [ ] `POST /api/auth/forgot-password` sends email when user exists
-- [ ] `POST /api/auth/forgot-password` does not send email when user not found
-- [ ] `POST /api/auth/reset-password/:token` returns 200 on success
-- [ ] `POST /api/auth/reset-password/:token` returns 400 for weak password
-- [ ] `POST /api/auth/reset-password/:token` returns 404 for invalid token
-- [ ] `POST /api/auth/reset-password/:token` returns 410 for expired token
-- [ ] Token is single-use (second attempt fails)
-- [ ] Public routes are whitelisted
+- [X] `POST /api/auth/forgot-password` returns 202 with generic message
+- [X] `POST /api/auth/forgot-password` returns 400 for invalid email
+- [X] `POST /api/auth/forgot-password` sends email when user exists
+- [X] `POST /api/auth/forgot-password` does not send email when user not found
+- [X] `POST /api/auth/reset-password/:token` returns 200 on success
+- [X] `POST /api/auth/reset-password/:token` returns 400 for weak password
+- [X] `POST /api/auth/reset-password/:token` returns 404 for invalid token
+- [X] `POST /api/auth/reset-password/:token` returns 410 for expired token
+- [X] Token is single-use (second attempt fails)
+- [X] Public routes are whitelisted
 
 ---
 

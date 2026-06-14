@@ -43,6 +43,29 @@ section and **before** the first class, function, or exported symbol:
 
 One or two sentences maximum. Describes the module's role, not its contents.
 
+## SonarCloud Code Quality
+
+A SonarQube MCP server is configured for this project. Use it to check code quality after
+making changes.
+
+**Workflow when modifying code:**
+
+1. Before starting implementation, disable SonarLint's automatic background analysis:
+   call `mcp__sonarqube__toggle_automatic_analysis` (if the tool is available).
+2. Implement the changes.
+3. After finishing, analyze the files you created or modified:
+   call `mcp__sonarqube__analyze_code_snippet` or look up existing issues with
+   `mcp__sonarqube__search_sonar_issues_in_projects` (project key: `mallwang_personal-contract-management`).
+4. Re-enable automatic analysis when done.
+
+**Quality gate thresholds to enforce (matches SonarCloud project config):**
+- Duplicated lines on new code: < 3 %
+- No new bugs or security hotspots
+- No new critical code smells
+
+Use `mcp__sonarqube__get_project_quality_gate_status` to check overall gate status after a
+CI scan has run on a branch or PR.
+
 <!-- SPECKIT START -->
 For additional context about technologies to be used, project structure,
 shell commands, and other important information, read the current plan

@@ -25,7 +25,7 @@ describe('auth service – requestPasswordReset', () => {
       json: async () => ({
         message: 'If an account exists with that email, a password reset link has been sent.',
       }),
-    } as Response);
+    } as unknown as Response);
 
     await requestPasswordReset({ email: 'user@example.com' });
 
@@ -44,7 +44,7 @@ describe('auth service – requestPasswordReset', () => {
       ok: false,
       status: 400,
       json: async () => ({ message: 'Invalid email' }),
-    } as Response);
+    } as unknown as Response);
 
     await expect(requestPasswordReset({ email: 'invalid' })).rejects.toThrow(AuthError);
   });
@@ -64,7 +64,7 @@ describe('auth service – resetPassword', () => {
       ok: true,
       status: 200,
       json: async () => mockUser,
-    } as Response);
+    } as unknown as Response);
 
     const result = await resetPassword('valid-token', { password: 'new-password' });
 
@@ -84,7 +84,7 @@ describe('auth service – resetPassword', () => {
       ok: false,
       status: 404,
       json: async () => ({ message: 'Invalid or expired reset link' }),
-    } as Response);
+    } as unknown as Response);
 
     await expect(resetPassword('invalid-token', { password: 'new-password' })).rejects.toThrow(
       AuthError,

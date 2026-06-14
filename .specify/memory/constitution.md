@@ -118,7 +118,11 @@ first exported symbol, class, or function. One or two sentences describing the m
 3. **Tests before implementation**: Per Principle I, failing tests MUST exist before implementation.
 4. **Independent stories**: Each user story MUST be independently testable and releasable.
 5. **CI gate**: Linting, type-checking (`tsc --noEmit`), and all tests MUST pass before merging.
-6. **Constitution Check**: Every `plan.md` MUST include a Constitution Check section confirming
+6. **SonarCloud quality gate**: Every PR MUST pass the SonarCloud quality gate before merging.
+   Thresholds on new code: duplicated lines < 3 %, zero new bugs, zero new security hotspots.
+   Code smells and duplication findings MUST be resolved or explicitly accepted (with a
+   documented rationale) before the PR is approved.
+7. **Constitution Check**: Every `plan.md` MUST include a Constitution Check section confirming
    compliance with Principles I–III before the plan is approved.
 
 ## Governance
@@ -136,4 +140,4 @@ This constitution supersedes all other development practices and conventions for
 - **MINOR**: Addition of a new principle or materially expanded guidance.
 - **PATCH**: Clarifications, wording refinements, typo fixes.
 
-**Version**: 1.1.0 | **Ratified**: 2026-06-04 | **Last Amended**: 2026-06-14
+**Version**: 1.2.0 | **Ratified**: 2026-06-04 | **Last Amended**: 2026-06-14
