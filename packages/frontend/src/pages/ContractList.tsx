@@ -1,22 +1,31 @@
+import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Stack, Group, Title, Button, Alert, Center, Text, Paper } from '@mantine/core';
+import { Stack, Group, Title, Button, Center, Text, Paper } from '@mantine/core';
 import { useContracts, useDeleteContract } from '../services/contracts.js';
 import { ContractTable } from '../components/ContractTable.js';
 import { AnonymizationToggle } from '../components/AnonymizationToggle.js';
 import { ExportMenu } from '../components/ExportMenu.js';
 import { useAnonymization } from '../hooks/useAnonymization.js';
+import { showError } from '../lib/notifications.js';
 
 /**
  * Contract list page displaying all user contracts in a sortable table with anonymization
  * toggle, export, and import actions.
  */
 
+/**
+ * Renders the contract list page with delete and load error feedback as toast notifications.
+ */
 export function ContractList() {
   const { t } = useTranslation();
-  const { data, isLoading, isError, error } = useContracts();
-  const { mutate: deleteContract, error: deleteError } = useDeleteContract();
+  const { data, isLoading, isError } = useContracts();
+  const { mutate: deleteContract } = useDeleteContract();
   const { isAnonymized, toggleAnonymization, getDisplayName } = useAnonymization();
+
+  useEffect(() => {
+    if (isError) showError(t('contractList.loadError'));
+  }, [isError, t]);
 
   return (
     <Stack gap="lg">
@@ -34,25 +43,21 @@ export function ContractList() {
         </Group>
       </Group>
 
-      {deleteError && <Alert color="red">{t('contractList.deleteError')}</Alert>}
-
       {isLoading && (
         <Center py="xl">
           <Text c="dimmed">{t('common.loading')}</Text>
         </Center>
       )}
 
-      {isError && (
-        <Alert color="red">
-          {t('contractList.loadError')} {error instanceof Error ? error.message : ''}
-        </Alert>
-      )}
-
       {data && (
         <Paper withBorder>
           <ContractTable
             contracts={data}
-            onDelete={(id) => deleteContract(id)}
+            onDelete={(id) =>
+              deleteContract(id, {
+                onError: () => showError(t('contractList.deleteError')),
+              })
+            }
             isAnonymized={isAnonymized}
             getDisplayName={getDisplayName}
           />

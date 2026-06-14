@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { MantineProvider } from '@mantine/core';
+import { Notifications, notifications } from '@mantine/notifications';
 import { createElement } from 'react';
 import type { ReactNode } from 'react';
 import { ContractEdit } from '../../src/pages/ContractEdit.js';
@@ -42,6 +43,7 @@ function createWrapper(initialPath: string) {
     createElement(
       MantineProvider,
       {},
+      createElement(Notifications),
       createElement(
         QueryClientProvider,
         { client: queryClient },
@@ -65,6 +67,7 @@ function createWrapper(initialPath: string) {
 describe('ContractEdit', () => {
   beforeEach(() => {
     vi.stubGlobal('fetch', vi.fn());
+    notifications.clean();
   });
 
   afterEach(() => {
@@ -173,5 +176,25 @@ describe('ContractEdit', () => {
     await user.click(screen.getByRole('button', { name: /cancel/i }));
 
     await waitFor(() => expect(screen.getByText('contract list')).toBeInTheDocument());
+  });
+
+  it('shows an error toast when the update mutation fails', async () => {
+    vi.mocked(fetch)
+      .mockResolvedValueOnce({ ok: true, json: async () => [sampleContract] } as Response)
+      .mockResolvedValueOnce({
+        ok: false,
+        status: 500,
+        json: async () => ({ message: 'Server error' }),
+      } as Response);
+
+    const user = userEvent.setup();
+    render(<ContractEdit />, {
+      wrapper: createWrapper(`/contracts/${sampleContract.id}/edit`),
+    });
+
+    await waitFor(() => expect(screen.getByDisplayValue('Netflix')).toBeInTheDocument());
+    await user.click(screen.getByRole('button', { name: /save changes/i }));
+
+    expect(await screen.findByRole('alert')).toBeInTheDocument();
   });
 });

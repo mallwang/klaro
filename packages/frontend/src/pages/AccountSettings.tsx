@@ -15,6 +15,7 @@ import { ACCOUNTS_QUERY_KEY } from '../hooks/useAccounts.js';
 import { useCurrentUser, CURRENT_USER_QUERY_KEY } from '../hooks/useAuth.js';
 import { DeleteAccountModal } from '../components/DeleteAccountModal.js';
 import { useContracts } from '../services/contracts.js';
+import { showSuccess, showError } from '../lib/notifications.js';
 
 /**
  * Account settings page for managing display name, email changes, password updates, and
@@ -46,6 +47,9 @@ export function AccountSettings() {
   // ── Delete Account modal ─────────────────────────────────────────────────────
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
+  /**
+   * Clears the query cache and navigates to sign-in after successful account deletion.
+   */
   function handleDeleted() {
     queryClient.clear();
     void navigate('/sign-in');
@@ -58,9 +62,16 @@ export function AccountSettings() {
     mutationFn: (name: string) => updateDisplayName(name),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: CURRENT_USER_QUERY_KEY });
+      showSuccess(t('accountSettings.displayNameSuccess'));
+    },
+    onError: () => {
+      showError(t('accountSettings.displayNameError'));
     },
   });
 
+  /**
+   * Submits the display name form, trimming whitespace before mutating.
+   */
   function handleDisplayNameSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!displayName.trim()) return;
@@ -79,21 +90,31 @@ export function AccountSettings() {
     mutationFn: (email: string) => requestEmailChange(email),
     onSuccess: () => {
       setNewEmail('');
+      showSuccess(t('accountSettings.emailChangeSent'));
+    },
+    onError: (error) => {
+      showError(resolveEmailChangeError(error));
     },
   });
 
+  /**
+   * Submits the email change form, trimming whitespace before mutating.
+   */
   function handleEmailChangeSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!newEmail.trim()) return;
     emailChangeMutation.mutate(newEmail.trim());
   }
 
-  function emailChangeErrorMessage(): string | null {
-    if (!emailChangeMutation.error) return null;
-    if (
-      emailChangeMutation.error instanceof AuthError &&
-      emailChangeMutation.error.status === 409
-    ) {
+  /**
+   * Returns a localised error message for an email change error, distinguishing
+   * the 409 conflict case from generic errors.
+   *
+   * @param error - the error thrown by the mutation
+   * @returns localised error string
+   */
+  function resolveEmailChangeError(error: unknown): string {
+    if (error instanceof AuthError && error.status === 409) {
       return t('accountSettings.emailChangeConflict');
     }
     return t('accountSettings.emailChangeError');
@@ -102,34 +123,40 @@ export function AccountSettings() {
   // ── Change Password ─────────────────────────────────────────────────────────
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
-  const [passwordSuccess, setPasswordSuccess] = useState(false);
 
-  const {
-    mutate: doChangePassword,
-    isPending: isChangingPassword,
-    error: passwordError,
-  } = useMutation({
+  const { mutate: doChangePassword, isPending: isChangingPassword } = useMutation({
     mutationFn: changePassword,
   });
 
+  /**
+   * Submits the password change form and shows toast feedback on completion.
+   */
   function handlePasswordSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setPasswordSuccess(false);
     doChangePassword(
       { currentPassword, newPassword },
       {
         onSuccess: () => {
           setCurrentPassword('');
           setNewPassword('');
-          setPasswordSuccess(true);
+          showSuccess(t('accountSettings.success'));
+        },
+        onError: (err) => {
+          showError(resolvePasswordError(err));
         },
       },
     );
   }
 
-  function passwordErrorMessage(): string | null {
-    if (!passwordError) return null;
-    if (passwordError instanceof AuthError && passwordError.status === 401) {
+  /**
+   * Returns a localised error message for a password change error, distinguishing
+   * the 401 wrong-current-password case from generic errors.
+   *
+   * @param error - the error thrown by the mutation
+   * @returns localised error string
+   */
+  function resolvePasswordError(error: unknown): string {
+    if (error instanceof AuthError && error.status === 401) {
       return t('accountSettings.errorInvalidCurrent');
     }
     return t('accountSettings.errorGeneric');
@@ -144,16 +171,6 @@ export function AccountSettings() {
         <Paper withBorder p="lg">
           <form onSubmit={handleDisplayNameSubmit}>
             <Stack gap="md">
-              {displayNameMutation.isError && (
-                <Alert role="alert" color="red">
-                  {t('accountSettings.displayNameError')}
-                </Alert>
-              )}
-              {displayNameMutation.isSuccess && (
-                <Alert role="status" color="green">
-                  {t('accountSettings.displayNameSuccess')}
-                </Alert>
-              )}
               <TextInput
                 id="display-name"
                 label={t('accountSettings.displayNameLabel')}
@@ -185,16 +202,6 @@ export function AccountSettings() {
               </Alert>
             )}
 
-            {emailChangeMutation.isSuccess && (
-              <Alert color="green">{t('accountSettings.emailChangeSent')}</Alert>
-            )}
-
-            {emailChangeErrorMessage() && (
-              <Alert role="alert" color="red">
-                {emailChangeErrorMessage()}
-              </Alert>
-            )}
-
             <form onSubmit={handleEmailChangeSubmit}>
               <Stack gap="md">
                 <TextInput
@@ -219,16 +226,6 @@ export function AccountSettings() {
               <Text size="sm" c="dimmed">
                 {t('accountSettings.subtitle')}
               </Text>
-              {passwordErrorMessage() && (
-                <Alert role="alert" color="red">
-                  {passwordErrorMessage()}
-                </Alert>
-              )}
-              {passwordSuccess && !passwordError && (
-                <Alert role="status" color="green">
-                  {t('accountSettings.success')}
-                </Alert>
-              )}
 
               <PasswordInput
                 id="current-password"

@@ -19,6 +19,7 @@ A personal web app for tracking contracts — subscriptions, insurance, housing,
 - **Email notifications** — transactional emails for key events: email-change verification, email-change confirmation, and password-change notification; administrators can send a test email from the admin panel to verify the SMTP connection
 - **Delete account** — users can permanently delete their own account and all associated contracts via a "Danger Zone" section on the account settings page; a modal prompts for an optional JSON export before confirming; sole administrators are blocked from deleting until a second admin exists
 - **Forgot password** — users can request a password reset link via email; the link expires after 1 hour and is single-use; the flow prevents email enumeration by returning a generic success message regardless of email validity
+- **Toast notifications** — success and error feedback on authenticated pages (account settings, admin panel, contract management) appears as auto-dismissing toast notifications in the top-right corner; public pages retain inline feedback
 
 For a full walkthrough of the UI, see [docs/user-guide.md](docs/user-guide.md).
 

@@ -3,18 +3,24 @@ import { useTranslation } from 'react-i18next';
 import { Center, Text, Alert, Stack, Title, Paper } from '@mantine/core';
 import { useContracts, useUpdateContract } from '../services/contracts.js';
 import { ContractForm } from '../components/ContractForm.js';
+import { showError } from '../lib/notifications.js';
 
 /**
  * Page for editing an existing contract. Loads the contract by ID from the URL params
  * and pre-fills the ContractForm for updates.
  */
 
+/**
+ * Renders the contract edit page with toast error feedback on submission failure.
+ * The page-level load error remains as an inline Alert since the form cannot function
+ * without data.
+ */
 export function ContractEdit() {
   const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { data: contracts, isLoading, isError } = useContracts();
-  const { mutate: updateContract, isPending, error } = useUpdateContract();
+  const { mutate: updateContract, isPending } = useUpdateContract();
 
   if (isLoading) {
     return (
@@ -71,13 +77,15 @@ export function ContractEdit() {
           onSubmit={(data) =>
             updateContract(
               { id: contract.id, body: data },
-              { onSuccess: () => navigate('/contracts') },
+              {
+                onSuccess: () => navigate('/contracts'),
+                onError: (err) => showError(err.message),
+              },
             )
           }
           onCancel={() => navigate('/contracts')}
           submitLabel={t('contractEdit.saveChanges')}
           isPending={isPending}
-          error={error instanceof Error ? error.message : null}
         />
       </Paper>
     </Stack>

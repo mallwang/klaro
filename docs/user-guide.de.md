@@ -40,6 +40,10 @@ Die App hat eine dauerhaft sichtbare Navigationsleiste auf der linken Seite. Sie
 
 Die Schaltfläche **Abmelden** befindet sich am unteren Rand der Seitenleiste. Dein Anzeigename und deine Rolle (Administrator / Mitglied) werden direkt darüber angezeigt.
 
+### Rückmeldungen
+
+Erfolgs- und Fehlermeldungen auf angemeldeten Seiten (Kontoeinstellungen, Verwaltung, Vertragsverwaltung) erscheinen als **Toast-Benachrichtigungen** in der oberen rechten Ecke des Bildschirms. Jede Benachrichtigung wird nach 5 Sekunden automatisch ausgeblendet. Öffentliche Seiten (Anmeldung, Passwort zurücksetzen, Einladungsannahme) zeigen Rückmeldungen weiterhin direkt auf der Seite an.
+
 ---
 
 ## 2. Dashboard

@@ -3,6 +3,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { MantineProvider } from '@mantine/core';
+import { Notifications, notifications } from '@mantine/notifications';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import type { SessionUser } from '@pcm/shared';
 
@@ -64,6 +65,7 @@ function renderAccountSettings(user: SessionUser | null = testUser) {
     ...render(
       <QueryClientProvider client={queryClient}>
         <MantineProvider>
+          <Notifications />
           <MemoryRouter>
             <AccountSettings />
           </MemoryRouter>
@@ -78,6 +80,7 @@ function renderAccountSettings(user: SessionUser | null = testUser) {
 describe('AccountSettings – Display Name section', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    notifications.clean();
     vi.mocked(profileService.getPendingEmailChange).mockResolvedValue({ pendingEmail: null });
   });
 
@@ -100,7 +103,7 @@ describe('AccountSettings – Display Name section', () => {
     );
   });
 
-  it('shows a success alert after saving display name', async () => {
+  it('shows a success toast after saving display name', async () => {
     vi.mocked(profileService.updateDisplayName).mockResolvedValue(undefined);
     const user = userEvent.setup();
     renderAccountSettings();
@@ -109,6 +112,20 @@ describe('AccountSettings – Display Name section', () => {
     await user.type(input, 'New Name');
     await user.click(screen.getByRole('button', { name: /save display name/i }));
     expect(await screen.findByText('Display name updated.')).toBeInTheDocument();
+    expect(screen.queryByRole('status')).not.toBeInTheDocument();
+  });
+
+  it('shows an error toast when updateDisplayName fails', async () => {
+    vi.mocked(profileService.updateDisplayName).mockRejectedValue(new Error('network'));
+    const user = userEvent.setup();
+    renderAccountSettings();
+    const input = screen.getByRole('textbox', { name: /display name/i });
+    await user.clear(input);
+    await user.type(input, 'Bad Name');
+    await user.click(screen.getByRole('button', { name: /save display name/i }));
+    expect(
+      await screen.findByText('Failed to update display name. Please try again.'),
+    ).toBeInTheDocument();
   });
 
   it('does not call updateDisplayName when display name is empty', async () => {
@@ -127,6 +144,7 @@ describe('AccountSettings – Display Name section', () => {
 describe('AccountSettings – Email Address section', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    notifications.clean();
     vi.mocked(profileService.updateDisplayName).mockResolvedValue(undefined);
   });
 
@@ -144,7 +162,7 @@ describe('AccountSettings – Email Address section', () => {
     await waitFor(() => expect(screen.getByText(/new@example\.com/i)).toBeInTheDocument());
   });
 
-  it('calls requestEmailChange and shows confirmation on success', async () => {
+  it('calls requestEmailChange and shows success toast on success', async () => {
     vi.mocked(profileService.getPendingEmailChange).mockResolvedValue({ pendingEmail: null });
     vi.mocked(profileService.requestEmailChange).mockResolvedValue(undefined);
     const user = userEvent.setup();
@@ -160,7 +178,7 @@ describe('AccountSettings – Email Address section', () => {
     expect(await screen.findByText(/check your inbox/i)).toBeInTheDocument();
   });
 
-  it('shows a conflict error when requestEmailChange throws a 409', async () => {
+  it('shows a conflict error toast when requestEmailChange throws a 409', async () => {
     vi.mocked(profileService.getPendingEmailChange).mockResolvedValue({ pendingEmail: null });
     const { AuthError } = await import('../../src/services/auth.js');
     vi.mocked(profileService.requestEmailChange).mockRejectedValue(new AuthError(409, 'conflict'));
@@ -175,11 +193,44 @@ describe('AccountSettings – Email Address section', () => {
   });
 });
 
+// ─── Password section ─────────────────────────────────────────────────────────
+
+describe('AccountSettings – Password section', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    notifications.clean();
+    vi.mocked(profileService.getPendingEmailChange).mockResolvedValue({ pendingEmail: null });
+  });
+
+  it('shows a success toast after changing password', async () => {
+    const { changePassword } = await import('../../src/services/auth.js');
+    vi.mocked(changePassword).mockResolvedValue(undefined);
+    const user = userEvent.setup();
+    renderAccountSettings();
+    await user.type(screen.getByLabelText(/current password/i), 'old-pass');
+    await user.type(screen.getByLabelText(/new password/i), 'new-pass-long');
+    await user.click(screen.getByRole('button', { name: /change password/i }));
+    expect(await screen.findByText('Your password has been changed.')).toBeInTheDocument();
+  });
+
+  it('shows an error toast when password change fails with 401', async () => {
+    const { changePassword, AuthError } = await import('../../src/services/auth.js');
+    vi.mocked(changePassword).mockRejectedValue(new AuthError(401, 'wrong'));
+    const user = userEvent.setup();
+    renderAccountSettings();
+    await user.type(screen.getByLabelText(/current password/i), 'wrong-pass');
+    await user.type(screen.getByLabelText(/new password/i), 'new-pass-long');
+    await user.click(screen.getByRole('button', { name: /change password/i }));
+    expect(await screen.findByText('The current password is incorrect.')).toBeInTheDocument();
+  });
+});
+
 // ─── Danger Zone section ──────────────────────────────────────────────────────
 
 describe('AccountSettings – Danger Zone section', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    notifications.clean();
     vi.mocked(profileService.getPendingEmailChange).mockResolvedValue({ pendingEmail: null });
   });
 

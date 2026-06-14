@@ -19,7 +19,7 @@
 
 **Purpose**: Add the new package dependency before any code is written.
 
-- [ ] T001 Add `@mantine/notifications: "^7.17.0"` to `packages/frontend/package.json` dependencies and run `pnpm install` from repo root
+- [X] T001 Add `@mantine/notifications: "^7.17.0"` to `packages/frontend/package.json` dependencies and run `pnpm install` from repo root
 
 **Checkpoint**: `node_modules/@mantine/notifications` exists in `packages/frontend`
 
@@ -35,13 +35,13 @@
 
 ### Tests for US4 ⚠️ Write FIRST — ensure they FAIL before T004/T005
 
-- [ ] T002 Write failing unit tests for `showSuccess` and `showError` in `packages/frontend/tests/unit/notifications.test.ts` — assert each call renders the notification message string in the DOM (wrap with `<MantineProvider><Notifications /></MantineProvider>`)
-- [ ] T003 [P] Create shared test helper `packages/frontend/tests/unit/test-utils.tsx` exporting a `renderWithNotifications(ui)` function that wraps the given element in `<QueryClientProvider><MantineProvider><Notifications />{ui}</MantineProvider></QueryClientProvider>` with a fresh `QueryClient`; add `notifications.clean()` call in the exported `afterEach` helper
+- [X] T002 Write failing unit tests for `showSuccess` and `showError` in `packages/frontend/tests/unit/notifications.test.ts` — assert each call renders the notification message string in the DOM (wrap with `<MantineProvider><Notifications /></MantineProvider>`)
+- [X] T003 [P] Create shared test helper `packages/frontend/tests/unit/test-utils.tsx` exporting a `renderWithNotifications(ui)` function that wraps the given element in `<QueryClientProvider><MantineProvider><Notifications />{ui}</MantineProvider></QueryClientProvider>` with a fresh `QueryClient`; add `notifications.clean()` call in the exported `afterEach` helper
 
 ### Implementation for US4
 
-- [ ] T004 Create `packages/frontend/src/lib/notifications.ts` with file-level JSDoc, and two typed exported functions `showSuccess(message: string): void` and `showError(message: string): void` each calling `notifications.show()` from `@mantine/notifications` with the correct `color` and `autoClose: 5000`
-- [ ] T005 Add `import { Notifications } from '@mantine/notifications'` to `packages/frontend/src/main.tsx` and render `<Notifications position="top-right" />` as the first child inside `<MantineProvider>`, before `<QueryClientProvider>`; add file-level JSDoc block update if it changes
+- [X] T004 Create `packages/frontend/src/lib/notifications.ts` with file-level JSDoc, and two typed exported functions `showSuccess(message: string): void` and `showError(message: string): void` each calling `notifications.show()` from `@mantine/notifications` with the correct `color` and `autoClose: 5000`
+- [X] T005 Add `import { Notifications } from '@mantine/notifications'` to `packages/frontend/src/main.tsx` and render `<Notifications position="top-right" />` as the first child inside `<MantineProvider>`, before `<QueryClientProvider>`; add file-level JSDoc block update if it changes
 
 **Checkpoint**: `T002` tests now pass. `main.tsx` type-checks. Ready for migration phases.
 
@@ -55,7 +55,7 @@
 
 ### Tests for US1+US2 — AccountSettings ⚠️ Write FIRST — ensure they FAIL before T007–T009
 
-- [ ] T006 Update `packages/frontend/tests/unit/AccountSettings.test.tsx`:
+- [X] T006 Update `packages/frontend/tests/unit/AccountSettings.test.tsx`:
   - Replace `renderAccountSettings` wrapper to include `<Notifications />` (or use `renderWithNotifications` from T003)
   - Add `notifications.clean()` in `beforeEach`/`afterEach`
   - Change `'shows a success alert after saving display name'` to assert the toast text appears via `screen.findByText` and assert no `role="status"` Alert inside the form
@@ -67,9 +67,9 @@
 
 ### Implementation for US1+US2 — AccountSettings
 
-- [ ] T007 [US1] [US2] Migrate display name feedback in `packages/frontend/src/pages/AccountSettings.tsx`: remove inline Alert JSX for display name success and error; add `showSuccess(t('accountSettings.displayNameSuccess'))` in `displayNameMutation.onSuccess` and `showError(t('accountSettings.displayNameError'))` in `displayNameMutation.onError`; update JSDoc on changed functions
-- [ ] T008 [US1] [US2] Migrate email change feedback in `packages/frontend/src/pages/AccountSettings.tsx`: remove `emailChangeMutation.isSuccess` Alert and `emailChangeErrorMessage()` Alert JSX; add `showSuccess(t('accountSettings.emailChangeSent'))` in `emailChangeMutation.onSuccess`; add `showError(emailChangeErrorMessage() ?? t('accountSettings.emailChangeError'))` in `emailChangeMutation.onError`; keep the blue pending-email `<Alert color="blue">` intact; update JSDoc
-- [ ] T009 [US1] [US2] Migrate password change feedback in `packages/frontend/src/pages/AccountSettings.tsx`: remove `passwordSuccess` state and both Alert JSX blocks; add `showSuccess(t('accountSettings.success'))` in the `onSuccess` callback of `doChangePassword`; add `showError(passwordErrorMessage() ?? t('accountSettings.errorGeneric'))` in the `onError` callback; remove `passwordSuccess` state variable entirely; update JSDoc
+- [X] T007 [US1] [US2] Migrate display name feedback in `packages/frontend/src/pages/AccountSettings.tsx`: remove inline Alert JSX for display name success and error; add `showSuccess(t('accountSettings.displayNameSuccess'))` in `displayNameMutation.onSuccess` and `showError(t('accountSettings.displayNameError'))` in `displayNameMutation.onError`; update JSDoc on changed functions
+- [X] T008 [US1] [US2] Migrate email change feedback in `packages/frontend/src/pages/AccountSettings.tsx`: remove `emailChangeMutation.isSuccess` Alert and `emailChangeErrorMessage()` Alert JSX; add `showSuccess(t('accountSettings.emailChangeSent'))` in `emailChangeMutation.onSuccess`; add `showError(emailChangeErrorMessage() ?? t('accountSettings.emailChangeError'))` in `emailChangeMutation.onError`; keep the blue pending-email `<Alert color="blue">` intact; update JSDoc
+- [X] T009 [US1] [US2] Migrate password change feedback in `packages/frontend/src/pages/AccountSettings.tsx`: remove `passwordSuccess` state and both Alert JSX blocks; add `showSuccess(t('accountSettings.success'))` in the `onSuccess` callback of `doChangePassword`; add `showError(passwordErrorMessage() ?? t('accountSettings.errorGeneric'))` in the `onError` callback; remove `passwordSuccess` state variable entirely; update JSDoc
 
 **Checkpoint**: T006 tests now pass. No inline success/error Alert in AccountSettings. Blue pending-email notice still renders inline.
 
@@ -83,7 +83,7 @@
 
 ### Tests for US1+US2 — AccountsAdmin ⚠️ Write FIRST — ensure they FAIL before T011–T013
 
-- [ ] T010 Update `packages/frontend/tests/unit/AccountsAdmin.test.tsx`:
+- [X] T010 Update `packages/frontend/tests/unit/AccountsAdmin.test.tsx`:
   - Update render wrapper to include `<Notifications />` (or use `renderWithNotifications`)
   - Add `notifications.clean()` in `beforeEach`
   - Update invite-success assertion to look for toast text instead of inline Alert
@@ -93,9 +93,9 @@
 
 ### Implementation for US1+US2 — AccountsAdmin
 
-- [ ] T011 [US1] [US2] Migrate `InviteForm` sub-component in `packages/frontend/src/pages/admin/AccountsAdmin.tsx`: remove `success` state and both Alert JSX blocks; add `showSuccess(t('accountsAdmin.inviteSuccess'))` call in `onSuccess` callback; replace `errorMessage()` Alert JSX with `showError(errorMessage() ?? t('accountsAdmin.inviteError'))` in `onError` callback; keep `errorMessage()` helper function for message resolution; update JSDoc
-- [ ] T012 [P] [US1] [US2] Migrate `TestEmailForm` sub-component in `packages/frontend/src/pages/admin/AccountsAdmin.tsx`: remove `success` and `error` states and both Alert JSX blocks; replace try/catch success/error paths with `showSuccess(t('accountsAdmin.testEmailSuccess'))` and `showError(errorMessage() ?? t('accountsAdmin.testEmailError'))`; update JSDoc
-- [ ] T013 [US1] [US2] Migrate account action errors in `packages/frontend/src/pages/admin/AccountsAdmin.tsx` (`AccountsAdmin` component): remove the combined `(archiveError || reactivateError || deleteError || roleError)` Alert block; add `onError` callbacks to each mutation hook (`useArchiveAccount`, `useReactivateAccount`, `useDeleteAccount`, `useChangeAccountRole`) calling `showError(actionErrorMessage(err) ?? t('accountsAdmin.actionError'))`; replace `isError` load Alert with a `useEffect(() => { if (isError) showError(t('accountsAdmin.loadError')); }, [isError])` pattern; update JSDoc
+- [X] T011 [US1] [US2] Migrate `InviteForm` sub-component in `packages/frontend/src/pages/admin/AccountsAdmin.tsx`: remove `success` state and both Alert JSX blocks; add `showSuccess(t('accountsAdmin.inviteSuccess'))` call in `onSuccess` callback; replace `errorMessage()` Alert JSX with `showError(errorMessage() ?? t('accountsAdmin.inviteError'))` in `onError` callback; keep `errorMessage()` helper function for message resolution; update JSDoc
+- [X] T012 [P] [US1] [US2] Migrate `TestEmailForm` sub-component in `packages/frontend/src/pages/admin/AccountsAdmin.tsx`: remove `success` and `error` states and both Alert JSX blocks; replace try/catch success/error paths with `showSuccess(t('accountsAdmin.testEmailSuccess'))` and `showError(errorMessage() ?? t('accountsAdmin.testEmailError'))`; update JSDoc
+- [X] T013 [US1] [US2] Migrate account action errors in `packages/frontend/src/pages/admin/AccountsAdmin.tsx` (`AccountsAdmin` component): remove the combined `(archiveError || reactivateError || deleteError || roleError)` Alert block; add `onError` callbacks to each mutation hook (`useArchiveAccount`, `useReactivateAccount`, `useDeleteAccount`, `useChangeAccountRole`) calling `showError(actionErrorMessage(err) ?? t('accountsAdmin.actionError'))`; replace `isError` load Alert with a `useEffect(() => { if (isError) showError(t('accountsAdmin.loadError')); }, [isError])` pattern; update JSDoc
 
 **Checkpoint**: T010 tests now pass. No inline success/error Alert in AccountsAdmin page.
 
@@ -109,7 +109,7 @@
 
 ### Tests for US1+US2 — ContractList ⚠️ Write FIRST — ensure they FAIL before T015
 
-- [ ] T014 Create `packages/frontend/tests/unit/ContractList.test.tsx` with tests:
+- [X] T014 Create `packages/frontend/tests/unit/ContractList.test.tsx` with tests:
   - Mock `useContracts` and `useDeleteContract` from `../../src/services/contracts.js`
   - Render with `<Notifications />` and `<MemoryRouter>`
   - Test: when `useDeleteContract` triggers `onError`, toast error text appears and no inline Alert is present
@@ -118,7 +118,7 @@
 
 ### Implementation for US1+US2 — ContractList
 
-- [ ] T015 [US1] [US2] Migrate error feedback in `packages/frontend/src/pages/ContractList.tsx`: remove `deleteError` inline Alert; add `onError` callback to `useDeleteContract()` calling `showError(t('contractList.deleteError'))`; remove `isError` load Alert and add `useEffect(() => { if (isError) showError(t('contractList.loadError')); }, [isError])` pattern; update JSDoc on `ContractList` function
+- [X] T015 [US1] [US2] Migrate error feedback in `packages/frontend/src/pages/ContractList.tsx`: remove `deleteError` inline Alert; add `onError` callback to `useDeleteContract()` calling `showError(t('contractList.deleteError'))`; remove `isError` load Alert and add `useEffect(() => { if (isError) showError(t('contractList.loadError')); }, [isError])` pattern; update JSDoc on `ContractList` function
 
 **Checkpoint**: T014 tests now pass. No inline error Alert in ContractList.
 
@@ -132,14 +132,14 @@
 
 ### Tests for US1+US2 — ContractForm/ContractEdit ⚠️ Write FIRST — ensure they FAIL before T018–T020
 
-- [ ] T016 Update `packages/frontend/tests/unit/ContractForm.test.tsx`: remove all test cases that assert on the `error` prop rendering an inline Alert (these test cases will become invalid once the prop is removed); confirm remaining tests still compile
-- [ ] T017 Update `packages/frontend/tests/unit/ContractEdit.test.tsx`: update render wrapper to include `<Notifications />`; add a test that when the update mutation fails, a toast error message appears and no inline Alert is present inside the form; confirm test FAILS before proceeding
+- [X] T016 Update `packages/frontend/tests/unit/ContractForm.test.tsx`: remove all test cases that assert on the `error` prop rendering an inline Alert (these test cases will become invalid once the prop is removed); confirm remaining tests still compile
+- [X] T017 Update `packages/frontend/tests/unit/ContractEdit.test.tsx`: update render wrapper to include `<Notifications />`; add a test that when the update mutation fails, a toast error message appears and no inline Alert is present inside the form; confirm test FAILS before proceeding
 
 ### Implementation for US1+US2 — ContractForm / ContractNew / ContractEdit
 
-- [ ] T018 [US1] [US2] Remove the `error` prop from `ContractForm` in `packages/frontend/src/components/ContractForm.tsx`: delete `error?: string | null` from props interface; remove `error` parameter from function signature; remove `(validationError ?? error)` Alert JSX block (leave the `validationError`-only case if it still applies, otherwise remove the whole block); update JSDoc on the `ContractForm` function
-- [ ] T019 [P] [US1] [US2] Update `packages/frontend/src/pages/ContractNew.tsx`: remove `error` state derivation from mutation; remove `error={...}` prop on `<ContractForm>`; add `onError: (err: Error) => showError(err.message)` to the `createContract` mutation call options; import `showError` from `../lib/notifications.js`; update JSDoc
-- [ ] T020 [P] [US1] [US2] Update `packages/frontend/src/pages/ContractEdit.tsx`: remove `error={error instanceof Error ? error.message : null}` prop on `<ContractForm>`; add `onError: (err: Error) => showError(err.message)` to the `updateContract` mutation call options; import `showError` from `../lib/notifications.js`; keep the existing inline `isError` load Alert (it renders the whole page — appropriate since the page cannot function without data); update JSDoc
+- [X] T018 [US1] [US2] Remove the `error` prop from `ContractForm` in `packages/frontend/src/components/ContractForm.tsx`: delete `error?: string | null` from props interface; remove `error` parameter from function signature; remove `(validationError ?? error)` Alert JSX block (leave the `validationError`-only case if it still applies, otherwise remove the whole block); update JSDoc on the `ContractForm` function
+- [X] T019 [P] [US1] [US2] Update `packages/frontend/src/pages/ContractNew.tsx`: remove `error` state derivation from mutation; remove `error={...}` prop on `<ContractForm>`; add `onError: (err: Error) => showError(err.message)` to the `createContract` mutation call options; import `showError` from `../lib/notifications.js`; update JSDoc
+- [X] T020 [P] [US1] [US2] Update `packages/frontend/src/pages/ContractEdit.tsx`: remove `error={error instanceof Error ? error.message : null}` prop on `<ContractForm>`; add `onError: (err: Error) => showError(err.message)` to the `updateContract` mutation call options; import `showError` from `../lib/notifications.js`; keep the existing inline `isError` load Alert (it renders the whole page — appropriate since the page cannot function without data); update JSDoc
 
 **Checkpoint**: T016/T017 tests now pass. ContractForm has no `error` prop. Submit errors show as toasts.
 
@@ -153,11 +153,11 @@
 
 ### Tests for US1+US2 — DeleteAccountModal ⚠️ Write FIRST — ensure they FAIL before T022
 
-- [ ] T021 Update `packages/frontend/tests/unit/DeleteAccountModal.test.tsx`: update render wrapper to include `<Notifications />`; update the test asserting on `deleteMutation.isError` Alert to instead assert toast error text appears and no `role="alert"` Alert is present; confirm test FAILS before proceeding; also add assertion that the sole-admin orange Alert still renders when `isSoleAdmin={true}`
+- [X] T021 Update `packages/frontend/tests/unit/DeleteAccountModal.test.tsx`: update render wrapper to include `<Notifications />`; update the test asserting on `deleteMutation.isError` Alert to instead assert toast error text appears and no `role="alert"` Alert is present; confirm test FAILS before proceeding; also add assertion that the sole-admin orange Alert still renders when `isSoleAdmin={true}`
 
 ### Implementation for US1+US2 — DeleteAccountModal
 
-- [ ] T022 [US1] [US2] Migrate delete error feedback in `packages/frontend/src/components/DeleteAccountModal.tsx`: remove `deleteMutation.isError` Alert JSX block; add `onError: () => showError(t('deleteModal.deleteError'))` to `useMutation` options; import `showError` from `../lib/notifications.js`; keep the `isSoleAdmin` orange Alert intact; update JSDoc on `DeleteAccountModal`
+- [X] T022 [US1] [US2] Migrate delete error feedback in `packages/frontend/src/components/DeleteAccountModal.tsx`: remove `deleteMutation.isError` Alert JSX block; add `onError: () => showError(t('deleteModal.deleteError'))` to `useMutation` options; import `showError` from `../lib/notifications.js`; keep the `isSoleAdmin` orange Alert intact; update JSDoc on `DeleteAccountModal`
 
 **Checkpoint**: T021 tests now pass. Delete error shows as toast. Sole-admin warning still inline.
 
@@ -169,9 +169,9 @@
 
 **Independent Test**: Visit `/forgot-password`, submit — inline confirmation text appears; no toast element in DOM.
 
-- [ ] T023 [P] [US3] Verify `packages/frontend/tests/unit/pages/ForgotPassword.test.tsx`: ensure existing inline feedback assertions still pass without adding `<Notifications />`; add an assertion that no element with `data-notifications-wrapper` attribute exists in the rendered output; run test and confirm it passes unchanged
-- [ ] T024 [P] [US3] Verify `packages/frontend/tests/unit/pages/ResetPassword.test.tsx`: same as T023 — inline feedback assertions pass; no toast element present; run test and confirm it passes unchanged
-- [ ] T025 [P] [US3] Inspect `packages/frontend/src/pages/AcceptInvitation.tsx`, `EmailVerifyConfirm.tsx`, and `SignIn.tsx` to confirm no `showSuccess`/`showError` imports were accidentally introduced during migration; confirm no import of `notifications.ts` exists in these files
+- [X] T023 [P] [US3] Verify `packages/frontend/tests/unit/pages/ForgotPassword.test.tsx`: ensure existing inline feedback assertions still pass without adding `<Notifications />`; add an assertion that no element with `data-notifications-wrapper` attribute exists in the rendered output; run test and confirm it passes unchanged
+- [X] T024 [P] [US3] Verify `packages/frontend/tests/unit/pages/ResetPassword.test.tsx`: same as T023 — inline feedback assertions pass; no toast element present; run test and confirm it passes unchanged
+- [X] T025 [P] [US3] Inspect `packages/frontend/src/pages/AcceptInvitation.tsx`, `EmailVerifyConfirm.tsx`, and `SignIn.tsx` to confirm no `showSuccess`/`showError` imports were accidentally introduced during migration; confirm no import of `notifications.ts` exists in these files
 
 **Checkpoint**: All public-page tests green. No notification imports in public pages.
 
@@ -179,11 +179,11 @@
 
 ## Phase 9: Polish & Cross-Cutting Concerns
 
-- [ ] T026 Run `pnpm --filter @pcm/frontend build` (TypeScript strict check + Vite build) and fix any type errors introduced by the `error` prop removal or new imports
-- [ ] T027 Run full unit test suite `pnpm --filter @pcm/frontend test` and ensure all tests pass (zero failures, zero skipped)
-- [ ] T028 [P] Update `docs/user-guide.md` and `docs/user-guide.de.md` to note that success and error messages now appear as toast notifications in the top-right corner (brief mention under UX/Feedback section)
-- [ ] T029 [P] Update `README.md` and `README.de.md` to reflect the global notification system if user-facing feature summary sections exist
-- [ ] T030 Run quickstart.md validation scenarios manually (scenarios 1–11) and confirm all pass
+- [X] T026 Run `pnpm --filter @pcm/frontend build` (TypeScript strict check + Vite build) and fix any type errors introduced by the `error` prop removal or new imports
+- [X] T027 Run full unit test suite `pnpm --filter @pcm/frontend test` and ensure all tests pass (zero failures, zero skipped)
+- [X] T028 [P] Update `docs/user-guide.md` and `docs/user-guide.de.md` to note that success and error messages now appear as toast notifications in the top-right corner (brief mention under UX/Feedback section)
+- [X] T029 [P] Update `README.md` and `README.de.md` to reflect the global notification system if user-facing feature summary sections exist
+- [X] T030 Run quickstart.md validation scenarios manually (scenarios 1–11) and confirm all pass
 
 ---
 
