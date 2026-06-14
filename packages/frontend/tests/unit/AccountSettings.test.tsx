@@ -1,0 +1,159 @@
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { MemoryRouter } from 'react-router-dom';
+import { MantineProvider } from '@mantine/core';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import type { SessionUser } from '@pcm/shared';
+
+vi.mock('../../src/hooks/useAuth.js', () => ({
+  useCurrentUser: vi.fn(),
+  CURRENT_USER_QUERY_KEY: ['auth', 'me'],
+}));
+
+vi.mock('../../src/services/profile.js', () => ({
+  updateDisplayName: vi.fn(),
+  requestEmailChange: vi.fn(),
+  getPendingEmailChange: vi.fn(),
+}));
+
+vi.mock('../../src/services/auth.js', () => ({
+  changePassword: vi.fn(),
+  AuthError: class AuthError extends Error {
+    status: number;
+    constructor(status: number, message: string) {
+      super(message);
+      this.status = status;
+    }
+  },
+}));
+
+import { useCurrentUser } from '../../src/hooks/useAuth.js';
+import * as profileService from '../../src/services/profile.js';
+import { AccountSettings } from '../../src/pages/AccountSettings.js';
+
+const testUser: SessionUser = {
+  id: 'user-1',
+  displayName: 'Jane Smith',
+  email: 'jane@example.com',
+  role: 'MEMBER',
+};
+
+function renderAccountSettings(user: SessionUser | null = testUser) {
+  vi.mocked(useCurrentUser).mockReturnValue({ data: user } as ReturnType<typeof useCurrentUser>);
+  const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+  return {
+    queryClient,
+    ...render(
+      <QueryClientProvider client={queryClient}>
+        <MantineProvider>
+          <MemoryRouter>
+            <AccountSettings />
+          </MemoryRouter>
+        </MantineProvider>
+      </QueryClientProvider>,
+    ),
+  };
+}
+
+// ─── US1: Display Name section ────────────────────────────────────────────────
+
+describe('AccountSettings – Display Name section', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.mocked(profileService.getPendingEmailChange).mockResolvedValue({ pendingEmail: null });
+  });
+
+  it('renders the display name input pre-filled with the current user name', () => {
+    renderAccountSettings();
+    const input = screen.getByRole('textbox', { name: /display name/i });
+    expect(input).toHaveValue('Jane Smith');
+  });
+
+  it('calls updateDisplayName with the new name on submit', async () => {
+    vi.mocked(profileService.updateDisplayName).mockResolvedValue(undefined);
+    const user = userEvent.setup();
+    renderAccountSettings();
+    const input = screen.getByRole('textbox', { name: /display name/i });
+    await user.clear(input);
+    await user.type(input, 'New Name');
+    await user.click(screen.getByRole('button', { name: /save display name/i }));
+    await waitFor(() =>
+      expect(vi.mocked(profileService.updateDisplayName).mock.calls[0]?.[0]).toBe('New Name'),
+    );
+  });
+
+  it('shows a success alert after saving display name', async () => {
+    vi.mocked(profileService.updateDisplayName).mockResolvedValue(undefined);
+    const user = userEvent.setup();
+    renderAccountSettings();
+    const input = screen.getByRole('textbox', { name: /display name/i });
+    await user.clear(input);
+    await user.type(input, 'New Name');
+    await user.click(screen.getByRole('button', { name: /save display name/i }));
+    expect(await screen.findByText('Display name updated.')).toBeInTheDocument();
+  });
+
+  it('does not call updateDisplayName when display name is empty', async () => {
+    const user = userEvent.setup();
+    renderAccountSettings();
+    const input = screen.getByRole('textbox', { name: /display name/i });
+    await user.clear(input);
+    const btn = screen.getByRole('button', { name: /save display name/i });
+    await user.click(btn);
+    expect(profileService.updateDisplayName).not.toHaveBeenCalled();
+  });
+});
+
+// ─── US3: Email Address section ───────────────────────────────────────────────
+
+describe('AccountSettings – Email Address section', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.mocked(profileService.updateDisplayName).mockResolvedValue(undefined);
+  });
+
+  it('renders the current email as read-only text', () => {
+    vi.mocked(profileService.getPendingEmailChange).mockResolvedValue({ pendingEmail: null });
+    renderAccountSettings();
+    expect(screen.getByText('jane@example.com')).toBeInTheDocument();
+  });
+
+  it('renders a pending verification notice when pending email is present', async () => {
+    vi.mocked(profileService.getPendingEmailChange).mockResolvedValue({
+      pendingEmail: 'new@example.com',
+    });
+    renderAccountSettings();
+    await waitFor(() => expect(screen.getByText(/new@example\.com/i)).toBeInTheDocument());
+  });
+
+  it('calls requestEmailChange and shows confirmation on success', async () => {
+    vi.mocked(profileService.getPendingEmailChange).mockResolvedValue({ pendingEmail: null });
+    vi.mocked(profileService.requestEmailChange).mockResolvedValue(undefined);
+    const user = userEvent.setup();
+    renderAccountSettings();
+    const input = screen.getByRole('textbox', { name: /new email address/i });
+    await user.type(input, 'new@example.com');
+    await user.click(screen.getByRole('button', { name: /request email change/i }));
+    await waitFor(() =>
+      expect(vi.mocked(profileService.requestEmailChange).mock.calls[0]?.[0]).toBe(
+        'new@example.com',
+      ),
+    );
+    expect(await screen.findByText(/check your inbox/i)).toBeInTheDocument();
+  });
+
+  it('shows a conflict error when requestEmailChange throws a 409', async () => {
+    vi.mocked(profileService.getPendingEmailChange).mockResolvedValue({ pendingEmail: null });
+    const { AuthError } = await import('../../src/services/auth.js');
+    vi.mocked(profileService.requestEmailChange).mockRejectedValue(new AuthError(409, 'conflict'));
+    const user = userEvent.setup();
+    renderAccountSettings();
+    const input = screen.getByRole('textbox', { name: /new email address/i });
+    await user.type(input, 'taken@example.com');
+    await user.click(screen.getByRole('button', { name: /request email change/i }));
+    expect(
+      await screen.findByText('This email address is already in use by another account.'),
+    ).toBeInTheDocument();
+  });
+});

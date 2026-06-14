@@ -11,6 +11,7 @@ import { contractRoutes } from './routes/contracts.js';
 import { authRoutes } from './routes/auth.js';
 import { userRoutes } from './routes/users.js';
 import { invitationRoutes } from './routes/invitations.js';
+import { profileRoutes } from './routes/profile.js';
 import { AuthService, SESSION_COOKIE_NAME, toSessionUser } from './services/auth.service.js';
 import type { MailerService } from './services/mailer.service.js';
 
@@ -30,6 +31,7 @@ declare module 'fastify' {
 const PUBLIC_ROUTES: Array<(method: string, path: string) => boolean> = [
   (m, p) => m === 'POST' && p === '/api/auth/sign-in',
   (m, p) => m === 'POST' && /^\/api\/invitations\/[^/]+\/accept$/.test(p),
+  (m, p) => m === 'POST' && /^\/api\/profile\/email-change\/[^/]+\/confirm$/.test(p),
 ];
 
 function isPublicRoute(method: string, url: string): boolean {
@@ -82,6 +84,7 @@ export async function buildServer(
   await fastify.register(dashboardRoutes);
   await fastify.register(contractRoutes);
   await fastify.register(invitationRoutes);
+  await fastify.register(profileRoutes);
 
   const staticDir =
     options.staticDir ??

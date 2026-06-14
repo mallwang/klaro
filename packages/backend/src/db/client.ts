@@ -182,6 +182,18 @@ export function runMigrations(instance: Database.Database): void {
   if (!hasCancelledAt) {
     instance.exec(`ALTER TABLE invitations ADD COLUMN cancelled_at TEXT`);
   }
+
+  instance.exec(`
+    CREATE TABLE IF NOT EXISTS email_verifications (
+      token       TEXT PRIMARY KEY,
+      user_id     TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      new_email   TEXT NOT NULL CHECK(length(new_email) <= 320),
+      expires_at  TEXT NOT NULL,
+      created_at  TEXT NOT NULL
+    );
+    CREATE UNIQUE INDEX IF NOT EXISTS idx_email_verifications_user
+      ON email_verifications(user_id);
+  `);
 }
 
 /**
@@ -267,4 +279,12 @@ export interface SessionRow {
   created_at: string;
   last_seen_at: string;
   expires_at: string;
+}
+
+export interface EmailVerificationRow {
+  token: string;
+  user_id: string;
+  new_email: string;
+  expires_at: string;
+  created_at: string;
 }

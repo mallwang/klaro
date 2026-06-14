@@ -9,7 +9,9 @@
     "backToContracts": "← Contracts",
     "accounts": "Manage Accounts",
     "myAccount": "My Account",
-    "backToAccounts": "← Accounts"
+    "backToAccounts": "← Accounts",
+    "roleAdmin": "Admin",
+    "roleMember": "Member"
   },
   "settings": {
     "darkMode": "Switch to dark mode",
@@ -231,6 +233,24 @@
     "submitting": "Updating…",
     "success": "Your password has been changed.",
     "errorInvalidCurrent": "The current password is incorrect.",
-    "errorGeneric": "Failed to change password. Please try again."
+    "errorGeneric": "Failed to change password. Please try again.",
+    "displayNameLabel": "Display name",
+    "displayNameSaveLabel": "Save display name",
+    "displayNameSuccess": "Display name updated.",
+    "displayNameError": "Failed to update display name. Please try again.",
+    "emailSectionTitle": "Email address",
+    "currentEmailLabel": "Current email",
+    "pendingEmailNotice": "Waiting for verification at {{email}}. Check your inbox.",
+    "newEmailLabel": "New email address",
+    "emailChangeSubmitLabel": "Request email change",
+    "emailChangeSent": "Check your inbox — a verification email has been sent to your new address.",
+    "emailChangeConflict": "This email address is already in use by another account.",
+    "emailChangeError": "Failed to request email change. Please try again."
+  },
+  "emailVerify": {
+    "loading": "Verifying your email address…",
+    "success": "Your email address has been updated.",
+    "expired": "This link has expired.",
+    "notFound": "This link is not valid."
   }
 }

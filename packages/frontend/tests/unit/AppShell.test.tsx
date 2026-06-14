@@ -112,6 +112,23 @@ describe('AppShell', () => {
     expect(signOutMock).toHaveBeenCalledOnce();
   });
 
+  // US2: Sidebar avatar and role label
+  it('renders an avatar element in the user section of the sidebar', () => {
+    renderAppShell(regularUser);
+    const navbar = screen.getByRole('navigation');
+    expect(navbar.querySelector('svg')).toBeInTheDocument();
+  });
+
+  it('renders "Admin" role label for ADMIN user', () => {
+    renderAppShell(adminUser);
+    expect(screen.getAllByText('Admin').length).toBeGreaterThanOrEqual(1);
+  });
+
+  it('renders "Member" role label for MEMBER user', () => {
+    renderAppShell(regularUser);
+    expect(screen.getByText('Member')).toBeInTheDocument();
+  });
+
   // US11: Footer
   it('renders a footer', () => {
     renderAppShell();

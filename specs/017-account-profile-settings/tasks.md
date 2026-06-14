@@ -20,7 +20,7 @@
 
 **Purpose**: Create the shared Zod schemas that both backend (validation) and frontend (typing) depend on. Must be complete before any backend or frontend work starts.
 
-- [ ] T001 Create packages/shared/src/schemas/profile.ts with UpdateDisplayNameBodySchema, RequestEmailChangeBodySchema, PendingEmailChangeSchema; export all three from packages/shared/src/index.ts
+- [X] T001 Create packages/shared/src/schemas/profile.ts with UpdateDisplayNameBodySchema, RequestEmailChangeBodySchema, PendingEmailChangeSchema; export all three from packages/shared/src/index.ts
 
 **Checkpoint**: `pnpm --filter shared build` must succeed before proceeding.
 
@@ -30,7 +30,7 @@
 
 **Purpose**: Extend the DB schema with the `email_verifications` table. All ProfileService methods for US3/US4 depend on this.
 
-- [ ] T002 Add email_verifications CREATE TABLE + idx_email_verifications_user CREATE UNIQUE INDEX migration to runMigrations in packages/backend/src/db/client.ts; add EmailVerificationRow interface to same file
+- [X] T002 Add email_verifications CREATE TABLE + idx_email_verifications_user CREATE UNIQUE INDEX migration to runMigrations in packages/backend/src/db/client.ts; add EmailVerificationRow interface to same file
 
 **Checkpoint**: Every subsequent integration test's `beforeEach` will exercise this migration automatically.
 
@@ -44,17 +44,17 @@
 
 ### Tests for User Story 1 (TDD: Write and confirm FAILING before implementation)
 
-- [ ] T003 [P] [US1] Write failing ProfileService.updateDisplayName unit tests (valid user → 'updated' with DB check; unknown user → 'not-found') in packages/backend/tests/unit/profile.service.test.ts
-- [ ] T004 [P] [US1] Write failing integration tests for PATCH /api/profile (204 for valid body; name updated in DB; 400 for empty name; 401 without auth) in packages/backend/tests/integration/profile.route.test.ts
-- [ ] T005 [P] [US1] Write failing frontend unit tests for AccountSettings display name section (pre-filled input; valid submit calls updateDisplayName + shows success; empty submit blocked client-side) in packages/frontend/tests/unit/AccountSettings.test.tsx
+- [X] T003 [P] [US1] Write failing ProfileService.updateDisplayName unit tests (valid user → 'updated' with DB check; unknown user → 'not-found') in packages/backend/tests/unit/profile.service.test.ts
+- [X] T004 [P] [US1] Write failing integration tests for PATCH /api/profile (204 for valid body; name updated in DB; 400 for empty name; 401 without auth) in packages/backend/tests/integration/profile.route.test.ts
+- [X] T005 [P] [US1] Write failing frontend unit tests for AccountSettings display name section (pre-filled input; valid submit calls updateDisplayName + shows success; empty submit blocked client-side) in packages/frontend/tests/unit/AccountSettings.test.tsx
 
 ### Implementation for User Story 1
 
-- [ ] T006 [P] [US1] Implement ProfileService class with updateDisplayName method in packages/backend/src/services/profile.service.ts (depends on T003)
-- [ ] T007 [P] [US1] Create packages/frontend/src/services/profile.ts with typed updateDisplayName fetch wrapper following auth.ts/users.ts pattern (depends on T005)
-- [ ] T008 [US1] Implement PATCH /api/profile route with UpdateDisplayNameBodySchema validation in packages/backend/src/routes/profile.ts (depends on T004, T006)
-- [ ] T009 [US1] Register profileRoutes in packages/backend/src/server.ts via `fastify.register(profileRoutes)` (depends on T008)
-- [ ] T010 [US1] Add Display Name section (`<Paper>`) to packages/frontend/src/pages/AccountSettings.tsx with pre-filled input, save button calling updateDisplayName + invalidating CURRENT_USER_QUERY_KEY, success/error alerts, and i18n keys accountSettings.displayNameLabel + accountSettings.displayNameSuccess in locale files (depends on T005, T007)
+- [X] T006 [P] [US1] Implement ProfileService class with updateDisplayName method in packages/backend/src/services/profile.service.ts (depends on T003)
+- [X] T007 [P] [US1] Create packages/frontend/src/services/profile.ts with typed updateDisplayName fetch wrapper following auth.ts/users.ts pattern (depends on T005)
+- [X] T008 [US1] Implement PATCH /api/profile route with UpdateDisplayNameBodySchema validation in packages/backend/src/routes/profile.ts (depends on T004, T006)
+- [X] T009 [US1] Register profileRoutes in packages/backend/src/server.ts via `fastify.register(profileRoutes)` (depends on T008)
+- [X] T010 [US1] Add Display Name section (`<Paper>`) to packages/frontend/src/pages/AccountSettings.tsx with pre-filled input, save button calling updateDisplayName + invalidating CURRENT_USER_QUERY_KEY, success/error alerts, and i18n keys accountSettings.displayNameLabel + accountSettings.displayNameSuccess in locale files (depends on T005, T007)
 
 **Checkpoint**: US1 independently functional and testable. `pnpm --filter backend test` and `pnpm --filter frontend test` must pass.
 
@@ -68,12 +68,12 @@
 
 ### Tests for User Story 2 (TDD: Write and confirm FAILING before implementation)
 
-- [ ] T011 [P] [US2] Write failing unit tests for NavbarSegmented user section in packages/frontend/tests/unit/AppShell.test.tsx: renders avatar element; renders "Admin" role label for ADMIN user; renders "Member" for MEMBER user
+- [X] T011 [P] [US2] Write failing unit tests for NavbarSegmented user section in packages/frontend/tests/unit/AppShell.test.tsx: renders avatar element; renders "Admin" role label for ADMIN user; renders "Member" for MEMBER user
 
 ### Implementation for User Story 2
 
-- [ ] T012 [P] [US2] Add nav.roleAdmin and nav.roleMember i18n keys to all locale files (e.g. packages/frontend/src/locales/en.json)
-- [ ] T013 [US2] Update userSection in packages/frontend/src/components/AppShell/NavbarSegmented.tsx: wrap display name in `<Group>` with `<Avatar size="sm" radius="xl" color="teal"><IconUser size={14} /></Avatar>` and a role label `<Text size="xs" c="dimmed">` using nav.roleAdmin/nav.roleMember; add Avatar to Mantine imports (depends on T011, T012)
+- [X] T012 [P] [US2] Add nav.roleAdmin and nav.roleMember i18n keys to all locale files (e.g. packages/frontend/src/locales/en.json)
+- [X] T013 [US2] Update userSection in packages/frontend/src/components/AppShell/NavbarSegmented.tsx: wrap display name in `<Group>` with `<Avatar size="sm" radius="xl" color="teal"><IconUser size={14} /></Avatar>` and a role label `<Text size="xs" c="dimmed">` using nav.roleAdmin/nav.roleMember; add Avatar to Mantine imports (depends on T011, T012)
 
 **Checkpoint**: US2 independently functional. Sidebar visible on every authenticated page with avatar + name + role.
 
@@ -87,17 +87,17 @@
 
 ### Tests for User Story 3 (TDD: Write and confirm FAILING before implementation)
 
-- [ ] T014 [P] [US3] Add failing unit tests for ProfileService.requestEmailChange (available email → 'requested' + row inserted; re-request supersedes old token; email used by active user → 'duplicate') and getPendingEmailChange (fresh token → pending email; expired → null; no row → null) to packages/backend/tests/unit/profile.service.test.ts
-- [ ] T015 [P] [US3] Add failing integration tests for POST /api/profile/email-change (202 + token row created; 409 for duplicate; 400 for invalid format; 401 without auth) and GET /api/profile/email-change/pending (returns pendingEmail; null when none) to packages/backend/tests/integration/profile.route.test.ts
-- [ ] T016 [P] [US3] Add failing frontend unit tests for AccountSettings email change section (renders current email read-only; renders pending notice when pendingEmail non-null; valid submit calls requestEmailChange + shows "check inbox"; 409 shown as conflict error) to packages/frontend/tests/unit/AccountSettings.test.tsx
+- [X] T014 [P] [US3] Add failing unit tests for ProfileService.requestEmailChange (available email → 'requested' + row inserted; re-request supersedes old token; email used by active user → 'duplicate') and getPendingEmailChange (fresh token → pending email; expired → null; no row → null) to packages/backend/tests/unit/profile.service.test.ts
+- [X] T015 [P] [US3] Add failing integration tests for POST /api/profile/email-change (202 + token row created; 409 for duplicate; 400 for invalid format; 401 without auth) and GET /api/profile/email-change/pending (returns pendingEmail; null when none) to packages/backend/tests/integration/profile.route.test.ts
+- [X] T016 [P] [US3] Add failing frontend unit tests for AccountSettings email change section (renders current email read-only; renders pending notice when pendingEmail non-null; valid submit calls requestEmailChange + shows "check inbox"; 409 shown as conflict error) to packages/frontend/tests/unit/AccountSettings.test.tsx
 
 ### Implementation for User Story 3
 
-- [ ] T017 [US3] Add requestEmailChange (randomBytes token, 24h expiry, delete+insert in transaction, duplicate check) and getPendingEmailChange (returns non-expired pending email or null) methods to packages/backend/src/services/profile.service.ts (depends on T014)
-- [ ] T018 [P] [US3] Add sendEmailVerificationEmail(to, link, expiresAt) method to packages/backend/src/services/mailer.service.ts following sendInvitationEmail pattern (depends on T017 for route wiring; can be coded in parallel with T017)
-- [ ] T019 [US3] Add POST /api/profile/email-change (202 on success, 409 on duplicate, 502 on mailer failure with token rollback) and GET /api/profile/email-change/pending routes to packages/backend/src/routes/profile.ts (depends on T015, T017, T018)
-- [ ] T020 [US3] Add requestEmailChange and getPendingEmailChange typed fetch wrappers to packages/frontend/src/services/profile.ts (depends on T007)
-- [ ] T021 [US3] Add Email Address section (`<Paper>`) to packages/frontend/src/pages/AccountSettings.tsx: read-only current email display; pending notice when getPendingEmailChange returns non-null; new-email input + submit calling requestEmailChange + "check inbox" message on 202; inline 409 conflict error; i18n keys accountSettings.emailSectionTitle, accountSettings.pendingEmailNotice, accountSettings.newEmailLabel, accountSettings.emailChangeSubmitLabel, accountSettings.emailChangeSent, accountSettings.emailChangeConflict in locale files (depends on T016, T020)
+- [X] T017 [US3] Add requestEmailChange (randomBytes token, 24h expiry, delete+insert in transaction, duplicate check) and getPendingEmailChange (returns non-expired pending email or null) methods to packages/backend/src/services/profile.service.ts (depends on T014)
+- [X] T018 [P] [US3] Add sendEmailVerificationEmail(to, link, expiresAt) method to packages/backend/src/services/mailer.service.ts following sendInvitationEmail pattern (depends on T017 for route wiring; can be coded in parallel with T017)
+- [X] T019 [US3] Add POST /api/profile/email-change (202 on success, 409 on duplicate, 502 on mailer failure with token rollback) and GET /api/profile/email-change/pending routes to packages/backend/src/routes/profile.ts (depends on T015, T017, T018)
+- [X] T020 [US3] Add requestEmailChange and getPendingEmailChange typed fetch wrappers to packages/frontend/src/services/profile.ts (depends on T007)
+- [X] T021 [US3] Add Email Address section (`<Paper>`) to packages/frontend/src/pages/AccountSettings.tsx: read-only current email display; pending notice when getPendingEmailChange returns non-null; new-email input + submit calling requestEmailChange + "check inbox" message on 202; inline 409 conflict error; i18n keys accountSettings.emailSectionTitle, accountSettings.pendingEmailNotice, accountSettings.newEmailLabel, accountSettings.emailChangeSubmitLabel, accountSettings.emailChangeSent, accountSettings.emailChangeConflict in locale files (depends on T016, T020)
 
 **Checkpoint**: US3 independently functional. POST /api/profile/email-change and GET pending work end-to-end. All unit + integration tests pass.
 
@@ -111,18 +111,18 @@
 
 ### Tests for User Story 4 (TDD: Write and confirm FAILING before implementation)
 
-- [ ] T022 [P] [US4] Add failing unit tests for ProfileService.confirmEmailChange (valid token → 'confirmed' + users.email updated + row deleted; expired → 'expired' + row deleted; unknown → 'not-found') to packages/backend/tests/unit/profile.service.test.ts
-- [ ] T023 [P] [US4] Add failing integration tests for POST /api/profile/email-change/:token/confirm (200 confirmed; 410 expired; 404 unknown token; no session required) to packages/backend/tests/integration/profile.route.test.ts
-- [ ] T024 [P] [US4] Write failing unit tests for EmailVerifyConfirm page (shows loading state; shows success message on resolve; shows expired message on 410; shows not-found message on 404) in packages/frontend/tests/unit/EmailVerifyConfirm.test.tsx
+- [X] T022 [P] [US4] Add failing unit tests for ProfileService.confirmEmailChange (valid token → 'confirmed' + users.email updated + row deleted; expired → 'expired' + row deleted; unknown → 'not-found') to packages/backend/tests/unit/profile.service.test.ts
+- [X] T023 [P] [US4] Add failing integration tests for POST /api/profile/email-change/:token/confirm (200 confirmed; 410 expired; 404 unknown token; no session required) to packages/backend/tests/integration/profile.route.test.ts
+- [X] T024 [P] [US4] Write failing unit tests for EmailVerifyConfirm page (shows loading state; shows success message on resolve; shows expired message on 410; shows not-found message on 404) in packages/frontend/tests/unit/EmailVerifyConfirm.test.tsx
 
 ### Implementation for User Story 4
 
-- [ ] T025 [US4] Add confirmEmailChange method (lookup token; return 'not-found' if absent; delete + return 'expired' if past expires_at; update users.email + delete row in transaction for valid token) to packages/backend/src/services/profile.service.ts (depends on T022)
-- [ ] T026 [US4] Add POST /api/profile/email-change/:token/confirm route (200/'confirmed', 410/'expired', 404/'not-found') to packages/backend/src/routes/profile.ts (depends on T023, T025)
-- [ ] T027 [US4] Add confirm path regex `(m, p) => m === 'POST' && /^\/api\/profile\/email-change\/[^/]+\/confirm$/.test(p)` to PUBLIC_ROUTES in packages/backend/src/server.ts (depends on T026)
-- [ ] T028 [US4] Add confirmEmailChange typed fetch wrapper to packages/frontend/src/services/profile.ts (depends on T020)
-- [ ] T029 [US4] Create packages/frontend/src/pages/EmailVerifyConfirm.tsx mirroring AcceptInvitation.tsx: reads token from router params, POSTs on mount, shows loading/success/expired/not-found states with i18n keys emailVerify.loading, emailVerify.success, emailVerify.expired, emailVerify.notFound in locale files (depends on T024, T028)
-- [ ] T030 [US4] Add `<Route path="/email-change/confirm/:token" element={<EmailVerifyConfirm />} />` to public routes in packages/frontend/src/main.tsx (depends on T029)
+- [X] T025 [US4] Add confirmEmailChange method (lookup token; return 'not-found' if absent; delete + return 'expired' if past expires_at; update users.email + delete row in transaction for valid token) to packages/backend/src/services/profile.service.ts (depends on T022)
+- [X] T026 [US4] Add POST /api/profile/email-change/:token/confirm route (200/'confirmed', 410/'expired', 404/'not-found') to packages/backend/src/routes/profile.ts (depends on T023, T025)
+- [X] T027 [US4] Add confirm path regex `(m, p) => m === 'POST' && /^\/api\/profile\/email-change\/[^/]+\/confirm$/.test(p)` to PUBLIC_ROUTES in packages/backend/src/server.ts (depends on T026)
+- [X] T028 [US4] Add confirmEmailChange typed fetch wrapper to packages/frontend/src/services/profile.ts (depends on T020)
+- [X] T029 [US4] Create packages/frontend/src/pages/EmailVerifyConfirm.tsx mirroring AcceptInvitation.tsx: reads token from router params, POSTs on mount, shows loading/success/expired/not-found states with i18n keys emailVerify.loading, emailVerify.success, emailVerify.expired, emailVerify.notFound in locale files (depends on T024, T028)
+- [X] T030 [US4] Add `<Route path="/email-change/confirm/:token" element={<EmailVerifyConfirm />} />` to public routes in packages/frontend/src/main.tsx (depends on T029)
 
 **Checkpoint**: US4 independently functional. Verification link works in incognito (no session). All four user stories complete.
 
@@ -132,8 +132,8 @@
 
 **Purpose**: Final validation gates before merge.
 
-- [ ] T031 [P] Run `tsc --noEmit` in packages/backend, packages/frontend, and packages/shared; confirm zero type errors with strict mode
-- [ ] T032 [P] Run full test suites (`pnpm --filter backend test` and `pnpm --filter frontend test`); confirm zero regressions in existing tests
+- [X] T031 [P] Run `tsc --noEmit` in packages/backend, packages/frontend, and packages/shared; confirm zero type errors with strict mode
+- [X] T032 [P] Run full test suites (`pnpm --filter backend test` and `pnpm --filter frontend test`); confirm zero regressions in existing tests
 - [ ] T033 Validate all quickstart.md scenarios (sections 3–9) in a running application: sidebar widget, display name update, email change request, verification link confirm, re-request supersedes old token, unauthenticated confirmation
 
 ---
