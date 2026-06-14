@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { NavLink as RouterNavLink, useLocation } from 'react-router-dom';
+import { NavLink as RouterNavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Group, Text, SegmentedControl, Stack, Tooltip, ActionIcon, Avatar } from '@mantine/core';
 import {
@@ -25,7 +25,14 @@ export function NavbarSegmented() {
   const { data: user } = useCurrentUser();
   const { mutate: signOut, isPending } = useSignOut();
   const location = useLocation();
+  const navigate = useNavigate();
   const [segment, setSegment] = useState<Segment>('app');
+
+  function handleSegmentChange(value: string) {
+    const next = value as Segment;
+    setSegment(next);
+    navigate(next === 'admin' ? '/admin/accounts' : '/');
+  }
 
   const appLinks: NavItem[] = [
     { label: t('nav.dashboard'), to: '/', icon: <IconLayoutDashboard size={18} /> },
@@ -49,7 +56,7 @@ export function NavbarSegmented() {
       {user?.role === 'ADMIN' && (
         <SegmentedControl
           value={segment}
-          onChange={(v) => setSegment(v as Segment)}
+          onChange={handleSegmentChange}
           data={[
             { label: 'App', value: 'app' },
             { label: 'Admin', value: 'admin' },

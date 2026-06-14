@@ -29,7 +29,9 @@ export class MailerService {
     const port = parseInt(process.env['SMTP_PORT'] ?? '587');
     const user = process.env['SMTP_USER'];
     const pass = process.env['SMTP_PASSWORD'];
-    const from = process.env['SMTP_FROM'] ?? '';
+    const fromAddress = process.env['SMTP_FROM'] ?? '';
+    const fromName = process.env['SMTP_FROM_NAME'];
+    const from = fromName ? `"${fromName}" <${fromAddress}>` : fromAddress;
 
     if (!host || !from) {
       throw new MailerError('SMTP configuration is missing (SMTP_HOST, SMTP_FROM required)');

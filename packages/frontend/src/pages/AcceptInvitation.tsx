@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useQueryClient } from '@tanstack/react-query';
-import { Center, Paper, Title, Stack, PasswordInput, Button, Alert, Text } from '@mantine/core';
+import { Paper, Title, Stack, PasswordInput, Button, Alert, Text } from '@mantine/core';
+import { PublicLayout } from '../components/PublicLayout.js';
 import { AuthError } from '../services/auth.js';
 import { acceptInvitation } from '../services/invitations.js';
 import { CURRENT_USER_QUERY_KEY } from '../hooks/useAuth.js';
@@ -74,7 +75,7 @@ export function AcceptInvitation() {
   };
 
   return (
-    <Center mih="100vh" bg="var(--mantine-color-gray-0)">
+    <PublicLayout>
       <Paper withBorder shadow="md" p="xl" w={400} radius="md">
         <Title order={2} mb="lg" ta="center">
           {t('acceptInvitation.title')}
@@ -130,6 +131,6 @@ export function AcceptInvitation() {
           </form>
         )}
       </Paper>
-    </Center>
+    </PublicLayout>
   );
 }

@@ -85,6 +85,11 @@ export class ProfileService {
 
     const confirm = this.db.transaction(() => {
       this.db
+        .prepare(
+          `UPDATE users SET email = id || '@archived.invalid' WHERE email = ? COLLATE NOCASE AND status != 'ACTIVE'`,
+        )
+        .run(row.new_email);
+      this.db
         .prepare(`UPDATE users SET email = ?, updated_at = ? WHERE id = ?`)
         .run(row.new_email, new Date().toISOString(), row.user_id);
       this.db.prepare(`DELETE FROM email_verifications WHERE token = ?`).run(token);

@@ -205,7 +205,11 @@
     "columnEmail": "E-Mail",
     "columnRole": "Rolle",
     "columnStatus": "Status",
-    "columnActions": "Aktionen"
+    "columnActions": "Aktionen",
+    "deleteButton": "Endgültig löschen",
+    "emailReassigned": "E-Mail neu zugewiesen",
+    "deleteConfirmTitle": "Konto löschen",
+    "deleteConfirmMessage": "Das Konto wird dauerhaft entfernt. Diese Aktion kann nicht rückgängig gemacht werden."
   },
   "acceptInvitation": {
     "title": "Konto einrichten",
@@ -251,6 +255,8 @@
     "loading": "E-Mail-Adresse wird verifiziert…",
     "success": "Ihre E-Mail-Adresse wurde aktualisiert.",
     "expired": "Dieser Link ist abgelaufen.",
-    "notFound": "Dieser Link ist nicht gültig."
+    "notFound": "Dieser Link ist nicht gültig.",
+    "toDashboard": "Zum Dashboard",
+    "redirecting": "Automatische Weiterleitung in wenigen Sekunden…"
   }
 }

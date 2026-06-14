@@ -21,6 +21,7 @@ export type CreateAccountResult =
 export type ArchiveResult = 'archived' | 'not-found' | 'last-admin';
 export type ReactivateResult = 'reactivated' | 'not-found' | 'not-archived';
 export type ChangeRoleResult = 'changed' | 'not-found' | 'last-admin';
+export type DeleteResult = 'deleted' | 'not-found' | 'not-archived';
 
 /**
  * Account lifecycle for FR-007–013/FR-018: list/create accounts, archive (with immediate
@@ -76,6 +77,19 @@ export class UserService {
       .run(now, now, id);
     this.db.prepare(`DELETE FROM sessions WHERE user_id = ?`).run(id);
     return 'archived';
+  }
+
+  delete(id: string): DeleteResult {
+    const target = this.db.prepare<[string], UserRow>(`SELECT * FROM users WHERE id = ?`).get(id);
+    if (!target) return 'not-found';
+    if (target.status !== 'ARCHIVED') return 'not-archived';
+
+    const doDelete = this.db.transaction(() => {
+      this.db.prepare(`DELETE FROM contracts WHERE user_id = ?`).run(id);
+      this.db.prepare(`DELETE FROM users WHERE id = ?`).run(id);
+    });
+    doDelete();
+    return 'deleted';
   }
 
   reactivate(id: string): ReactivateResult {

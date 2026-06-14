@@ -1,18 +1,10 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate, type Location } from 'react-router-dom';
-import {
-  Stack,
-  TextInput,
-  PasswordInput,
-  Button,
-  Alert,
-  Paper,
-  Title,
-  Center,
-} from '@mantine/core';
+import { Stack, TextInput, PasswordInput, Button, Alert, Paper, Title } from '@mantine/core';
 import { AuthError } from '../services/auth';
 import { useSignIn } from '../hooks/useAuth';
+import { PublicLayout } from '../components/PublicLayout.js';
 
 interface LocationState {
   from?: Location;
@@ -46,7 +38,7 @@ export function SignIn() {
   }
 
   return (
-    <Center mih="100vh" bg="var(--mantine-color-gray-0)">
+    <PublicLayout>
       <Paper withBorder shadow="md" p="xl" w={400} radius="md">
         <Title order={2} mb="lg" ta="center">
           {t('auth.signInTitle')}
@@ -84,6 +76,6 @@ export function SignIn() {
           </Stack>
         </form>
       </Paper>
-    </Center>
+    </PublicLayout>
   );
 }

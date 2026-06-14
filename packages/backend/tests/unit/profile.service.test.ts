@@ -205,4 +205,16 @@ describe('ProfileService – confirmEmailChange', () => {
   it('returns "not-found" for an unknown token', () => {
     expect(service.confirmEmailChange('nonexistent-token')).toBe('not-found');
   });
+
+  it('returns "confirmed" even when an archived user holds the target email', () => {
+    insertUser(db, { email: 'target@example.test', status: 'ARCHIVED' });
+    const req = service.requestEmailChange(userId, 'target@example.test');
+    if (req.outcome !== 'requested') throw new Error('unexpected');
+    const result = service.confirmEmailChange(req.token);
+    expect(result).toBe('confirmed');
+    const user = db
+      .prepare<[string], { email: string }>(`SELECT email FROM users WHERE id = ?`)
+      .get(userId);
+    expect(user?.email).toBe('target@example.test');
+  });
 });

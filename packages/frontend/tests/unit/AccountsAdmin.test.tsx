@@ -8,6 +8,7 @@ vi.mock('../../src/hooks/useAccounts.js', () => ({
   useAccounts: vi.fn(),
   useArchiveAccount: vi.fn(),
   useReactivateAccount: vi.fn(),
+  useDeleteAccount: vi.fn(),
   useChangeAccountRole: vi.fn(),
 }));
 
@@ -22,6 +23,7 @@ import {
   useAccounts,
   useArchiveAccount,
   useReactivateAccount,
+  useDeleteAccount,
   useChangeAccountRole,
 } from '../../src/hooks/useAccounts.js';
 import {
@@ -66,9 +68,9 @@ function noop() {
   return { mutate: vi.fn(), isPending: false, error: null };
 }
 
-function renderPage() {
+function renderPage(accounts: Account[] = sampleAccounts) {
   vi.mocked(useAccounts).mockReturnValue({
-    data: sampleAccounts,
+    data: accounts,
     isLoading: false,
     isError: false,
   } as ReturnType<typeof useAccounts>);
@@ -82,6 +84,9 @@ function renderPage() {
   );
   vi.mocked(useReactivateAccount).mockReturnValue(
     noop() as unknown as ReturnType<typeof useReactivateAccount>,
+  );
+  vi.mocked(useDeleteAccount).mockReturnValue(
+    noop() as unknown as ReturnType<typeof useDeleteAccount>,
   );
   vi.mocked(useChangeAccountRole).mockReturnValue(
     noop() as unknown as ReturnType<typeof useChangeAccountRole>,
@@ -146,8 +151,30 @@ describe('AccountsAdmin – user table', () => {
     expect(archiveButtons.length).toBeGreaterThanOrEqual(1);
   });
 
-  it('renders a Reactivate button for archived users', () => {
+  it('renders a Reactivate button for archived users with a normal email', () => {
     renderPage();
     expect(screen.getByRole('button', { name: /reactivate/i })).toBeInTheDocument();
+  });
+
+  it('renders a Delete permanently button for archived users', () => {
+    renderPage();
+    expect(screen.getByRole('button', { name: /delete permanently/i })).toBeInTheDocument();
+  });
+
+  it('hides Reactivate and shows "Email reassigned" for users with a reassigned email', () => {
+    const accountsWithReassigned: Account[] = [
+      ...sampleAccounts.slice(0, 2),
+      {
+        id: '3',
+        email: '3@archived.invalid',
+        displayName: 'Carol',
+        role: 'MEMBER',
+        status: 'ARCHIVED',
+        createdAt: '2026-01-01T00:00:00.000Z',
+      },
+    ];
+    renderPage(accountsWithReassigned);
+    expect(screen.queryByRole('button', { name: /reactivate/i })).not.toBeInTheDocument();
+    expect(screen.getByText(/email reassigned/i)).toBeInTheDocument();
   });
 });

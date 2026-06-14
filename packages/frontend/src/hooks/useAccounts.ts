@@ -5,6 +5,7 @@ import {
   createAccount,
   archiveAccount,
   reactivateAccount,
+  deleteAccount,
   changeAccountRole,
 } from '../services/users.js';
 
@@ -37,6 +38,14 @@ export function useReactivateAccount() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (id: string) => reactivateAccount(id),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ACCOUNTS_QUERY_KEY }),
+  });
+}
+
+export function useDeleteAccount() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => deleteAccount(id),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ACCOUNTS_QUERY_KEY }),
   });
 }

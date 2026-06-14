@@ -102,6 +102,31 @@ export async function userRoutes(fastify: FastifyInstance): Promise<void> {
     return reply.status(204).send();
   });
 
+  fastify.delete('/api/users/:id', async (request, reply) => {
+    const params = IdParams.safeParse(request.params);
+    if (!params.success) {
+      return reply
+        .status(400)
+        .send({ statusCode: 400, error: 'Bad Request', message: 'Invalid ID' });
+    }
+
+    const service = new UserService(fastify.db);
+    const result = service.delete(params.data.id);
+    if (result === 'not-found') {
+      return reply
+        .status(404)
+        .send({ statusCode: 404, error: 'Not Found', message: 'Account not found' });
+    }
+    if (result === 'not-archived') {
+      return reply.status(409).send({
+        statusCode: 409,
+        error: 'Conflict',
+        message: 'Only archived accounts can be permanently deleted',
+      });
+    }
+    return reply.status(204).send();
+  });
+
   fastify.post('/api/users/:id/role', async (request, reply) => {
     const params = IdParams.safeParse(request.params);
     if (!params.success) {

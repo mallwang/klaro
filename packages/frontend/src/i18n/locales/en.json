@@ -205,7 +205,11 @@
     "columnEmail": "Email",
     "columnRole": "Role",
     "columnStatus": "Status",
-    "columnActions": "Actions"
+    "columnActions": "Actions",
+    "deleteButton": "Delete permanently",
+    "emailReassigned": "Email reassigned",
+    "deleteConfirmTitle": "Delete account",
+    "deleteConfirmMessage": "This will permanently remove the account and cannot be undone."
   },
   "acceptInvitation": {
     "title": "Set up your account",
@@ -251,6 +255,8 @@
     "loading": "Verifying your email address…",
     "success": "Your email address has been updated.",
     "expired": "This link has expired.",
-    "notFound": "This link is not valid."
+    "notFound": "This link is not valid.",
+    "toDashboard": "Go to dashboard",
+    "redirecting": "Redirecting automatically in a few seconds…"
   }
 }
