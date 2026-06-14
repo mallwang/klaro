@@ -1,37 +1,99 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useMutation } from '@tanstack/react-query';
-import { Stack, Title, Text, Paper, PasswordInput, Button, Alert } from '@mantine/core';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { Stack, Title, Text, Paper, PasswordInput, TextInput, Button, Alert } from '@mantine/core';
 import { AuthError, changePassword } from '../services/auth.js';
+import {
+  updateDisplayName,
+  requestEmailChange,
+  getPendingEmailChange,
+} from '../services/profile.js';
+import { useCurrentUser, CURRENT_USER_QUERY_KEY } from '../hooks/useAuth.js';
 
 export function AccountSettings() {
   const { t } = useTranslation();
+  const queryClient = useQueryClient();
+  const { data: user } = useCurrentUser();
+
+  // ── Display Name ────────────────────────────────────────────────────────────
+  const [displayName, setDisplayName] = useState(user?.displayName ?? '');
+
+  const displayNameMutation = useMutation({
+    mutationFn: (name: string) => updateDisplayName(name),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: CURRENT_USER_QUERY_KEY });
+    },
+  });
+
+  function handleDisplayNameSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!displayName.trim()) return;
+    displayNameMutation.mutate(displayName.trim());
+  }
+
+  // ── Email Change ────────────────────────────────────────────────────────────
+  const [newEmail, setNewEmail] = useState('');
+
+  const { data: pendingData } = useQuery({
+    queryKey: ['profile', 'pendingEmail'],
+    queryFn: getPendingEmailChange,
+  });
+
+  const emailChangeMutation = useMutation({
+    mutationFn: (email: string) => requestEmailChange(email),
+    onSuccess: () => {
+      setNewEmail('');
+    },
+  });
+
+  function handleEmailChangeSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!newEmail.trim()) return;
+    emailChangeMutation.mutate(newEmail.trim());
+  }
+
+  function emailChangeErrorMessage(): string | null {
+    if (!emailChangeMutation.error) return null;
+    if (
+      emailChangeMutation.error instanceof AuthError &&
+      emailChangeMutation.error.status === 409
+    ) {
+      return t('accountSettings.emailChangeConflict');
+    }
+    return t('accountSettings.emailChangeError');
+  }
+
+  // ── Change Password ─────────────────────────────────────────────────────────
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
-  const [success, setSuccess] = useState(false);
+  const [passwordSuccess, setPasswordSuccess] = useState(false);
 
-  const { mutate, isPending, error } = useMutation({
+  const {
+    mutate: doChangePassword,
+    isPending: isChangingPassword,
+    error: passwordError,
+  } = useMutation({
     mutationFn: changePassword,
   });
 
-  function handleSubmit(e: React.FormEvent) {
+  function handlePasswordSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setSuccess(false);
-    mutate(
+    setPasswordSuccess(false);
+    doChangePassword(
       { currentPassword, newPassword },
       {
         onSuccess: () => {
           setCurrentPassword('');
           setNewPassword('');
-          setSuccess(true);
+          setPasswordSuccess(true);
         },
       },
     );
   }
 
-  function errorMessage(): string | null {
-    if (!error) return null;
-    if (error instanceof AuthError && error.status === 401) {
+  function passwordErrorMessage(): string | null {
+    if (!passwordError) return null;
+    if (passwordError instanceof AuthError && passwordError.status === 401) {
       return t('accountSettings.errorInvalidCurrent');
     }
     return t('accountSettings.errorGeneric');
@@ -39,22 +101,93 @@ export function AccountSettings() {
 
   return (
     <Stack gap="lg" maw={480} mx="auto">
-      <div>
-        <Title order={2}>{t('accountSettings.title')}</Title>
-        <Text size="sm" c="dimmed">
-          {t('accountSettings.subtitle')}
-        </Text>
-      </div>
+      <Title order={2}>{t('accountSettings.title')}</Title>
 
+      {/* Display Name */}
       <Paper withBorder p="lg">
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleDisplayNameSubmit}>
           <Stack gap="md">
-            {errorMessage() && (
+            {displayNameMutation.isError && (
               <Alert role="alert" color="red">
-                {errorMessage()}
+                {t('accountSettings.displayNameError')}
               </Alert>
             )}
-            {success && !error && (
+            {displayNameMutation.isSuccess && (
+              <Alert role="status" color="green">
+                {t('accountSettings.displayNameSuccess')}
+              </Alert>
+            )}
+            <TextInput
+              id="display-name"
+              label={t('accountSettings.displayNameLabel')}
+              value={displayName}
+              onChange={(e) => setDisplayName(e.target.value)}
+            />
+            <Button type="submit" loading={displayNameMutation.isPending} fullWidth>
+              {t('accountSettings.displayNameSaveLabel')}
+            </Button>
+          </Stack>
+        </form>
+      </Paper>
+
+      {/* Email Address */}
+      <Paper withBorder p="lg">
+        <Stack gap="md">
+          <div>
+            <Text size="sm" fw={500}>
+              {t('accountSettings.emailSectionTitle')}
+            </Text>
+            <Text size="sm" c="dimmed">
+              {user?.email}
+            </Text>
+          </div>
+
+          {pendingData?.pendingEmail && (
+            <Alert color="blue">
+              {t('accountSettings.pendingEmailNotice', { email: pendingData.pendingEmail })}
+            </Alert>
+          )}
+
+          {emailChangeMutation.isSuccess && (
+            <Alert color="green">{t('accountSettings.emailChangeSent')}</Alert>
+          )}
+
+          {emailChangeErrorMessage() && (
+            <Alert role="alert" color="red">
+              {emailChangeErrorMessage()}
+            </Alert>
+          )}
+
+          <form onSubmit={handleEmailChangeSubmit}>
+            <Stack gap="md">
+              <TextInput
+                id="new-email"
+                type="email"
+                label={t('accountSettings.newEmailLabel')}
+                value={newEmail}
+                onChange={(e) => setNewEmail(e.target.value)}
+              />
+              <Button type="submit" loading={emailChangeMutation.isPending} fullWidth>
+                {t('accountSettings.emailChangeSubmitLabel')}
+              </Button>
+            </Stack>
+          </form>
+        </Stack>
+      </Paper>
+
+      {/* Change Password */}
+      <Paper withBorder p="lg">
+        <form onSubmit={handlePasswordSubmit}>
+          <Stack gap="md">
+            <Text size="sm" c="dimmed">
+              {t('accountSettings.subtitle')}
+            </Text>
+            {passwordErrorMessage() && (
+              <Alert role="alert" color="red">
+                {passwordErrorMessage()}
+              </Alert>
+            )}
+            {passwordSuccess && !passwordError && (
               <Alert role="status" color="green">
                 {t('accountSettings.success')}
               </Alert>
@@ -79,8 +212,10 @@ export function AccountSettings() {
               onChange={(e) => setNewPassword(e.target.value)}
             />
 
-            <Button type="submit" loading={isPending} fullWidth>
-              {isPending ? t('accountSettings.submitting') : t('accountSettings.submitLabel')}
+            <Button type="submit" loading={isChangingPassword} fullWidth>
+              {isChangingPassword
+                ? t('accountSettings.submitting')
+                : t('accountSettings.submitLabel')}
             </Button>
           </Stack>
         </form>

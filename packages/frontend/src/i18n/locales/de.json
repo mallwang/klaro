@@ -9,7 +9,9 @@
     "backToContracts": "← Verträge",
     "accounts": "Konten verwalten",
     "myAccount": "Mein Konto",
-    "backToAccounts": "← Konten"
+    "backToAccounts": "← Konten",
+    "roleAdmin": "Admin",
+    "roleMember": "Mitglied"
   },
   "settings": {
     "darkMode": "Dunkelmodus aktivieren",
@@ -203,7 +205,11 @@
     "columnEmail": "E-Mail",
     "columnRole": "Rolle",
     "columnStatus": "Status",
-    "columnActions": "Aktionen"
+    "columnActions": "Aktionen",
+    "deleteButton": "Endgültig löschen",
+    "emailReassigned": "E-Mail neu zugewiesen",
+    "deleteConfirmTitle": "Konto löschen",
+    "deleteConfirmMessage": "Das Konto wird dauerhaft entfernt. Diese Aktion kann nicht rückgängig gemacht werden."
   },
   "acceptInvitation": {
     "title": "Konto einrichten",
@@ -231,6 +237,26 @@
     "submitting": "Wird aktualisiert…",
     "success": "Ihr Passwort wurde geändert.",
     "errorInvalidCurrent": "Das aktuelle Passwort ist falsch.",
-    "errorGeneric": "Passwort konnte nicht geändert werden. Bitte versuchen Sie es erneut."
+    "errorGeneric": "Passwort konnte nicht geändert werden. Bitte versuchen Sie es erneut.",
+    "displayNameLabel": "Anzeigename",
+    "displayNameSaveLabel": "Anzeigename speichern",
+    "displayNameSuccess": "Anzeigename aktualisiert.",
+    "displayNameError": "Anzeigename konnte nicht aktualisiert werden. Bitte erneut versuchen.",
+    "emailSectionTitle": "E-Mail-Adresse",
+    "currentEmailLabel": "Aktuelle E-Mail",
+    "pendingEmailNotice": "Warte auf Bestätigung für {{email}}. Bitte prüfen Sie Ihren Posteingang.",
+    "newEmailLabel": "Neue E-Mail-Adresse",
+    "emailChangeSubmitLabel": "E-Mail-Änderung anfordern",
+    "emailChangeSent": "Bitte prüfen Sie Ihren Posteingang — eine Bestätigungs-E-Mail wurde an Ihre neue Adresse gesendet.",
+    "emailChangeConflict": "Diese E-Mail-Adresse wird bereits von einem anderen Konto verwendet.",
+    "emailChangeError": "E-Mail-Änderung konnte nicht angefordert werden. Bitte erneut versuchen."
+  },
+  "emailVerify": {
+    "loading": "E-Mail-Adresse wird verifiziert…",
+    "success": "Ihre E-Mail-Adresse wurde aktualisiert.",
+    "expired": "Dieser Link ist abgelaufen.",
+    "notFound": "Dieser Link ist nicht gültig.",
+    "toDashboard": "Zum Dashboard",
+    "redirecting": "Automatische Weiterleitung in wenigen Sekunden…"
   }
 }

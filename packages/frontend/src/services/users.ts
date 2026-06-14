@@ -53,6 +53,12 @@ export async function reactivateAccount(id: string): Promise<void> {
     throw new AuthError(res.status, await readErrorMessage(res, 'Failed to reactivate account'));
 }
 
+export async function deleteAccount(id: string): Promise<void> {
+  const res = await fetch(`/api/users/${id}`, { method: 'DELETE', credentials: 'include' });
+  if (!res.ok)
+    throw new AuthError(res.status, await readErrorMessage(res, 'Failed to delete account'));
+}
+
 export async function changeAccountRole(id: string, role: Role): Promise<void> {
   const res = await fetch(`/api/users/${id}/role`, {
     method: 'POST',

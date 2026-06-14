@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { NavLink as RouterNavLink, useLocation } from 'react-router-dom';
+import { NavLink as RouterNavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Group, Text, SegmentedControl, Stack, Tooltip, ActionIcon } from '@mantine/core';
+import { Group, Text, SegmentedControl, Stack, Tooltip, ActionIcon, Avatar } from '@mantine/core';
 import {
   IconLayoutDashboard,
   IconFileText,
@@ -25,7 +25,14 @@ export function NavbarSegmented() {
   const { data: user } = useCurrentUser();
   const { mutate: signOut, isPending } = useSignOut();
   const location = useLocation();
+  const navigate = useNavigate();
   const [segment, setSegment] = useState<Segment>('app');
+
+  function handleSegmentChange(value: string) {
+    const next = value as Segment;
+    setSegment(next);
+    navigate(next === 'admin' ? '/admin/accounts' : '/');
+  }
 
   const appLinks: NavItem[] = [
     { label: t('nav.dashboard'), to: '/', icon: <IconLayoutDashboard size={18} /> },
@@ -49,7 +56,7 @@ export function NavbarSegmented() {
       {user?.role === 'ADMIN' && (
         <SegmentedControl
           value={segment}
-          onChange={(v) => setSegment(v as Segment)}
+          onChange={handleSegmentChange}
           data={[
             { label: 'App', value: 'app' },
             { label: 'Admin', value: 'admin' },
@@ -77,9 +84,19 @@ export function NavbarSegmented() {
 
       <div className={classes.userSection}>
         <Group justify="space-between" align="center">
-          <Text size="sm" fw={500} truncate>
-            {user?.displayName}
-          </Text>
+          <Group gap="xs" align="center" style={{ overflow: 'hidden', flex: 1, minWidth: 0 }}>
+            <Avatar size="sm" radius="xl" color="teal">
+              <IconUser size={14} />
+            </Avatar>
+            <div style={{ overflow: 'hidden', flex: 1, minWidth: 0 }}>
+              <Text size="sm" fw={500} truncate>
+                {user?.displayName}
+              </Text>
+              <Text size="xs" c="dimmed">
+                {user?.role === 'ADMIN' ? t('nav.roleAdmin') : t('nav.roleMember')}
+              </Text>
+            </div>
+          </Group>
           <Tooltip label={t('auth.signOut')}>
             <ActionIcon
               variant="default"

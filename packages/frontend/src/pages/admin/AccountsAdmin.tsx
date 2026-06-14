@@ -13,6 +13,7 @@ import {
   Alert,
   TextInput,
   Center,
+  Modal,
 } from '@mantine/core';
 import type { Account, Invitation } from '@pcm/shared';
 import { AuthError } from '../../services/auth.js';
@@ -20,6 +21,7 @@ import {
   useAccounts,
   useArchiveAccount,
   useReactivateAccount,
+  useDeleteAccount,
   useChangeAccountRole,
 } from '../../hooks/useAccounts.js';
 import {
@@ -211,7 +213,13 @@ export function AccountsAdmin() {
   const { data: accounts, isLoading, isError } = useAccounts();
   const { mutate: archiveAccount, error: archiveError } = useArchiveAccount();
   const { mutate: reactivateAccount, error: reactivateError } = useReactivateAccount();
+  const { mutate: deleteAccount, error: deleteError } = useDeleteAccount();
   const { mutate: changeRole, error: roleError } = useChangeAccountRole();
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+
+  function isEmailReassigned(email: string): boolean {
+    return email.endsWith('@archived.invalid');
+  }
 
   function actionErrorMessage(error: unknown): string | null {
     if (!error) return null;
@@ -249,9 +257,9 @@ export function AccountsAdmin() {
       <InviteForm />
       <InvitationsTable />
 
-      {(archiveError || reactivateError || roleError) && (
+      {(archiveError || reactivateError || deleteError || roleError) && (
         <Alert role="alert" color="red">
-          {actionErrorMessage(archiveError ?? reactivateError ?? roleError)}
+          {actionErrorMessage(archiveError ?? reactivateError ?? deleteError ?? roleError)}
         </Alert>
       )}
 
@@ -293,7 +301,9 @@ export function AccountsAdmin() {
                       </Table.Td>
                       <Table.Td>
                         <Text size="sm" c="dimmed">
-                          {account.email}
+                          {isEmailReassigned(account.email)
+                            ? t('accountsAdmin.emailReassigned')
+                            : account.email}
                         </Text>
                       </Table.Td>
                       <Table.Td>
@@ -345,13 +355,25 @@ export function AccountsAdmin() {
                               )}
                             </>
                           ) : (
-                            <Button
-                              size="compact-sm"
-                              variant="default"
-                              onClick={() => reactivateAccount(account.id)}
-                            >
-                              {t('accountsAdmin.reactivateButton')}
-                            </Button>
+                            <Group gap="xs">
+                              {!isEmailReassigned(account.email) && (
+                                <Button
+                                  size="compact-sm"
+                                  variant="default"
+                                  onClick={() => reactivateAccount(account.id)}
+                                >
+                                  {t('accountsAdmin.reactivateButton')}
+                                </Button>
+                              )}
+                              <Button
+                                size="compact-sm"
+                                variant="filled"
+                                color="red"
+                                onClick={() => setConfirmDeleteId(account.id)}
+                              >
+                                {t('accountsAdmin.deleteButton')}
+                              </Button>
+                            </Group>
                           )}
                         </Group>
                       </Table.Td>
@@ -363,6 +385,31 @@ export function AccountsAdmin() {
           </Table.ScrollContainer>
         </Paper>
       )}
+
+      <Modal
+        opened={confirmDeleteId !== null}
+        onClose={() => setConfirmDeleteId(null)}
+        title={t('accountsAdmin.deleteConfirmTitle')}
+        centered
+      >
+        <Stack gap="md">
+          <Text size="sm">{t('accountsAdmin.deleteConfirmMessage')}</Text>
+          <Group justify="flex-end" gap="sm">
+            <Button variant="default" onClick={() => setConfirmDeleteId(null)}>
+              {t('common.cancel')}
+            </Button>
+            <Button
+              color="red"
+              onClick={() => {
+                if (confirmDeleteId) deleteAccount(confirmDeleteId);
+                setConfirmDeleteId(null);
+              }}
+            >
+              {t('accountsAdmin.deleteButton')}
+            </Button>
+          </Group>
+        </Stack>
+      </Modal>
     </Stack>
   );
 }

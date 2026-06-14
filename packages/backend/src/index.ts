@@ -9,7 +9,15 @@ import { buildServer } from './server.js';
 import { MailerService } from './services/mailer.service.js';
 
 const db = getDb(process.env['DATABASE_PATH']);
-runMigrations(db);
+const bootstrap = runMigrations(db);
+if (bootstrap) {
+  console.log('============================================================');
+  console.log(' Bootstrap administrator account created');
+  console.log(` Email:    ${bootstrap.email}`);
+  console.log(` Password: ${bootstrap.password}`);
+  console.log(' Sign in and change this password immediately from Account Settings.');
+  console.log('============================================================');
+}
 purgeExpiredArchivedAccounts(db);
 purgeStaleInvitations(db);
 

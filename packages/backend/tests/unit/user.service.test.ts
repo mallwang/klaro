@@ -347,6 +347,49 @@ describe('UserService – findByEmail', () => {
   });
 });
 
+describe('UserService – delete', () => {
+  let db: Database.Database;
+  let service: UserService;
+
+  beforeEach(() => {
+    db = createDb(':memory:');
+    runMigrations(db);
+    db.prepare(`DELETE FROM users WHERE email = 'admin@localhost.local'`).run();
+    service = new UserService(db);
+  });
+
+  afterEach(() => db.close());
+
+  it('deletes an archived account and returns "deleted"', () => {
+    const target = insertUser(db, { status: 'ARCHIVED', archivedAt: new Date().toISOString() });
+    expect(service.delete(target.id)).toBe('deleted');
+    expect(db.prepare(`SELECT id FROM users WHERE id = ?`).get(target.id)).toBeUndefined();
+  });
+
+  it("also removes the user's contracts", () => {
+    const target = insertUser(db, { status: 'ARCHIVED', archivedAt: new Date().toISOString() });
+    const now = new Date().toISOString();
+    db.prepare(
+      `INSERT INTO contracts (id, user_id, name, category, amount, billing_interval, status, anonymize, created_at, updated_at)
+       VALUES (?, ?, 'Old Contract', 'SUBSCRIPTIONS', 5, 'MONTHLY', 'ACTIVE', 0, ?, ?)`,
+    ).run(randomUUID(), target.id, now, now);
+
+    expect(service.delete(target.id)).toBe('deleted');
+    const contracts = db.prepare(`SELECT id FROM contracts WHERE user_id = ?`).all(target.id);
+    expect(contracts).toHaveLength(0);
+  });
+
+  it('returns "not-found" for an unknown id', () => {
+    expect(service.delete(randomUUID())).toBe('not-found');
+  });
+
+  it('returns "not-archived" for an active account', () => {
+    const target = insertUser(db, { status: 'ACTIVE' });
+    expect(service.delete(target.id)).toBe('not-archived');
+    expect(db.prepare(`SELECT id FROM users WHERE id = ?`).get(target.id)).toBeTruthy();
+  });
+});
+
 describe('30-day retention purge (FR-012/FR-013, exercised via db/client)', () => {
   let db: Database.Database;
 

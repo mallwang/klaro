@@ -6,8 +6,8 @@ import { LanguagePicker } from './LanguagePicker.js';
 import classes from './TopHeader.module.css';
 
 interface TopHeaderProps {
-  mobileOpened: boolean;
-  toggleMobile: () => void;
+  mobileOpened?: boolean;
+  toggleMobile?: () => void;
 }
 
 export function TopHeader({ mobileOpened, toggleMobile }: TopHeaderProps) {
@@ -17,13 +17,15 @@ export function TopHeader({ mobileOpened, toggleMobile }: TopHeaderProps) {
   return (
     <div className={classes.header}>
       <Group className={classes.left}>
-        <Burger
-          opened={mobileOpened}
-          onClick={toggleMobile}
-          hiddenFrom="sm"
-          size="sm"
-          aria-label="Toggle navigation"
-        />
+        {toggleMobile && (
+          <Burger
+            opened={mobileOpened ?? false}
+            onClick={toggleMobile}
+            hiddenFrom="sm"
+            size="sm"
+            aria-label="Toggle navigation"
+          />
+        )}
         <ThemeIcon variant="light" size="md">
           <IconFileDescription size={16} />
         </ThemeIcon>

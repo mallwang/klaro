@@ -29,7 +29,9 @@ export class MailerService {
     const port = parseInt(process.env['SMTP_PORT'] ?? '587');
     const user = process.env['SMTP_USER'];
     const pass = process.env['SMTP_PASSWORD'];
-    const from = process.env['SMTP_FROM'] ?? '';
+    const fromAddress = process.env['SMTP_FROM'] ?? '';
+    const fromName = process.env['SMTP_FROM_NAME'];
+    const from = fromName ? `"${fromName}" <${fromAddress}>` : fromAddress;
 
     if (!host || !from) {
       throw new MailerError('SMTP configuration is missing (SMTP_HOST, SMTP_FROM required)');
@@ -46,6 +48,20 @@ export class MailerService {
     });
 
     return new MailerService({ transport, from });
+  }
+
+  async sendEmailVerificationEmail(to: string, link: string, expiresAt: string): Promise<void> {
+    const expiryDate = new Date(expiresAt).toISOString().slice(0, 10);
+    const subject = 'Verify your new email address';
+    const text = `You requested an email address change.\n\nClick the link below to confirm your new email address:\n\n${link}\n\nThis link expires on ${expiryDate}. It can only be used once.\n\nIf you did not request this change, you can ignore this email.`;
+    const html = `<p>You requested an email address change.</p><p>Click the link below to confirm your new email address:</p><p><a href="${link}">${link}</a></p><p>This link expires on <strong>${expiryDate}</strong>. It can only be used once.</p><p>If you did not request this change, you can ignore this email.</p>`;
+
+    await new Promise<void>((resolve, reject) => {
+      this.transport.sendMail({ from: this.from, to, subject, text, html }, (err) => {
+        if (err) reject(new MailerError(err.message));
+        else resolve();
+      });
+    });
   }
 
   async sendInvitationEmail(to: string, link: string, expiresAt: string): Promise<void> {

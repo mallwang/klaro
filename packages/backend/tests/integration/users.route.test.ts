@@ -388,6 +388,62 @@ describe('POST /api/users/:id/reactivate', () => {
   });
 });
 
+describe('DELETE /api/users/:id', () => {
+  let db: Database.Database;
+  let app: FastifyInstance;
+  let adminCookie: string;
+
+  function inject(sessionCookie: string, opts: InjectOptions) {
+    return app.inject({ ...opts, cookies: { [SESSION_COOKIE_NAME]: sessionCookie } });
+  }
+
+  beforeEach(async () => {
+    db = createDb(':memory:');
+    runMigrations(db);
+    db.prepare(`DELETE FROM users WHERE email = 'admin@localhost.local'`).run();
+    app = await buildServer(db);
+    await app.ready();
+    adminCookie = createAuthenticatedSession(db, {
+      role: 'ADMIN',
+      email: 'admin@example.test',
+    }).sessionId;
+  });
+
+  afterEach(async () => {
+    await app.close();
+    db.close();
+  });
+
+  it('returns 204 and removes the account row when the account is archived', async () => {
+    const target = insertUser(db, { status: 'ARCHIVED', archivedAt: new Date().toISOString() });
+    const res = await inject(adminCookie, { method: 'DELETE', url: `/api/users/${target.id}` });
+    expect(res.statusCode).toBe(204);
+    expect(db.prepare(`SELECT id FROM users WHERE id = ?`).get(target.id)).toBeUndefined();
+  });
+
+  it('returns 404 for an unknown id', async () => {
+    const res = await inject(adminCookie, { method: 'DELETE', url: `/api/users/${randomUUID()}` });
+    expect(res.statusCode).toBe(404);
+  });
+
+  it('returns 409 when the account is not archived', async () => {
+    const target = insertUser(db, { status: 'ACTIVE' });
+    const res = await inject(adminCookie, { method: 'DELETE', url: `/api/users/${target.id}` });
+    expect(res.statusCode).toBe(409);
+    expect(db.prepare(`SELECT id FROM users WHERE id = ?`).get(target.id)).toBeTruthy();
+  });
+
+  it('returns 403 for a non-admin', async () => {
+    const memberCookie = createAuthenticatedSession(db, {
+      role: 'MEMBER',
+      email: 'member@example.test',
+    }).sessionId;
+    const target = insertUser(db, { status: 'ARCHIVED', archivedAt: new Date().toISOString() });
+    const res = await inject(memberCookie, { method: 'DELETE', url: `/api/users/${target.id}` });
+    expect(res.statusCode).toBe(403);
+  });
+});
+
 describe('POST /api/users/:id/role', () => {
   let db: Database.Database;
   let app: FastifyInstance;
