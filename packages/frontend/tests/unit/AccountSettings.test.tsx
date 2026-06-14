@@ -15,6 +15,7 @@ vi.mock('../../src/services/profile.js', () => ({
   updateDisplayName: vi.fn(),
   requestEmailChange: vi.fn(),
   getPendingEmailChange: vi.fn(),
+  deleteSelf: vi.fn(),
 }));
 
 vi.mock('../../src/services/auth.js', () => ({
@@ -26,6 +27,22 @@ vi.mock('../../src/services/auth.js', () => ({
       this.status = status;
     }
   },
+}));
+
+vi.mock('../../src/services/contracts.js', () => ({
+  useContracts: vi.fn(() => ({ data: [] })),
+}));
+
+vi.mock('../../src/services/users.js', () => ({
+  fetchAccounts: vi.fn(() => Promise.resolve([])),
+}));
+
+vi.mock('../../src/hooks/useAccounts.js', () => ({
+  ACCOUNTS_QUERY_KEY: ['accounts'],
+}));
+
+vi.mock('../../src/components/DeleteAccountModal.js', () => ({
+  DeleteAccountModal: vi.fn(() => null),
 }));
 
 import { useCurrentUser } from '../../src/hooks/useAuth.js';
@@ -155,5 +172,24 @@ describe('AccountSettings – Email Address section', () => {
     expect(
       await screen.findByText('This email address is already in use by another account.'),
     ).toBeInTheDocument();
+  });
+});
+
+// ─── Danger Zone section ──────────────────────────────────────────────────────
+
+describe('AccountSettings – Danger Zone section', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.mocked(profileService.getPendingEmailChange).mockResolvedValue({ pendingEmail: null });
+  });
+
+  it('renders the Danger Zone Paper section', () => {
+    renderAccountSettings();
+    expect(screen.getByText(/danger zone/i)).toBeInTheDocument();
+  });
+
+  it('renders the "Delete Account" button', () => {
+    renderAccountSettings();
+    expect(screen.getByRole('button', { name: /delete account/i })).toBeInTheDocument();
   });
 });

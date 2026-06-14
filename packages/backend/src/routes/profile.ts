@@ -2,11 +2,26 @@ import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
 import { UpdateDisplayNameBodySchema, RequestEmailChangeBodySchema } from '@pcm/shared';
 import { ProfileService } from '../services/profile.service.js';
+import { SESSION_COOKIE_NAME } from '../server.js';
 
 const TokenParams = z.object({ token: z.string() });
 
 export async function profileRoutes(fastify: FastifyInstance): Promise<void> {
   const profileService = new ProfileService(fastify.db);
+
+  // DELETE /api/profile — delete own account
+  fastify.delete('/api/profile', async (request, reply) => {
+    const result = profileService.deleteSelf(request.user!.id);
+    if (result === 'last-admin') {
+      return reply.status(409).send({
+        statusCode: 409,
+        error: 'Conflict',
+        message: 'Cannot delete the last active administrator account',
+      });
+    }
+    reply.clearCookie(SESSION_COOKIE_NAME, { path: '/' });
+    return reply.status(204).send();
+  });
 
   // PATCH /api/profile — update display name
   fastify.patch('/api/profile', async (request, reply) => {

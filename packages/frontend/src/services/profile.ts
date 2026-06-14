@@ -54,3 +54,12 @@ export async function confirmEmailChange(token: string): Promise<void> {
   if (!res.ok)
     throw new AuthError(res.status, await readErrorMessage(res, 'Failed to confirm email change'));
 }
+
+export async function deleteSelf(): Promise<void> {
+  const res = await fetch('/api/profile', {
+    method: 'DELETE',
+    credentials: 'include',
+  });
+  if (!res.ok)
+    throw new AuthError(res.status, await readErrorMessage(res, 'Failed to delete account'));
+}

@@ -1,6 +1,7 @@
 import { randomBytes } from 'node:crypto';
 import type Database from 'better-sqlite3';
 import type { UserRow, EmailVerificationRow } from '../db/client.js';
+import type { DeleteSelfResult } from '@pcm/shared';
 
 export type UpdateDisplayNameResult = 'updated' | 'not-found';
 
@@ -73,6 +74,31 @@ export class ProfileService {
       return null;
     }
     return { pendingEmail: row.new_email };
+  }
+
+  deleteSelf(userId: string): DeleteSelfResult {
+    const user = this.db
+      .prepare<
+        [string],
+        { role: string }
+      >(`SELECT role FROM users WHERE id = ? AND status = 'ACTIVE'`)
+      .get(userId);
+
+    if (user?.role === 'ADMIN') {
+      const { count } = this.db
+        .prepare<
+          [],
+          { count: number }
+        >(`SELECT COUNT(*) AS count FROM users WHERE role = 'ADMIN' AND status = 'ACTIVE'`)
+        .get()!;
+      if (count <= 1) return 'last-admin';
+    }
+
+    this.db.transaction(() => {
+      this.db.prepare(`DELETE FROM users WHERE id = ?`).run(userId);
+    })();
+
+    return 'deleted';
   }
 
   confirmEmailChange(token: string): ConfirmEmailChangeResult {

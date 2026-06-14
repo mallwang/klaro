@@ -266,5 +266,23 @@
     "notFound": "Dieser Link ist nicht gültig.",
     "toDashboard": "Zum Dashboard",
     "redirecting": "Automatische Weiterleitung in wenigen Sekunden…"
+  },
+  "dangerZone": {
+    "title": "Gefahrenzone",
+    "description": "Löschen Sie Ihr Konto und alle zugehörigen Verträge dauerhaft. Diese Aktion kann nicht rückgängig gemacht werden.",
+    "deleteButton": "Konto löschen"
+  },
+  "deleteModal": {
+    "title": "Konto löschen",
+    "warningText": "Dadurch werden Ihr Konto und alle zugehörigen Verträge dauerhaft und unwiderruflich gelöscht.",
+    "exportButton": "Verträge als JSON herunterladen",
+    "skipButton": "Überspringen, ohne herunterzuladen",
+    "emptyContractsNotice": "Keine Verträge zum Exportieren.",
+    "confirmTitle": "Dauerhaftes Löschen bestätigen",
+    "confirmButton": "Mein Konto dauerhaft löschen",
+    "cancelButton": "Abbrechen",
+    "deleteError": "Konto konnte nicht gelöscht werden. Bitte erneut versuchen.",
+    "deleting": "Wird gelöscht…",
+    "soleAdminWarning": "Sie sind der einzige Administrator. Bitte befördern Sie zuerst einen anderen Benutzer zum Administrator."
   }
 }

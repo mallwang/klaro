@@ -419,3 +419,57 @@ function insertVerificationTokenForApp(db: Database.Database, userId: string, ne
   );
   return token;
 }
+
+// ─── DELETE /api/profile ──────────────────────────────────────────────────────
+
+describe('DELETE /api/profile', () => {
+  let db: Database.Database;
+  let app: FastifyInstance;
+  let memberCookie: string;
+  let memberId: string;
+  let adminCookie: string;
+
+  beforeEach(async () => {
+    ({ db, app, memberCookie, memberId, adminCookie } = await setup());
+  });
+
+  afterEach(async () => {
+    await app.close();
+    db.close();
+  });
+
+  it('returns 401 when unauthenticated', async () => {
+    const res = await app.inject({ method: 'DELETE', url: '/api/profile' });
+    expect(res.statusCode).toBe(401);
+  });
+
+  it('returns 204, removes the user row, and clears the session cookie for a MEMBER', async () => {
+    const res = await app.inject({
+      method: 'DELETE',
+      url: '/api/profile',
+      cookies: { [SESSION_COOKIE_NAME]: memberCookie },
+    });
+    expect(res.statusCode).toBe(204);
+    const row = db
+      .prepare<[string], { id: string }>(`SELECT id FROM users WHERE id = ?`)
+      .get(memberId);
+    expect(row).toBeUndefined();
+    const setCookieHeader = res.headers['set-cookie'];
+    const cookieStr = Array.isArray(setCookieHeader)
+      ? setCookieHeader.join('; ')
+      : (setCookieHeader ?? '');
+    expect(cookieStr).toContain(SESSION_COOKIE_NAME);
+    expect(cookieStr).toContain('Expires=Thu, 01 Jan 1970');
+  });
+
+  it('returns 409 when the sole ADMIN tries to delete their account', async () => {
+    const res = await app.inject({
+      method: 'DELETE',
+      url: '/api/profile',
+      cookies: { [SESSION_COOKIE_NAME]: adminCookie },
+    });
+    expect(res.statusCode).toBe(409);
+    const body = res.json<{ message: string }>();
+    expect(body.message).toMatch(/last.*admin|admin/i);
+  });
+});
