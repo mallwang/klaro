@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useLocation, useNavigate, type Location } from 'react-router-dom';
+import { useLocation, useNavigate, Navigate, type Location } from 'react-router-dom';
 import { Stack, TextInput, PasswordInput, Button, Alert, Paper, Title } from '@mantine/core';
 import { AuthError } from '../services/auth';
-import { useSignIn } from '../hooks/useAuth';
+import { useCurrentUser, useSignIn } from '../hooks/useAuth';
 import { PublicLayout } from '../components/PublicLayout.js';
 
 interface LocationState {
@@ -14,6 +14,7 @@ export function SignIn() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
+  const { data: currentUser, isLoading: isCheckingSession } = useCurrentUser();
   const { mutate: signIn, isPending, error } = useSignIn();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -27,6 +28,9 @@ export function SignIn() {
       { onSuccess: () => navigate(redirectTo, { replace: true }) },
     );
   }
+
+  if (isCheckingSession) return null;
+  if (currentUser) return <Navigate to="/" replace />;
 
   function errorMessage(): string | null {
     if (!error) return null;

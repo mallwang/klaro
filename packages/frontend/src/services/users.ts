@@ -4,6 +4,7 @@ import {
   type Account,
   type CreateAccountBody,
   type Role,
+  type SendTestEmailBody,
 } from '@pcm/shared';
 import { AuthError } from './auth.js';
 
@@ -68,4 +69,15 @@ export async function changeAccountRole(id: string, role: Role): Promise<void> {
   });
   if (!res.ok)
     throw new AuthError(res.status, await readErrorMessage(res, 'Failed to change account role'));
+}
+
+export async function sendTestEmail(body: SendTestEmailBody): Promise<void> {
+  const res = await fetch('/api/admin/email/test', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify(body),
+  });
+  if (!res.ok)
+    throw new AuthError(res.status, await readErrorMessage(res, 'Failed to send test email'));
 }

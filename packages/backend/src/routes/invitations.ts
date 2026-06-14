@@ -194,6 +194,13 @@ export async function invitationRoutes(fastify: FastifyInstance): Promise<void> 
 
     const { userRow, session } = acceptAndActivate();
 
+    if (fastify.mailer) {
+      const appUrl = process.env['APP_URL'] ?? 'http://localhost:5173';
+      fastify.mailer.sendWelcomeEmail(userRow.email, `${appUrl}/sign-in`).catch((err) => {
+        fastify.log.error({ err }, 'Failed to send welcome email');
+      });
+    }
+
     reply.setCookie('session_id', session.id, {
       httpOnly: true,
       sameSite: 'lax',

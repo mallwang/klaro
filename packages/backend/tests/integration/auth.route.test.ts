@@ -6,6 +6,8 @@ import { createDb, runMigrations } from '../../src/db/client.js';
 import { buildServer, SESSION_COOKIE_NAME } from '../../src/server.js';
 import { hashPassword } from '../../src/services/password.js';
 import { createAuthenticatedSession } from '../helpers/auth.js';
+import type { MailerService } from '../../src/services/mailer.service.js';
+import { MailerError } from '../../src/services/mailer.service.js';
 
 function insertUser(
   db: Database.Database,
@@ -441,5 +443,85 @@ describe('POST /api/auth/password', () => {
       payload: { currentPassword: 'totally-wrong', newPassword: 'new-password456' },
     });
     expect(res.statusCode).toBe(401);
+  });
+});
+
+describe('POST /api/auth/password — password change email (fire-and-forget)', () => {
+  it('calls sendPasswordChangeEmail with the user email after a successful change', async () => {
+    let capturedTo: string | undefined;
+    let capturedLink: string | undefined;
+    const trackingMailer: MailerService = {
+      sendPasswordChangeEmail: async (to: string, link: string) => {
+        capturedTo = to;
+        capturedLink = link;
+      },
+    } as unknown as MailerService;
+
+    const db = createDb(':memory:');
+    runMigrations(db);
+    const app = await buildServer(db, { mailer: trackingMailer });
+    await app.ready();
+
+    try {
+      const { email } = insertUser(db, { email: 'pwchange@example.test', password: 'old-pass123' });
+      const signIn = await app.inject({
+        method: 'POST',
+        url: '/api/auth/sign-in',
+        payload: { email, password: 'old-pass123' },
+      });
+      const cookie = findCookie(signIn.headers['set-cookie'], SESSION_COOKIE_NAME)!
+        .split(';')[0]!
+        .split('=')[1]!;
+
+      const res = await app.inject({
+        method: 'POST',
+        url: '/api/auth/password',
+        cookies: { [SESSION_COOKIE_NAME]: cookie },
+        payload: { currentPassword: 'old-pass123', newPassword: 'new-pass456' },
+      });
+      expect(res.statusCode).toBe(204);
+      await new Promise((r) => setTimeout(r, 20));
+      expect(capturedTo).toBe('pwchange@example.test');
+      expect(capturedLink).toContain('/sign-in');
+    } finally {
+      await app.close();
+      db.close();
+    }
+  });
+
+  it('still returns 204 when sendPasswordChangeEmail throws (fire-and-forget)', async () => {
+    const failMailer: MailerService = {
+      sendPasswordChangeEmail: async () => {
+        throw new MailerError('SMTP down');
+      },
+    } as unknown as MailerService;
+
+    const db = createDb(':memory:');
+    runMigrations(db);
+    const app = await buildServer(db, { mailer: failMailer });
+    await app.ready();
+
+    try {
+      const { email } = insertUser(db, { email: 'pwfail@example.test', password: 'old-pass123' });
+      const signIn = await app.inject({
+        method: 'POST',
+        url: '/api/auth/sign-in',
+        payload: { email, password: 'old-pass123' },
+      });
+      const cookie = findCookie(signIn.headers['set-cookie'], SESSION_COOKIE_NAME)!
+        .split(';')[0]!
+        .split('=')[1]!;
+
+      const res = await app.inject({
+        method: 'POST',
+        url: '/api/auth/password',
+        cookies: { [SESSION_COOKIE_NAME]: cookie },
+        payload: { currentPassword: 'old-pass123', newPassword: 'new-pass456' },
+      });
+      expect(res.statusCode).toBe(204);
+    } finally {
+      await app.close();
+      db.close();
+    }
   });
 });

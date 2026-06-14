@@ -8,12 +8,19 @@ import { createAuthenticatedSession } from '../helpers/auth.js';
 import type { MailerService } from '../../src/services/mailer.service.js';
 import { MailerError } from '../../src/services/mailer.service.js';
 
-function makeStubMailer(failWith?: Error): MailerService {
+function makeStubMailer(
+  opts: { emailVerificationFails?: Error; confirmationEmailFails?: boolean } = {},
+): MailerService {
   return {
     sendInvitationEmail: async () => {},
-    sendEmailVerificationEmail: failWith
+    sendEmailVerificationEmail: opts.emailVerificationFails
       ? async () => {
-          throw new MailerError(failWith.message);
+          throw new MailerError(opts.emailVerificationFails!.message);
+        }
+      : async () => {},
+    sendEmailChangeConfirmationEmail: opts.confirmationEmailFails
+      ? async () => {
+          throw new MailerError('SMTP down');
         }
       : async () => {},
   } as unknown as MailerService;
@@ -174,7 +181,7 @@ describe('POST /api/profile/email-change', () => {
       app: failApp,
       memberCookie: failCookie,
       memberId: failMemberId,
-    } = await setup(makeStubMailer(new Error('SMTP error')));
+    } = await setup(makeStubMailer({ emailVerificationFails: new Error('SMTP error') }));
     try {
       const res = await failApp.inject({
         method: 'POST',
@@ -317,3 +324,98 @@ describe('POST /api/profile/email-change/:token/confirm', () => {
     expect(res.statusCode).toBe(404);
   });
 });
+
+// ─── US3: confirmation email after email change (US3) ─────────────────────────
+
+describe('POST /api/profile/email-change/:token/confirm — confirmation email (US3)', () => {
+  let db: Database.Database;
+  let app: FastifyInstance;
+  let memberId: string;
+
+  beforeEach(async () => {
+    ({ db, app, memberId } = await setup());
+  });
+
+  afterEach(async () => {
+    await app.close();
+    db.close();
+  });
+
+  function insertVerificationToken(userId: string, newEmail: string) {
+    const token = 'test-' + randomUUID().replace(/-/g, '');
+    db.prepare(
+      `INSERT INTO email_verifications (token, user_id, new_email, expires_at, created_at)
+       VALUES (?, ?, ?, ?, ?)`,
+    ).run(
+      token,
+      userId,
+      newEmail,
+      new Date(Date.now() + 86400000).toISOString(),
+      new Date().toISOString(),
+    );
+    return token;
+  }
+
+  it('calls sendEmailChangeConfirmationEmail with the new email after a successful confirm', async () => {
+    let capturedTo: string | undefined;
+    let capturedChangedAt: string | undefined;
+    const trackingMailer: MailerService = {
+      sendInvitationEmail: async () => {},
+      sendEmailVerificationEmail: async () => {},
+      sendEmailChangeConfirmationEmail: async (to: string, changedAt: string) => {
+        capturedTo = to;
+        capturedChangedAt = changedAt;
+      },
+    } as unknown as MailerService;
+
+    const { db: tDb, app: tApp, memberId: tMemberId } = await setup(trackingMailer);
+    try {
+      const token = insertVerificationTokenForApp(tDb, tMemberId, 'newaddr@example.test');
+      const res = await tApp.inject({
+        method: 'POST',
+        url: `/api/profile/email-change/${token}/confirm`,
+      });
+      expect(res.statusCode).toBe(200);
+      await new Promise((r) => setTimeout(r, 20));
+      expect(capturedTo).toBe('newaddr@example.test');
+      expect(capturedChangedAt).toBeTruthy();
+    } finally {
+      await tApp.close();
+      tDb.close();
+    }
+  });
+
+  it('still returns 200 when sendEmailChangeConfirmationEmail throws (fire-and-forget)', async () => {
+    const {
+      db: fDb,
+      app: fApp,
+      memberId: fMemberId,
+    } = await setup(makeStubMailer({ confirmationEmailFails: true }));
+    try {
+      const token = insertVerificationTokenForApp(fDb, fMemberId, 'failconfirm@example.test');
+      const res = await fApp.inject({
+        method: 'POST',
+        url: `/api/profile/email-change/${token}/confirm`,
+      });
+      expect(res.statusCode).toBe(200);
+    } finally {
+      await fApp.close();
+      fDb.close();
+    }
+  });
+});
+
+function insertVerificationTokenForApp(db: Database.Database, userId: string, newEmail: string) {
+  const token = 'test-' + randomUUID().replace(/-/g, '');
+  db.prepare(
+    `INSERT INTO email_verifications (token, user_id, new_email, expires_at, created_at)
+     VALUES (?, ?, ?, ?, ?)`,
+  ).run(
+    token,
+    userId,
+    newEmail,
+    new Date(Date.now() + 86400000).toISOString(),
+    new Date().toISOString(),
+  );
+  return token;
+}

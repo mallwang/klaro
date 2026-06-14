@@ -19,7 +19,7 @@ written and confirmed failing BEFORE the implementation tasks in each phase.
 **Purpose**: No new packages or project structure required — the monorepo, mailer service,
 and test infrastructure all exist. Phase 1 is intentionally minimal.
 
-- [ ] T001 Confirm all tests currently pass: `pnpm --filter backend test` and `pnpm --filter backend test:integration`
+- [X] T001 Confirm all tests currently pass: `pnpm --filter backend test` and `pnpm --filter backend test:integration`
 
 ---
 
@@ -45,17 +45,17 @@ that a non-admin `POST /api/admin/email/test` request returns 403.
 
 > **Write these tests FIRST — they MUST fail before any implementation begins.**
 
-- [ ] T002 [P] [US1] Write failing unit tests for `sendTestEmail` in `packages/backend/tests/unit/mailer.service.test.ts` — cover: correct recipient/subject, transport failure throws `MailerError`
-- [ ] T003 [P] [US1] Write failing integration tests for `POST /api/admin/email/test` in `packages/backend/tests/integration/admin.route.test.ts` — cover: 200 success (mock mailer), 400 bad input, 403 non-admin, 502 mailer error
+- [X] T002 [P] [US1] Write failing unit tests for `sendTestEmail` in `packages/backend/tests/unit/mailer.service.test.ts` — cover: correct recipient/subject, transport failure throws `MailerError`
+- [X] T003 [P] [US1] Write failing integration tests for `POST /api/admin/email/test` in `packages/backend/tests/integration/admin.route.test.ts` — cover: 200 success (mock mailer), 400 bad input, 403 non-admin, 502 mailer error
 
 ### Implementation for User Story 1
 
-- [ ] T004 [P] [US1] Add `SendTestEmailBodySchema` (and exported `SendTestEmailBody` type) to `packages/shared/src/schemas/profile.ts` and re-export from `packages/shared/src/index.ts`
-- [ ] T005 [P] [US1] Add `sendTestEmail(to: string): Promise<void>` method to `MailerService` in `packages/backend/src/services/mailer.service.ts` (after T002 is failing)
-- [ ] T006 [US1] Create `packages/backend/src/routes/admin.ts` — admin-only `onRequest` guard (403 for non-admin) and `POST /api/admin/email/test` handler using `SendTestEmailBodySchema` and `fastify.mailer.sendTestEmail` (depends on T004, T005)
-- [ ] T007 [US1] Register `adminRoutes` in `packages/backend/src/server.ts` (depends on T006)
-- [ ] T008 [P] [US1] Add `sendTestEmail(email: string): Promise<void>` function to `packages/frontend/src/services/users.ts` — calls `POST /api/admin/email/test`, throws `AuthError` on non-2xx
-- [ ] T009 [US1] Add `TestEmailForm` component (pre-fills recipient with signed-in admin's email, shows success/error alert) and its section to `packages/frontend/src/pages/admin/AccountsAdmin.tsx` (depends on T008)
+- [X] T004 [P] [US1] Add `SendTestEmailBodySchema` (and exported `SendTestEmailBody` type) to `packages/shared/src/schemas/profile.ts` and re-export from `packages/shared/src/index.ts`
+- [X] T005 [P] [US1] Add `sendTestEmail(to: string): Promise<void>` method to `MailerService` in `packages/backend/src/services/mailer.service.ts` (after T002 is failing)
+- [X] T006 [US1] Create `packages/backend/src/routes/admin.ts` — admin-only `onRequest` guard (403 for non-admin) and `POST /api/admin/email/test` handler using `SendTestEmailBodySchema` and `fastify.mailer.sendTestEmail` (depends on T004, T005)
+- [X] T007 [US1] Register `adminRoutes` in `packages/backend/src/server.ts` (depends on T006)
+- [X] T008 [P] [US1] Add `sendTestEmail(email: string): Promise<void>` function to `packages/frontend/src/services/users.ts` — calls `POST /api/admin/email/test`, throws `AuthError` on non-2xx
+- [X] T009 [US1] Add `TestEmailForm` component (pre-fills recipient with signed-in admin's email, shows success/error alert) and its section to `packages/frontend/src/pages/admin/AccountsAdmin.tsx` (depends on T008)
 
 **Checkpoint**: `POST /api/admin/email/test` is live, guarded by ADMIN role, and the admin UI form works end-to-end. Unit and integration tests pass.
 
@@ -74,13 +74,13 @@ sink. Confirm that with SMTP disabled, activation still succeeds and the error i
 
 > **Write these tests FIRST — they MUST fail before any implementation begins.**
 
-- [ ] T010 [P] [US2] Write failing unit tests for `sendWelcomeEmail` in `packages/backend/tests/unit/mailer.service.test.ts` — cover: correct recipient/subject/body, transport failure throws `MailerError`
-- [ ] T011 [P] [US2] Write failing integration test in `packages/backend/tests/integration/invitations.route.test.ts` — assert that `POST /api/invitations/:token/accept` calls mock mailer's `sendWelcomeEmail` after successful activation; assert activation still returns 200 when mailer throws
+- [X] T010 [P] [US2] Write failing unit tests for `sendWelcomeEmail` in `packages/backend/tests/unit/mailer.service.test.ts` — cover: correct recipient/subject/body, transport failure throws `MailerError`
+- [X] T011 [P] [US2] Write failing integration test in `packages/backend/tests/integration/invitations.route.test.ts` — assert that `POST /api/invitations/:token/accept` calls mock mailer's `sendWelcomeEmail` after successful activation; assert activation still returns 200 when mailer throws
 
 ### Implementation for User Story 2
 
-- [ ] T012 [P] [US2] Add `sendWelcomeEmail(to: string): Promise<void>` method to `MailerService` in `packages/backend/src/services/mailer.service.ts` (after T010 is failing)
-- [ ] T013 [US2] Add fire-and-forget `sendWelcomeEmail` call after `acceptAndActivate()` in `packages/backend/src/routes/invitations.ts` — wrap in try/catch, log error, never surface to invitee (depends on T012)
+- [X] T012 [P] [US2] Add `sendWelcomeEmail(to: string): Promise<void>` method to `MailerService` in `packages/backend/src/services/mailer.service.ts` (after T010 is failing)
+- [X] T013 [US2] Add fire-and-forget `sendWelcomeEmail` call after `acceptAndActivate()` in `packages/backend/src/routes/invitations.ts` — wrap in try/catch, log error, never surface to invitee (depends on T012)
 
 **Checkpoint**: Welcome email is sent on every successful invitation acceptance. Activation is never blocked by a mailer error. Tests pass.
 
@@ -99,15 +99,15 @@ Confirm that with SMTP disabled, the email change still completes and the error 
 
 > **Write these tests FIRST — they MUST fail before any implementation begins.**
 
-- [ ] T014 [P] [US3] Write failing unit tests for `sendEmailChangeConfirmationEmail` in `packages/backend/tests/unit/mailer.service.test.ts` — cover: correct recipient/date in body, transport failure throws `MailerError`
-- [ ] T015 [P] [US3] Update `packages/backend/tests/unit/profile.service.test.ts` — update `confirmEmailChange` test to expect `{ outcome: 'confirmed', newEmail: string }` return shape (should fail against current implementation)
-- [ ] T016 [P] [US3] Write failing integration test in `packages/backend/tests/integration/profile.route.test.ts` — assert that `POST /api/profile/email-change/:token/confirm` calls mock mailer's `sendEmailChangeConfirmationEmail` with the new email; assert the change still returns 200 when mailer throws
+- [X] T014 [P] [US3] Write failing unit tests for `sendEmailChangeConfirmationEmail` in `packages/backend/tests/unit/mailer.service.test.ts` — cover: correct recipient/date in body, transport failure throws `MailerError`
+- [X] T015 [P] [US3] Update `packages/backend/tests/unit/profile.service.test.ts` — update `confirmEmailChange` test to expect `{ outcome: 'confirmed', newEmail: string }` return shape (should fail against current implementation)
+- [X] T016 [P] [US3] Write failing integration test in `packages/backend/tests/integration/profile.route.test.ts` — assert that `POST /api/profile/email-change/:token/confirm` calls mock mailer's `sendEmailChangeConfirmationEmail` with the new email; assert the change still returns 200 when mailer throws
 
 ### Implementation for User Story 3
 
-- [ ] T017 [P] [US3] Widen `ConfirmEmailChangeResult` type and update `confirmEmailChange` method to return `{ outcome: 'confirmed'; newEmail: string }` (instead of `'confirmed'`) in `packages/backend/src/services/profile.service.ts` — the `new_email` value is already on the row (after T015 is failing)
-- [ ] T018 [P] [US3] Add `sendEmailChangeConfirmationEmail(to: string, changedAt: string): Promise<void>` method to `MailerService` in `packages/backend/src/services/mailer.service.ts` (after T014 is failing)
-- [ ] T019 [US3] Update `POST /api/profile/email-change/:token/confirm` handler in `packages/backend/src/routes/profile.ts` — destructure `result.newEmail` from widened return type and add fire-and-forget `sendEmailChangeConfirmationEmail` call with current timestamp (depends on T017, T018)
+- [X] T017 [P] [US3] Widen `ConfirmEmailChangeResult` type and update `confirmEmailChange` method to return `{ outcome: 'confirmed'; newEmail: string }` (instead of `'confirmed'`) in `packages/backend/src/services/profile.service.ts` — the `new_email` value is already on the row (after T015 is failing)
+- [X] T018 [P] [US3] Add `sendEmailChangeConfirmationEmail(to: string, changedAt: string): Promise<void>` method to `MailerService` in `packages/backend/src/services/mailer.service.ts` (after T014 is failing)
+- [X] T019 [US3] Update `POST /api/profile/email-change/:token/confirm` handler in `packages/backend/src/routes/profile.ts` — destructure `result.newEmail` from widened return type and add fire-and-forget `sendEmailChangeConfirmationEmail` call with current timestamp (depends on T017, T018)
 
 **Checkpoint**: Confirmation email is sent on every successful email-change confirmation. The email update is never blocked by a mailer error. Tests pass.
 
@@ -115,8 +115,8 @@ Confirm that with SMTP disabled, the email change still completes and the error 
 
 ## Phase 6: Polish & Cross-Cutting Concerns
 
-- [ ] T020 [P] Run full backend test suite and confirm all tests pass: `pnpm --filter backend test` and `pnpm --filter backend test:integration`
-- [ ] T021 [P] Run type-check across all packages: `pnpm tsc --noEmit` (or per-package equivalent)
+- [X] T020 [P] Run full backend test suite and confirm all tests pass: `pnpm --filter backend test` and `pnpm --filter backend test:integration`
+- [X] T021 [P] Run type-check across all packages: `pnpm tsc --noEmit` (or per-package equivalent)
 - [ ] T022 Run quickstart.md validation scenarios A, B, and C manually against a running app with Mailpit
 
 ---

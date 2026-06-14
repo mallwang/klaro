@@ -209,7 +209,15 @@
     "deleteButton": "Endgültig löschen",
     "emailReassigned": "E-Mail neu zugewiesen",
     "deleteConfirmTitle": "Konto löschen",
-    "deleteConfirmMessage": "Das Konto wird dauerhaft entfernt. Diese Aktion kann nicht rückgängig gemacht werden."
+    "deleteConfirmMessage": "Das Konto wird dauerhaft entfernt. Diese Aktion kann nicht rückgängig gemacht werden.",
+    "testEmailTitle": "Test email delivery",
+    "testEmailDescription": "Send a test email to verify your SMTP configuration is working.",
+    "testEmailRecipientLabel": "Recipient email",
+    "testEmailButton": "Send test email",
+    "testEmailSending": "Sending…",
+    "testEmailSuccess": "Test email sent successfully.",
+    "testEmailError": "Failed to send test email. Please check your SMTP configuration.",
+    "testEmailMailerError": "SMTP transport rejected the message. Please check your SMTP configuration."
   },
   "acceptInvitation": {
     "title": "Konto einrichten",
