@@ -8,8 +8,19 @@ import {
 } from '@pcm/shared';
 import { UserService } from '../services/user.service.js';
 
+/**
+ * Fastify route plugin for admin-only user account management: list, create, archive,
+ * reactivate, delete, and role change.
+ */
+
 const IdParams = z.object({ id: z.string().uuid() });
 
+/**
+ * Sends a 403 Forbidden response with a standard error body.
+ *
+ * @param reply - The Fastify reply object
+ * @returns The reply after sending the 403 status
+ */
 function forbidden(reply: import('fastify').FastifyReply) {
   return reply.status(403).send({
     statusCode: 403,
@@ -18,6 +29,11 @@ function forbidden(reply: import('fastify').FastifyReply) {
   });
 }
 
+/**
+ * Registers user management routes under /api/users on the Fastify instance.
+ *
+ * @param fastify - The Fastify instance to register routes on
+ */
 export async function userRoutes(fastify: FastifyInstance): Promise<void> {
   fastify.addHook('onRequest', async (request, reply) => {
     if (request.user?.role !== 'ADMIN') {

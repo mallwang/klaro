@@ -2,6 +2,16 @@ import type { FastifyInstance } from 'fastify';
 import { SendTestEmailBodySchema } from '@pcm/shared';
 import { MailerError } from '../services/mailer.service.js';
 
+/**
+ * Fastify route plugin for admin-only operations, currently SMTP test email dispatch.
+ */
+
+/**
+ * Sends a 403 Forbidden response with a standard error body.
+ *
+ * @param reply - The Fastify reply object
+ * @returns The reply after sending the 403 status
+ */
 function forbidden(reply: import('fastify').FastifyReply) {
   return reply.status(403).send({
     statusCode: 403,
@@ -10,6 +20,11 @@ function forbidden(reply: import('fastify').FastifyReply) {
   });
 }
 
+/**
+ * Registers admin-only routes under /api/admin on the Fastify instance.
+ *
+ * @param fastify - The Fastify instance to register routes on
+ */
 export async function adminRoutes(fastify: FastifyInstance): Promise<void> {
   fastify.addHook('onRequest', async (request, reply) => {
     if (request.user?.role !== 'ADMIN') {

@@ -5,6 +5,10 @@ import englishFlag from './images/english.png';
 import germanFlag from './images/german.png';
 import classes from './LanguagePicker.module.css';
 
+/**
+ * Dropdown language picker component that persists the selected locale to localStorage.
+ */
+
 const LANGUAGES = [
   { code: 'en', label: 'English', image: englishFlag },
   { code: 'de', label: 'Deutsch', image: germanFlag },
@@ -12,12 +16,20 @@ const LANGUAGES = [
 
 type LangCode = (typeof LANGUAGES)[number]['code'];
 
+/**
+ * Renders a flag-and-label dropdown for switching the application language.
+ */
 export function LanguagePicker() {
   const { i18n } = useTranslation();
   const current = i18n.language as LangCode;
 
   const currentLang = LANGUAGES.find((l) => l.code === current) ?? LANGUAGES[0];
 
+  /**
+   * Switches the active i18n language and persists the choice to localStorage.
+   *
+   * @param code - The BCP 47 language code to activate
+   */
   function handleSelect(code: LangCode) {
     void i18n.changeLanguage(code);
     localStorage.setItem('pcm-lang', code);

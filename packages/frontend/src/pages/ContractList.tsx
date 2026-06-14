@@ -7,6 +7,11 @@ import { AnonymizationToggle } from '../components/AnonymizationToggle.js';
 import { ExportMenu } from '../components/ExportMenu.js';
 import { useAnonymization } from '../hooks/useAnonymization.js';
 
+/**
+ * Contract list page displaying all user contracts in a sortable table with anonymization
+ * toggle, export, and import actions.
+ */
+
 export function ContractList() {
   const { t } = useTranslation();
   const { data, isLoading, isError, error } = useContracts();

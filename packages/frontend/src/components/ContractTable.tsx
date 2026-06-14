@@ -9,6 +9,11 @@ import { CategoryIcon } from './CategoryIcon.js';
 import { ProviderLogo } from './ProviderLogo.js';
 import classes from './ContractTable.module.css';
 
+/**
+ * Sortable contract table displaying name, category, amount, status, end date, and
+ * action links. Supports client-side sorting and an anonymization flip animation.
+ */
+
 type SortColumn = 'name' | 'category' | 'amount' | 'status' | 'endDate';
 type SortDirection = 'asc' | 'desc';
 
@@ -45,6 +50,15 @@ function SortIcon({ col, sortState }: { col: SortColumn; sortState: SortState })
   return <IconSelector role="img" aria-label="Sort" size={14} className={classes.sortIcon} />;
 }
 
+/**
+ * Renders a sortable table of contracts with delete confirmation, anonymization support,
+ * and locale-aware currency/date formatting.
+ *
+ * @param props.contracts - array of contract data to display
+ * @param props.onDelete - callback invoked with the contract ID when deletion is confirmed
+ * @param props.isAnonymized - whether contract names should be displayed anonymized
+ * @param props.getDisplayName - optional function to resolve a display name for anonymized contracts
+ */
 export function ContractTable({
   contracts,
   onDelete,

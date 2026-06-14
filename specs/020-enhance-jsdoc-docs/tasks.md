@@ -28,7 +28,7 @@
 
 **Purpose**: Establish the current documentation coverage baseline before making any changes
 
-- [ ] T001 Run baseline coverage grep and record which files lack a file-level JSDoc block: `grep -rL "^/\*\*" packages/backend/src packages/frontend/src packages/shared/src --include="*.ts" --include="*.tsx" | grep -v "vite-env\|types.d\|vite.config\|vitest.config\|playwright.config"`
+- [x] T001 Run baseline coverage grep and record which files lack a file-level JSDoc block: `grep -rL "^/\*\*" packages/backend/src packages/frontend/src packages/shared/src --include="*.ts" --include="*.tsx" | grep -v "vite-env\|types.d\|vite.config\|vitest.config\|playwright.config"`
 
 ---
 
@@ -46,10 +46,10 @@
 
 ### Implementation for User Story 1
 
-- [ ] T002 [P] [US1] Add file-level JSDoc blocks to `packages/shared/src/schemas/auth.ts` and `packages/shared/src/schemas/contract.ts`
-- [ ] T003 [P] [US1] Add file-level JSDoc blocks to `packages/shared/src/schemas/dashboard.ts`, `packages/shared/src/schemas/invitation.ts`, `packages/shared/src/schemas/profile.ts`, and `packages/shared/src/schemas/user.ts`
-- [ ] T004 [P] [US1] Add file-level JSDoc blocks to `packages/shared/src/types/contract.ts`, `packages/shared/src/types/invitation.ts`, and `packages/shared/src/types/user.ts`
-- [ ] T005 [US1] Add file-level JSDoc block to `packages/shared/src/index.ts`
+- [x] T002 [P] [US1] Add file-level JSDoc blocks to `packages/shared/src/schemas/auth.ts` and `packages/shared/src/schemas/contract.ts`
+- [x] T003 [P] [US1] Add file-level JSDoc blocks to `packages/shared/src/schemas/dashboard.ts`, `packages/shared/src/schemas/invitation.ts`, `packages/shared/src/schemas/profile.ts`, and `packages/shared/src/schemas/user.ts`
+- [x] T004 [P] [US1] Add file-level JSDoc blocks to `packages/shared/src/types/contract.ts`, `packages/shared/src/types/invitation.ts`, and `packages/shared/src/types/user.ts`
+- [x] T005 [US1] Add file-level JSDoc block to `packages/shared/src/index.ts`
 
 **Checkpoint**: All shared files have file-level blocks; `grep -rL "^/\*\*" packages/shared/src --include="*.ts"` returns zero lines.
 
@@ -63,14 +63,14 @@
 
 ### Implementation for User Story 2 — Backend Services
 
-- [ ] T006 [P] [US2] Audit and complete JSDoc in `packages/backend/src/services/auth.service.ts` (file already has partial JSDoc — fill gaps in function descriptions and params)
-- [ ] T007 [P] [US2] Add file-level block and function JSDoc to all exported functions in `packages/backend/src/services/contract.ts`
-- [ ] T008 [P] [US2] Add file-level block and function JSDoc to all exported functions in `packages/backend/src/services/dashboard.ts`
-- [ ] T009 [P] [US2] Add file-level block and function JSDoc to all exported functions in `packages/backend/src/services/invitation.service.ts`
-- [ ] T010 [P] [US2] Add file-level block and function JSDoc to all exported functions in `packages/backend/src/services/mailer.service.ts`
-- [ ] T011 [P] [US2] Audit and complete JSDoc in `packages/backend/src/services/password.ts` (file already has partial JSDoc — fill gaps)
-- [ ] T012 [P] [US2] Add file-level block and function JSDoc to all exported functions in `packages/backend/src/services/profile.service.ts`
-- [ ] T013 [P] [US2] Audit and complete JSDoc in `packages/backend/src/services/user.service.ts` (file already has partial JSDoc — fill gaps)
+- [x] T006 [P] [US2] Audit and complete JSDoc in `packages/backend/src/services/auth.service.ts` (file already has partial JSDoc — fill gaps in function descriptions and params)
+- [x] T007 [P] [US2] Add file-level block and function JSDoc to all exported functions in `packages/backend/src/services/contract.ts`
+- [x] T008 [P] [US2] Add file-level block and function JSDoc to all exported functions in `packages/backend/src/services/dashboard.ts`
+- [x] T009 [P] [US2] Add file-level block and function JSDoc to all exported functions in `packages/backend/src/services/invitation.service.ts`
+- [x] T010 [P] [US2] Add file-level block and function JSDoc to all exported functions in `packages/backend/src/services/mailer.service.ts`
+- [x] T011 [P] [US2] Audit and complete JSDoc in `packages/backend/src/services/password.ts` (file already has partial JSDoc — fill gaps)
+- [x] T012 [P] [US2] Add file-level block and function JSDoc to all exported functions in `packages/backend/src/services/profile.service.ts`
+- [x] T013 [P] [US2] Audit and complete JSDoc in `packages/backend/src/services/user.service.ts` (file already has partial JSDoc — fill gaps)
 
 **Checkpoint**: `grep -rL "^/\*\*" packages/backend/src/services --include="*.ts"` returns zero lines.
 
@@ -84,25 +84,25 @@
 
 ### Implementation for User Story 2 — Backend Routes
 
-- [ ] T014 [P] [US2] Add file-level block and JSDoc on the exported registration function in `packages/backend/src/routes/admin.ts`
-- [ ] T015 [P] [US2] Add file-level block and JSDoc on the exported registration function in `packages/backend/src/routes/auth.ts`
-- [ ] T016 [P] [US2] Add file-level block and JSDoc on the exported registration function in `packages/backend/src/routes/contracts.ts`
-- [ ] T017 [P] [US2] Add file-level block and JSDoc on the exported registration function in `packages/backend/src/routes/dashboard.ts`
-- [ ] T018 [P] [US2] Add file-level block and JSDoc on the exported registration function in `packages/backend/src/routes/invitations.ts`
-- [ ] T019 [P] [US2] Add file-level block and JSDoc on the exported registration function in `packages/backend/src/routes/profile.ts`
-- [ ] T020 [P] [US2] Add file-level block and JSDoc on the exported registration function in `packages/backend/src/routes/users.ts`
+- [x] T014 [P] [US2] Add file-level block and JSDoc on the exported registration function in `packages/backend/src/routes/admin.ts`
+- [x] T015 [P] [US2] Add file-level block and JSDoc on the exported registration function in `packages/backend/src/routes/auth.ts`
+- [x] T016 [P] [US2] Add file-level block and JSDoc on the exported registration function in `packages/backend/src/routes/contracts.ts`
+- [x] T017 [P] [US2] Add file-level block and JSDoc on the exported registration function in `packages/backend/src/routes/dashboard.ts`
+- [x] T018 [P] [US2] Add file-level block and JSDoc on the exported registration function in `packages/backend/src/routes/invitations.ts`
+- [x] T019 [P] [US2] Add file-level block and JSDoc on the exported registration function in `packages/backend/src/routes/profile.ts`
+- [x] T020 [P] [US2] Add file-level block and JSDoc on the exported registration function in `packages/backend/src/routes/users.ts`
 
 ### Implementation for User Story 2 — Backend DB Layer
 
-- [ ] T021 [P] [US2] Audit and complete JSDoc in `packages/backend/src/db/client.ts` (file already has partial JSDoc — fill gaps, ensure file-level block present)
-- [ ] T022 [P] [US2] Add file-level block and function JSDoc to all exported functions in `packages/backend/src/db/migrate.ts`
-- [ ] T023 [P] [US2] Add file-level block and function JSDoc to all exported functions in `packages/backend/src/db/reset.ts`
-- [ ] T024 [P] [US2] Add file-level block and function JSDoc to all exported functions in `packages/backend/src/db/seed.ts`
+- [x] T021 [P] [US2] Audit and complete JSDoc in `packages/backend/src/db/client.ts` (file already has partial JSDoc — fill gaps, ensure file-level block present)
+- [x] T022 [P] [US2] Add file-level block and function JSDoc to all exported functions in `packages/backend/src/db/migrate.ts`
+- [x] T023 [P] [US2] Add file-level block and function JSDoc to all exported functions in `packages/backend/src/db/reset.ts`
+- [x] T024 [P] [US2] Add file-level block and function JSDoc to all exported functions in `packages/backend/src/db/seed.ts`
 
 ### Implementation for User Story 2 — Backend Entry Points
 
-- [ ] T025 [US2] Add file-level block and JSDoc on exported symbols in `packages/backend/src/server.ts`
-- [ ] T026 [US2] Add file-level block to `packages/backend/src/index.ts` (application bootstrap entry point)
+- [x] T025 [US2] Add file-level block and JSDoc on exported symbols in `packages/backend/src/server.ts`
+- [x] T026 [US2] Add file-level block to `packages/backend/src/index.ts` (application bootstrap entry point)
 
 **Checkpoint**: `grep -rL "^/\*\*" packages/backend/src --include="*.ts"` returns zero lines.
 
@@ -116,22 +116,22 @@
 
 ### Implementation for User Story 2 — Frontend Services
 
-- [ ] T027 [P] [US2] Add file-level block and function JSDoc to all exported functions in `packages/frontend/src/services/api.ts`
-- [ ] T028 [P] [US2] Add file-level block and function JSDoc to all exported functions in `packages/frontend/src/services/auth.ts`
-- [ ] T029 [P] [US2] Add file-level block and function JSDoc to all exported functions in `packages/frontend/src/services/contracts.ts`
-- [ ] T030 [P] [US2] Add file-level block and function JSDoc to all exported functions in `packages/frontend/src/services/export.ts`
-- [ ] T031 [P] [US2] Add file-level block and function JSDoc to all exported functions in `packages/frontend/src/services/importParsing.ts`
-- [ ] T032 [P] [US2] Add file-level block and function JSDoc to all exported functions in `packages/frontend/src/services/invitations.ts`
-- [ ] T033 [P] [US2] Add file-level block and function JSDoc to all exported functions in `packages/frontend/src/services/profile.ts`
-- [ ] T034 [P] [US2] Add file-level block and function JSDoc to all exported functions in `packages/frontend/src/services/users.ts`
+- [x] T027 [P] [US2] Add file-level block and function JSDoc to all exported functions in `packages/frontend/src/services/api.ts`
+- [x] T028 [P] [US2] Add file-level block and function JSDoc to all exported functions in `packages/frontend/src/services/auth.ts`
+- [x] T029 [P] [US2] Add file-level block and function JSDoc to all exported functions in `packages/frontend/src/services/contracts.ts`
+- [x] T030 [P] [US2] Add file-level block and function JSDoc to all exported functions in `packages/frontend/src/services/export.ts`
+- [x] T031 [P] [US2] Add file-level block and function JSDoc to all exported functions in `packages/frontend/src/services/importParsing.ts`
+- [x] T032 [P] [US2] Add file-level block and function JSDoc to all exported functions in `packages/frontend/src/services/invitations.ts`
+- [x] T033 [P] [US2] Add file-level block and function JSDoc to all exported functions in `packages/frontend/src/services/profile.ts`
+- [x] T034 [P] [US2] Add file-level block and function JSDoc to all exported functions in `packages/frontend/src/services/users.ts`
 
 ### Implementation for User Story 2 — Frontend Hooks
 
-- [ ] T035 [P] [US2] Add file-level block and hook JSDoc to `packages/frontend/src/hooks/useAccounts.ts`
-- [ ] T036 [P] [US2] Add file-level block and hook JSDoc to `packages/frontend/src/hooks/useAnonymization.ts`
-- [ ] T037 [P] [US2] Add file-level block and hook JSDoc to `packages/frontend/src/hooks/useAuth.ts`
-- [ ] T038 [P] [US2] Add file-level block and hook JSDoc to `packages/frontend/src/hooks/useInvitations.ts`
-- [ ] T039 [P] [US2] Add file-level block and hook JSDoc to `packages/frontend/src/hooks/useLocaleFormat.ts`
+- [x] T035 [P] [US2] Add file-level block and hook JSDoc to `packages/frontend/src/hooks/useAccounts.ts`
+- [x] T036 [P] [US2] Add file-level block and hook JSDoc to `packages/frontend/src/hooks/useAnonymization.ts`
+- [x] T037 [P] [US2] Add file-level block and hook JSDoc to `packages/frontend/src/hooks/useAuth.ts`
+- [x] T038 [P] [US2] Add file-level block and hook JSDoc to `packages/frontend/src/hooks/useInvitations.ts`
+- [x] T039 [P] [US2] Add file-level block and hook JSDoc to `packages/frontend/src/hooks/useLocaleFormat.ts`
 
 **Checkpoint**: `grep -rL "^/\*\*" packages/frontend/src/services packages/frontend/src/hooks --include="*.ts"` returns zero lines.
 
@@ -145,30 +145,30 @@
 
 ### Implementation for User Story 2 — AppShell Components
 
-- [ ] T040 [P] [US2] Add file-level block and component JSDoc to `packages/frontend/src/components/AppShell/AppShell.tsx`
-- [ ] T041 [P] [US2] Add file-level block and component JSDoc to `packages/frontend/src/components/AppShell/FooterSimple.tsx`
-- [ ] T042 [P] [US2] Add file-level block and component JSDoc to `packages/frontend/src/components/AppShell/LanguagePicker.tsx`
-- [ ] T043 [P] [US2] Add file-level block and component JSDoc to `packages/frontend/src/components/AppShell/NavbarSegmented.tsx`
-- [ ] T044 [P] [US2] Add file-level block and component JSDoc to `packages/frontend/src/components/AppShell/TopHeader.tsx`
+- [x] T040 [P] [US2] Add file-level block and component JSDoc to `packages/frontend/src/components/AppShell/AppShell.tsx`
+- [x] T041 [P] [US2] Add file-level block and component JSDoc to `packages/frontend/src/components/AppShell/FooterSimple.tsx`
+- [x] T042 [P] [US2] Add file-level block and component JSDoc to `packages/frontend/src/components/AppShell/LanguagePicker.tsx`
+- [x] T043 [P] [US2] Add file-level block and component JSDoc to `packages/frontend/src/components/AppShell/NavbarSegmented.tsx`
+- [x] T044 [P] [US2] Add file-level block and component JSDoc to `packages/frontend/src/components/AppShell/TopHeader.tsx`
 
 ### Implementation for User Story 2 — Feature Components
 
-- [ ] T045 [P] [US2] Add file-level block and component JSDoc to `packages/frontend/src/components/AnonymizationToggle.tsx`
-- [ ] T046 [P] [US2] Add file-level block and component JSDoc to `packages/frontend/src/components/CategoryIcon.tsx`
-- [ ] T047 [P] [US2] Add file-level block and component JSDoc to `packages/frontend/src/components/ColumnMappingTable.tsx`
-- [ ] T048 [P] [US2] Add file-level block and component JSDoc to `packages/frontend/src/components/ContractForm.tsx`
-- [ ] T049 [P] [US2] Add file-level block and component JSDoc to `packages/frontend/src/components/ContractTable.tsx`
-- [ ] T050 [P] [US2] Add file-level block and component JSDoc to `packages/frontend/src/components/DeleteAccountModal.tsx`
-- [ ] T051 [P] [US2] Add file-level block and component JSDoc to `packages/frontend/src/components/ExpiredContracts.tsx`
-- [ ] T052 [P] [US2] Add file-level block and component JSDoc to `packages/frontend/src/components/ExportMenu.tsx`
-- [ ] T053 [P] [US2] Add file-level block and component JSDoc to `packages/frontend/src/components/ImportResultSummary.tsx`
-- [ ] T054 [P] [US2] Add file-level block and component JSDoc to `packages/frontend/src/components/LanguageSwitcher.tsx`
-- [ ] T055 [P] [US2] Add file-level block and component JSDoc to `packages/frontend/src/components/ProviderLogo.tsx`
-- [ ] T056 [P] [US2] Add file-level block and component JSDoc to `packages/frontend/src/components/PublicLayout.tsx`
-- [ ] T057 [P] [US2] Add file-level block and component JSDoc to `packages/frontend/src/components/RequireAdmin.tsx`
-- [ ] T058 [P] [US2] Add file-level block and component JSDoc to `packages/frontend/src/components/RequireAuth.tsx`
-- [ ] T059 [P] [US2] Add file-level block and component JSDoc to `packages/frontend/src/components/SpendingOverview.tsx`
-- [ ] T060 [P] [US2] Add file-level block and component JSDoc to `packages/frontend/src/components/UpcomingRenewals.tsx`
+- [x] T045 [P] [US2] Add file-level block and component JSDoc to `packages/frontend/src/components/AnonymizationToggle.tsx`
+- [x] T046 [P] [US2] Add file-level block and component JSDoc to `packages/frontend/src/components/CategoryIcon.tsx`
+- [x] T047 [P] [US2] Add file-level block and component JSDoc to `packages/frontend/src/components/ColumnMappingTable.tsx`
+- [x] T048 [P] [US2] Add file-level block and component JSDoc to `packages/frontend/src/components/ContractForm.tsx`
+- [x] T049 [P] [US2] Add file-level block and component JSDoc to `packages/frontend/src/components/ContractTable.tsx`
+- [x] T050 [P] [US2] Add file-level block and component JSDoc to `packages/frontend/src/components/DeleteAccountModal.tsx`
+- [x] T051 [P] [US2] Add file-level block and component JSDoc to `packages/frontend/src/components/ExpiredContracts.tsx`
+- [x] T052 [P] [US2] Add file-level block and component JSDoc to `packages/frontend/src/components/ExportMenu.tsx`
+- [x] T053 [P] [US2] Add file-level block and component JSDoc to `packages/frontend/src/components/ImportResultSummary.tsx`
+- [x] T054 [P] [US2] Add file-level block and component JSDoc to `packages/frontend/src/components/LanguageSwitcher.tsx`
+- [x] T055 [P] [US2] Add file-level block and component JSDoc to `packages/frontend/src/components/ProviderLogo.tsx`
+- [x] T056 [P] [US2] Add file-level block and component JSDoc to `packages/frontend/src/components/PublicLayout.tsx`
+- [x] T057 [P] [US2] Add file-level block and component JSDoc to `packages/frontend/src/components/RequireAdmin.tsx`
+- [x] T058 [P] [US2] Add file-level block and component JSDoc to `packages/frontend/src/components/RequireAuth.tsx`
+- [x] T059 [P] [US2] Add file-level block and component JSDoc to `packages/frontend/src/components/SpendingOverview.tsx`
+- [x] T060 [P] [US2] Add file-level block and component JSDoc to `packages/frontend/src/components/UpcomingRenewals.tsx`
 
 **Checkpoint**: `grep -rL "^/\*\*" packages/frontend/src/components --include="*.tsx"` returns zero lines.
 
@@ -182,24 +182,24 @@
 
 ### Implementation for User Story 2 — Pages
 
-- [ ] T061 [P] [US2] Add file-level block and component JSDoc to `packages/frontend/src/pages/AcceptInvitation.tsx`
-- [ ] T062 [P] [US2] Add file-level block and component JSDoc to `packages/frontend/src/pages/AccountSettings.tsx`
-- [ ] T063 [P] [US2] Add file-level block and component JSDoc to `packages/frontend/src/pages/ContractEdit.tsx`
-- [ ] T064 [P] [US2] Add file-level block and component JSDoc to `packages/frontend/src/pages/ContractImport.tsx`
-- [ ] T065 [P] [US2] Add file-level block and component JSDoc to `packages/frontend/src/pages/ContractList.tsx`
-- [ ] T066 [P] [US2] Add file-level block and component JSDoc to `packages/frontend/src/pages/ContractNew.tsx`
-- [ ] T067 [P] [US2] Add file-level block and component JSDoc to `packages/frontend/src/pages/Dashboard.tsx`
-- [ ] T068 [P] [US2] Add file-level block and component JSDoc to `packages/frontend/src/pages/EmailVerifyConfirm.tsx`
-- [ ] T069 [P] [US2] Add file-level block and component JSDoc to `packages/frontend/src/pages/SignIn.tsx`
-- [ ] T070 [P] [US2] Add file-level block and component JSDoc to `packages/frontend/src/pages/admin/AccountsAdmin.tsx`
+- [x] T061 [P] [US2] Add file-level block and component JSDoc to `packages/frontend/src/pages/AcceptInvitation.tsx`
+- [x] T062 [P] [US2] Add file-level block and component JSDoc to `packages/frontend/src/pages/AccountSettings.tsx`
+- [x] T063 [P] [US2] Add file-level block and component JSDoc to `packages/frontend/src/pages/ContractEdit.tsx`
+- [x] T064 [P] [US2] Add file-level block and component JSDoc to `packages/frontend/src/pages/ContractImport.tsx`
+- [x] T065 [P] [US2] Add file-level block and component JSDoc to `packages/frontend/src/pages/ContractList.tsx`
+- [x] T066 [P] [US2] Add file-level block and component JSDoc to `packages/frontend/src/pages/ContractNew.tsx`
+- [x] T067 [P] [US2] Add file-level block and component JSDoc to `packages/frontend/src/pages/Dashboard.tsx`
+- [x] T068 [P] [US2] Add file-level block and component JSDoc to `packages/frontend/src/pages/EmailVerifyConfirm.tsx`
+- [x] T069 [P] [US2] Add file-level block and component JSDoc to `packages/frontend/src/pages/SignIn.tsx`
+- [x] T070 [P] [US2] Add file-level block and component JSDoc to `packages/frontend/src/pages/admin/AccountsAdmin.tsx`
 
 ### Implementation for User Story 2 — Utilities and Entry
 
-- [ ] T071 [P] [US2] Add file-level block and function JSDoc to all exported functions in `packages/frontend/src/utils/columnMapping.ts`
-- [ ] T072 [P] [US2] Add file-level block and function JSDoc to all exported functions in `packages/frontend/src/lib/utils.ts`
-- [ ] T073 [P] [US2] Add file-level block and JSDoc on any exported symbols in `packages/frontend/src/data/fantasyNames.ts`
-- [ ] T074 [P] [US2] Add file-level block and JSDoc on exported functions/constants in `packages/frontend/src/i18n/index.ts`
-- [ ] T075 [US2] Add file-level block to `packages/frontend/src/main.tsx` (application bootstrap; no exported symbols require function JSDoc)
+- [x] T071 [P] [US2] Add file-level block and function JSDoc to all exported functions in `packages/frontend/src/utils/columnMapping.ts`
+- [x] T072 [P] [US2] Add file-level block and function JSDoc to all exported functions in `packages/frontend/src/lib/utils.ts`
+- [x] T073 [P] [US2] Add file-level block and JSDoc on any exported symbols in `packages/frontend/src/data/fantasyNames.ts`
+- [x] T074 [P] [US2] Add file-level block and JSDoc on exported functions/constants in `packages/frontend/src/i18n/index.ts`
+- [x] T075 [US2] Add file-level block to `packages/frontend/src/main.tsx` (application bootstrap; no exported symbols require function JSDoc)
 
 **Checkpoint**: All frontend source files have JSDoc coverage. Run the full Phase 1 grep check — it must now return zero lines.
 
@@ -213,10 +213,10 @@
 
 ### Implementation for User Story 3
 
-- [ ] T076 [US3] Verify file-level JSDoc coverage: run `grep -rL "^/\*\*" packages/backend/src packages/frontend/src packages/shared/src --include="*.ts" --include="*.tsx" | grep -v "vite-env\|types.d\|vite.config\|vitest.config\|playwright.config"` — must produce no output (SC-001)
-- [ ] T077 [US3] Verify no forbidden phrases in JSDoc: run `grep -rn "used by\|added for\|handles the case from\|issue #\|PR #\|ticket #" packages/ --include="*.ts" --include="*.tsx" | grep -v node_modules` — must produce no output (SC-003)
-- [ ] T078 [P] [US3] Run TypeScript strict-mode check across all packages: `pnpm --filter backend exec tsc --noEmit && pnpm --filter frontend exec tsc --noEmit && pnpm --filter @pcm/shared exec tsc --noEmit` — must exit zero (SC-005)
-- [ ] T079 [P] [US3] Run ESLint across all packages: `pnpm lint` — must exit zero with no errors (SC-005)
+- [x] T076 [US3] Verify file-level JSDoc coverage: run `grep -rL "^/\*\*" packages/backend/src packages/frontend/src packages/shared/src --include="*.ts" --include="*.tsx" | grep -v "vite-env\|types.d\|vite.config\|vitest.config\|playwright.config"` — must produce no output (SC-001)
+- [x] T077 [US3] Verify no forbidden phrases in JSDoc: run `grep -rn "used by\|added for\|handles the case from\|issue #\|PR #\|ticket #" packages/ --include="*.ts" --include="*.tsx" | grep -v node_modules` — must produce no output (SC-003)
+- [x] T078 [P] [US3] Run TypeScript strict-mode check across all packages: `pnpm --filter backend exec tsc --noEmit && pnpm --filter frontend exec tsc --noEmit && pnpm --filter @pcm/shared exec tsc --noEmit` — must exit zero (SC-005)
+- [x] T079 [P] [US3] Run ESLint across all packages: `pnpm lint` — must exit zero with no errors (SC-005)
 
 **Checkpoint**: All verification checks pass. Pattern is established — any developer can open a documented file and replicate the JSDoc style on the next function they write.
 
@@ -226,8 +226,8 @@
 
 **Purpose**: Final end-to-end validation to confirm no tests were broken by documentation edits
 
-- [ ] T080 Run full test suite to confirm documentation edits introduced no regressions: `pnpm test`
-- [ ] T081 [P] Perform manual IDE spot-check per quickstart.md Scenario 6: open `packages/backend/src/services/contract.ts`, `packages/frontend/src/hooks/useAuth.ts`, and `packages/frontend/src/components/ContractTable.tsx`; hover over an exported function in each file and confirm the IDE tooltip shows the JSDoc description and parameter documentation
+- [x] T080 Run full test suite to confirm documentation edits introduced no regressions: `pnpm test`
+- [x] T081 [P] Perform manual IDE spot-check per quickstart.md Scenario 6: open `packages/backend/src/services/contract.ts`, `packages/frontend/src/hooks/useAuth.ts`, and `packages/frontend/src/components/ContractTable.tsx`; hover over an exported function in each file and confirm the IDE tooltip shows the JSDoc description and parameter documentation
 
 ---
 

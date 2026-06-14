@@ -3,6 +3,11 @@ import type Database from 'better-sqlite3';
 import type { UserRow, EmailVerificationRow } from '../db/client.js';
 import type { DeleteSelfResult } from '@pcm/shared';
 
+/**
+ * Service layer for user profile mutations: display name updates, email change requests,
+ * and self-service account deletion.
+ */
+
 export type UpdateDisplayNameResult = 'updated' | 'not-found';
 
 export type RequestEmailChangeResult =
@@ -20,6 +25,14 @@ const EMAIL_VERIFICATION_EXPIRY_MS = 24 * 60 * 60 * 1000;
 export class ProfileService {
   constructor(private readonly db: Database.Database) {}
 
+  /**
+   * Updates the display name for an active user.
+   *
+   * @param userId - The ID of the user whose display name should be updated
+   * @param displayName - The new display name (1–100 characters)
+   * @returns 'updated' on success, or 'not-found' if the user does not exist or is not
+   *   active
+   */
   updateDisplayName(userId: string, displayName: string): UpdateDisplayNameResult {
     const result = this.db
       .prepare(
@@ -29,6 +42,16 @@ export class ProfileService {
     return result.changes > 0 ? 'updated' : 'not-found';
   }
 
+  /**
+   * Initiates an email-change flow by generating a time-limited single-use verification
+   * token and storing it in the email_verifications table.
+   *
+   * @param userId - The ID of the user requesting the change
+   * @param newEmail - The desired new email address
+   * @returns A result object with the verification token and expiry, 'duplicate' if the
+   *   address is already in use by an active account, or 'not-found' if the user does
+   *   not exist
+   */
   requestEmailChange(userId: string, newEmail: string): RequestEmailChangeResult {
     const user = this.db
       .prepare<[string], UserRow>(`SELECT * FROM users WHERE id = ? AND status = 'ACTIVE'`)
@@ -61,6 +84,13 @@ export class ProfileService {
     return { outcome: 'requested', token, expiresAt };
   }
 
+  /**
+   * Returns the pending new email address if a valid (non-expired) verification request
+   * exists for the user.
+   *
+   * @param userId - The ID of the user to query
+   * @returns An object with the pending email, or null if no valid request exists
+   */
   getPendingEmailChange(userId: string): { pendingEmail: string } | null {
     const row = this.db
       .prepare<
@@ -76,6 +106,14 @@ export class ProfileService {
     return { pendingEmail: row.new_email };
   }
 
+  /**
+   * Deletes the calling user's own account, refusing if they are the sole remaining
+   * active administrator.
+   *
+   * @param userId - The ID of the user requesting deletion
+   * @returns 'deleted' on success, or 'last-admin' if the deletion would leave the
+   *   application without any active admin
+   */
   deleteSelf(userId: string): DeleteSelfResult {
     const user = this.db
       .prepare<
@@ -101,6 +139,17 @@ export class ProfileService {
     return 'deleted';
   }
 
+  /**
+   * Applies a verified email change, updating the user row and retiring any archived
+   * account that previously held the new address.
+   *
+   * @param token - The verification token issued during the email-change request
+   * @returns A confirmed result with the new email, or 'not-found'/'expired' if the token
+   *   is invalid or has passed its expiry
+   *
+   * The retired-address update prevents a UNIQUE constraint violation when the new
+   * address previously belonged to an archived account.
+   */
   confirmEmailChange(token: string): ConfirmEmailChangeResult {
     const row = this.db
       .prepare<[string], EmailVerificationRow>(`SELECT * FROM email_verifications WHERE token = ?`)

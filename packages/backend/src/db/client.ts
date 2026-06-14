@@ -5,6 +5,11 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { hashPassword, generateInitialPassword } from '../services/password.js';
 
+/**
+ * Database client module: connection factory, schema migration, and startup maintenance
+ * helpers for the SQLite database.
+ */
+
 const ARCHIVE_RETENTION_DAYS = 30;
 // Must satisfy the shared Zod email schema (rejects TLD-less addresses like "admin@localhost"),
 // otherwise the bootstrap account can never sign in and GET /api/users fails to serialize it.
@@ -14,6 +19,13 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 let db: Database.Database | null = null;
 
+/**
+ * Returns the singleton database connection, creating it on first call.
+ *
+ * @param dbPath - Absolute path to the SQLite file; defaults to data/contracts.db relative
+ *   to the repository root
+ * @returns The open Database instance with WAL mode and foreign keys enabled
+ */
 export function getDb(
   dbPath = join(__dirname, '../../../../data/contracts.db'),
 ): Database.Database {
@@ -26,6 +38,13 @@ export function getDb(
   return db;
 }
 
+/**
+ * Creates a new, independent database connection with WAL mode and foreign keys enabled.
+ *
+ * @param dbPath - Absolute path to the SQLite file; defaults to an in-memory database when
+ *   omitted
+ * @returns A new Database instance (not the shared singleton)
+ */
 export function createDb(dbPath?: string): Database.Database {
   const instance = new Database(dbPath ?? ':memory:');
   instance.pragma('journal_mode = WAL');
@@ -38,6 +57,19 @@ export interface BootstrapResult {
   password: string;
 }
 
+/**
+ * Applies the SQL schema and all incremental migrations to the given database instance,
+ * then bootstraps a first administrator account if no users exist yet.
+ *
+ * @param instance - The database connection to migrate
+ * @returns Bootstrap credentials (email + password) when a new admin was created, or null
+ *   when the database already contained at least one user
+ *
+ * Migrations are additive ALTER TABLE statements guarded by PRAGMA table_info checks, so
+ * the function is safe to call against any database version. The bootstrap step also
+ * back-fills the owner of any orphaned contracts created before multi-user support was
+ * added.
+ */
 export function runMigrations(instance: Database.Database): BootstrapResult | null {
   const schema = readFileSync(join(__dirname, 'schema.sql'), 'utf-8');
   instance.exec(schema);

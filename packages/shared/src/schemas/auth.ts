@@ -1,6 +1,10 @@
 import { z } from 'zod';
 import { Role } from '../types/user.js';
 
+/**
+ * Zod schemas and inferred TypeScript types for authentication and session payloads.
+ */
+
 const RoleEnum = z.enum([Role.ADMIN, Role.MEMBER]);
 
 export const SignInBodySchema = z.object({

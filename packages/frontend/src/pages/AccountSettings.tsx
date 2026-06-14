@@ -16,6 +16,12 @@ import { useCurrentUser, CURRENT_USER_QUERY_KEY } from '../hooks/useAuth.js';
 import { DeleteAccountModal } from '../components/DeleteAccountModal.js';
 import { useContracts } from '../services/contracts.js';
 
+/**
+ * Account settings page for managing display name, email changes, password updates, and
+ * account deletion. Includes a sole-admin guard that prevents the last admin from deleting
+ * their account.
+ */
+
 export function AccountSettings() {
   const { t } = useTranslation();
   const queryClient = useQueryClient();

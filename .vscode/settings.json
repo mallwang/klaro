@@ -8,5 +8,9 @@
         "**/*.sass",
         "**/*.less",
         "node_modules/@mantine/core/styles.css"
-    ]
+    ],
+    "sonarlint.connectedMode.project": {
+        "connectionId": "mallwang",
+        "projectKey": "mallwang_personal-contract-management"
+    }
 }

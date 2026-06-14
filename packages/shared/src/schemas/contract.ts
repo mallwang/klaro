@@ -6,6 +6,10 @@ import {
   CancellationPeriodUnit,
 } from '../types/contract.js';
 
+/**
+ * Zod schemas and inferred TypeScript types for contract data, creation, and update payloads.
+ */
+
 const CategoryEnum = z.enum([
   Category.UTILITIES,
   Category.SUBSCRIPTIONS,

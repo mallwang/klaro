@@ -12,6 +12,10 @@ import {
 import { useCurrentUser, useSignOut } from '../../hooks/useAuth.js';
 import classes from './NavbarSegmented.module.css';
 
+/**
+ * Sidebar navigation with an app/admin segment switcher and user identity footer.
+ */
+
 type Segment = 'app' | 'admin';
 
 interface NavItem {
@@ -20,6 +24,10 @@ interface NavItem {
   icon: React.ReactNode;
 }
 
+/**
+ * Renders the sidebar navigation with app/admin segments, route links, and a sign-out
+ * button.
+ */
 export function NavbarSegmented() {
   const { t } = useTranslation();
   const { data: user } = useCurrentUser();
@@ -28,6 +36,11 @@ export function NavbarSegmented() {
   const navigate = useNavigate();
   const [segment, setSegment] = useState<Segment>('app');
 
+  /**
+   * Switches the active nav segment and navigates to the segment's default route.
+   *
+   * @param value - The new segment value, either "app" or "admin"
+   */
   function handleSegmentChange(value: string) {
     const next = value as Segment;
     setSegment(next);
@@ -44,6 +57,12 @@ export function NavbarSegmented() {
     { label: t('nav.accounts'), to: '/admin/accounts', icon: <IconUsers size={18} /> },
   ];
 
+  /**
+   * Returns true when the given route path matches the current location.
+   *
+   * @param to - The route path to test
+   * @returns Whether the current location starts with (or exactly matches) the path
+   */
   const isActive = (to: string) => {
     if (to === '/') return location.pathname === '/';
     return location.pathname.startsWith(to);

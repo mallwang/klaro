@@ -1,5 +1,10 @@
 import nodemailer, { type Transporter, type SentMessageInfo } from 'nodemailer';
 
+/**
+ * Email delivery service wrapping a Nodemailer transporter with typed, purpose-specific
+ * send methods.
+ */
+
 export class MailerError extends Error {
   constructor(message: string) {
     super(message);
@@ -24,6 +29,12 @@ export class MailerService {
     this.from = opts.from;
   }
 
+  /**
+   * Constructs a MailerService from SMTP environment variables.
+   *
+   * @returns A configured MailerService instance
+   * @throws {MailerError} If SMTP_HOST or SMTP_FROM are not set
+   */
   static fromEnv(): MailerService {
     const host = process.env['SMTP_HOST'];
     const port = parseInt(process.env['SMTP_PORT'] ?? '587');
@@ -50,6 +61,11 @@ export class MailerService {
     return new MailerService({ transport, from });
   }
 
+  /**
+   * Sends a test email to verify SMTP configuration is working.
+   *
+   * @param to - The recipient email address
+   */
   async sendTestEmail(to: string): Promise<void> {
     const subject = 'Test email — SMTP configuration check';
     const text = `This is a test email sent from your Personal Contract Management app.\n\nIf you received this, your SMTP configuration is working correctly.`;
@@ -63,6 +79,12 @@ export class MailerService {
     });
   }
 
+  /**
+   * Sends an account-activation confirmation email with a sign-in link.
+   *
+   * @param to - The recipient email address
+   * @param link - The URL the user should visit to sign in
+   */
   async sendWelcomeEmail(to: string, link: string): Promise<void> {
     const subject = 'Welcome — your account is ready';
     const text = `Your account has been activated.\n\nClick the link below to sign in:\n\n${link}\n\nWelcome aboard!`;
@@ -76,6 +98,12 @@ export class MailerService {
     });
   }
 
+  /**
+   * Notifies the user that their password was changed and provides a sign-in link.
+   *
+   * @param to - The recipient email address
+   * @param link - The URL the user should visit to sign in
+   */
   async sendPasswordChangeEmail(to: string, link: string): Promise<void> {
     const subject = 'Your password has been changed';
     const text = `Your password was successfully changed.\n\nIf you did not make this change, please contact your administrator immediately.\n\nClick the link below to sign in:\n\n${link}`;
@@ -89,6 +117,12 @@ export class MailerService {
     });
   }
 
+  /**
+   * Notifies the old email address that the account email was successfully updated.
+   *
+   * @param to - The old (previous) email address to notify
+   * @param changedAt - ISO timestamp of when the change was confirmed
+   */
   async sendEmailChangeConfirmationEmail(to: string, changedAt: string): Promise<void> {
     const changedDate = new Date(changedAt).toISOString().slice(0, 10);
     const subject = 'Your email address has been updated';
@@ -103,6 +137,13 @@ export class MailerService {
     });
   }
 
+  /**
+   * Sends the email-change verification link to the new email address.
+   *
+   * @param to - The new email address that must be verified
+   * @param link - The one-time verification URL
+   * @param expiresAt - ISO timestamp after which the verification link is no longer valid
+   */
   async sendEmailVerificationEmail(to: string, link: string, expiresAt: string): Promise<void> {
     const expiryDate = new Date(expiresAt).toISOString().slice(0, 10);
     const subject = 'Verify your new email address';
@@ -117,6 +158,13 @@ export class MailerService {
     });
   }
 
+  /**
+   * Sends an invitation email with a one-time account setup link.
+   *
+   * @param to - The invited email address
+   * @param link - The one-time invitation URL
+   * @param expiresAt - ISO timestamp after which the invitation link is no longer valid
+   */
   async sendInvitationEmail(to: string, link: string, expiresAt: string): Promise<void> {
     const expiryDate = new Date(expiresAt).toISOString().slice(0, 10);
     const subject = "You've been invited";

@@ -1,6 +1,10 @@
 import { z } from 'zod';
 import { InvitationStatus } from '../types/invitation.js';
 
+/**
+ * Zod schemas and inferred TypeScript types for invitation objects and invitation action payloads.
+ */
+
 const InvitationStatusEnum = z.enum([
   InvitationStatus.PENDING,
   InvitationStatus.ACCEPTED,

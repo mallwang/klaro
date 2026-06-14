@@ -1,3 +1,8 @@
+/**
+ * Utilities for mapping imported CSV/Excel column headers to contract fields using
+ * a synonym-based confidence scoring system.
+ */
+
 export interface ImportResult {
   total: number;
   created: number;
@@ -127,10 +132,24 @@ const SYNONYM_TABLE: Record<string, TargetField> = {
   hidden: 'anonymize',
 };
 
+/**
+ * Normalizes a column header by trimming whitespace, lowercasing, and collapsing
+ * internal whitespace.
+ *
+ * @param column - the raw column header string
+ * @returns the normalized lowercase column name
+ */
 export function normalizeColumn(column: string): string {
   return column.trim().toLowerCase().replace(/\s+/g, ' ');
 }
 
+/**
+ * Infers a single column mapping by matching the normalized source column against the
+ * synonym table. System fields (id, createdat, etc.) are excluded from mapping.
+ *
+ * @param sourceColumn - the raw column header from the imported file
+ * @returns a ColumnMapping with the matched target field and confidence score
+ */
 export function inferMapping(sourceColumn: string): ColumnMapping {
   const normalized = normalizeColumn(sourceColumn);
 
@@ -146,10 +165,22 @@ export function inferMapping(sourceColumn: string): ColumnMapping {
   return { sourceColumn, targetField: null, confidence: 0 };
 }
 
+/**
+ * Batch-infers mappings for all source columns in a file.
+ *
+ * @param columns - array of raw column headers from the imported file
+ * @returns array of inferred ColumnMapping objects
+ */
 export function inferMappings(columns: string[]): ColumnMapping[] {
   return columns.map(inferMapping);
 }
 
+/**
+ * Checks whether all required target fields have been mapped.
+ *
+ * @param mappings - the current column mappings
+ * @returns true if every required field (name, category, amount, billingInterval) is present
+ */
 export function isMappingComplete(mappings: ColumnMapping[]): boolean {
   const mappedFields = new Set(
     mappings.filter((m) => m.targetField !== null).map((m) => m.targetField),

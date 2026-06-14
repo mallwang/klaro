@@ -7,6 +7,14 @@ import {
   type UpdateContractBody,
 } from '@pcm/shared';
 
+/**
+ * TanStack Query hooks for contract CRUD operations against the authenticated user's data.
+ */
+
+/**
+ * Returns a TanStack Query result for the authenticated user's contract list, refreshed every
+ * 30 s.
+ */
 export function useContracts() {
   return useQuery({
     queryKey: ['contracts'],
@@ -19,6 +27,10 @@ export function useContracts() {
   });
 }
 
+/**
+ * Returns a mutation for creating a new contract, invalidating the contracts cache on
+ * success.
+ */
 export function useCreateContract() {
   const queryClient = useQueryClient();
   return useMutation({
@@ -35,6 +47,10 @@ export function useCreateContract() {
   });
 }
 
+/**
+ * Returns a mutation for updating an existing contract by ID, invalidating the contracts
+ * cache on success.
+ */
 export function useUpdateContract() {
   const queryClient = useQueryClient();
   return useMutation({
@@ -57,6 +73,10 @@ export function useUpdateContract() {
   });
 }
 
+/**
+ * Returns a mutation for deleting a contract by ID, invalidating the contracts cache on
+ * success.
+ */
 export function useDeleteContract() {
   const queryClient = useQueryClient();
   return useMutation({

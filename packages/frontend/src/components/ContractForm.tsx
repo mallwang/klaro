@@ -18,6 +18,11 @@ import type { CreateContractBody } from '@pcm/shared';
 import { ProviderLogo } from './ProviderLogo.js';
 import classes from './ContractForm.module.css';
 
+/**
+ * Reusable contract creation/editing form with validation, field defaults, and a
+ * cancellation period row. Used by both the new-contract and edit-contract pages.
+ */
+
 interface ContractFormValues {
   name: string;
   category: string;
@@ -42,6 +47,16 @@ interface ContractFormProps {
   isPending?: boolean;
 }
 
+/**
+ * Renders a contract creation/editing form with validation and submission handling.
+ *
+ * @param props.defaultValues - optional pre-filled values for edit mode
+ * @param props.onSubmit - callback invoked with the validated contract body
+ * @param props.onCancel - callback invoked when the user cancels the form
+ * @param props.submitLabel - optional custom label for the submit button
+ * @param props.error - optional server-side error message to display
+ * @param props.isPending - whether a submission is currently in progress
+ */
 export function ContractForm({
   defaultValues,
   onSubmit,

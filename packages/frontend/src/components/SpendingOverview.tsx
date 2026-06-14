@@ -5,6 +5,11 @@ import type { CategorySummary } from '@pcm/shared';
 import { useLocaleFormat } from '../hooks/useLocaleFormat.js';
 import classes from './SpendingOverview.module.css';
 
+/**
+ * Dashboard card displaying total monthly spending and a breakdown by contract category with
+ * a proportional progress bar.
+ */
+
 const SEGMENT_COLORS = ['blue', 'cyan', 'teal'] as const;
 
 interface SpendingOverviewProps {
@@ -12,6 +17,13 @@ interface SpendingOverviewProps {
   contractsByCategory: CategorySummary[];
 }
 
+/**
+ * Renders total monthly spending and a segmented progress bar showing per-category
+ * proportions.
+ *
+ * @param props - totalMonthlySpending: sum of all active contract monthly costs;
+ *   contractsByCategory: per-category aggregation from the dashboard API
+ */
 export function SpendingOverview({
   totalMonthlySpending,
   contractsByCategory,

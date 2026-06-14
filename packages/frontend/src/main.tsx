@@ -1,6 +1,11 @@
 import './index.css';
 import './i18n/index.js';
 import { StrictMode } from 'react';
+/**
+ * Application bootstrap entry point. Mounts the React root with Mantine theming,
+ * React Query provider, client-side routing, and the global app shell layout.
+ */
+
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';

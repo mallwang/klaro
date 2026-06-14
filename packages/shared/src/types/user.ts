@@ -1,3 +1,8 @@
+/**
+ * Enum constants and TypeScript types for user roles, account status values, and the User
+ * domain object.
+ */
+
 export const Role = {
   ADMIN: 'ADMIN',
   MEMBER: 'MEMBER',

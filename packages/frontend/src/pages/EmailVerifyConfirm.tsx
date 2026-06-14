@@ -6,6 +6,11 @@ import { AuthError } from '../services/auth.js';
 import { confirmEmailChange } from '../services/profile.js';
 import { PublicLayout } from '../components/PublicLayout.js';
 
+/**
+ * Email verification confirmation page. Automatically confirms the email change using the
+ * token from the URL and displays success, expiration, or error states.
+ */
+
 type State = 'loading' | 'success' | 'expired' | 'not-found';
 
 export function EmailVerifyConfirm() {

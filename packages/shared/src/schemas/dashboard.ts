@@ -1,6 +1,11 @@
 import { z } from 'zod';
 import { Category } from '../types/contract.js';
 
+/**
+ * Zod schemas and inferred TypeScript types for the dashboard API response, including spending
+ * summaries, upcoming renewals, and expired contracts.
+ */
+
 const CategoryEnum = z.enum([
   Category.UTILITIES,
   Category.SUBSCRIPTIONS,

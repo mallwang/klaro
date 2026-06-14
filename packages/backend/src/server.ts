@@ -16,6 +16,11 @@ import { adminRoutes } from './routes/admin.js';
 import { AuthService, SESSION_COOKIE_NAME, toSessionUser } from './services/auth.service.js';
 import type { MailerService } from './services/mailer.service.js';
 
+/**
+ * Fastify application factory and shared type augmentations for per-request session data,
+ * service decorators, and session cookie constants.
+ */
+
 export { SESSION_COOKIE_NAME, toSessionUser };
 
 declare module 'fastify' {
@@ -35,11 +40,32 @@ const PUBLIC_ROUTES: Array<(method: string, path: string) => boolean> = [
   (m, p) => m === 'POST' && /^\/api\/profile\/email-change\/[^/]+\/confirm$/.test(p),
 ];
 
+/**
+ * Returns true if the given HTTP method and URL correspond to a route that does not require
+ * an authenticated session.
+ *
+ * @param method - HTTP method in uppercase (e.g. "POST")
+ * @param url - Full request URL including any query string
+ * @returns Whether the route is publicly accessible without a session cookie
+ */
 function isPublicRoute(method: string, url: string): boolean {
   const path = url.split('?')[0] ?? '';
   return PUBLIC_ROUTES.some((fn) => fn(method, path));
 }
 
+/**
+ * Constructs and configures the Fastify application instance with all plugins, routes, and
+ * the session authentication hook.
+ *
+ * @param db - The open SQLite database connection to expose as a Fastify decorator
+ * @param options - Optional server configuration
+ * @param options.staticDir - Directory to serve as the SPA static bundle; omit to disable
+ *   static serving (typical in test mode)
+ * @param options.mailer - Configured MailerService instance; omit when SMTP is unavailable
+ * @param options.logger - Whether to enable Fastify's built-in logger; defaults to true
+ *   outside of the test environment
+ * @returns The fully configured Fastify instance, ready to listen
+ */
 export async function buildServer(
   db: Database.Database,
   options: { staticDir?: string; mailer?: MailerService; logger?: boolean } = {},

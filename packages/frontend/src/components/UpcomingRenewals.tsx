@@ -7,16 +7,32 @@ import { useAnonymization } from '../hooks/useAnonymization.js';
 import { getFantasyName, FANTASY_NAMES } from '../data/fantasyNames.js';
 import classes from './UpcomingRenewals.module.css';
 
+/**
+ * Dashboard card listing contracts with upcoming cancellation deadlines, colour-coded by
+ * urgency.
+ */
+
 interface UpcomingRenewalsProps {
   upcomingRenewals: UpcomingRenewal[];
 }
 
+/**
+ * Maps the number of days remaining until a cancellation deadline to a Mantine colour token.
+ *
+ * @param days - Days until (positive) or since (negative) the cancellation deadline
+ * @returns "red" when overdue, "orange" within 7 days, otherwise "gray"
+ */
 function urgencyColor(days: number): string {
   if (days < 0) return 'red';
   if (days <= 7) return 'orange';
   return 'gray';
 }
 
+/**
+ * Renders a colour-coded urgency badge for a cancellation deadline.
+ *
+ * @param props - days: days remaining until (or since) the cancellation deadline
+ */
 function UrgencyBadge({ days }: { days: number }) {
   const { t } = useTranslation();
   const color = urgencyColor(days);
@@ -35,11 +51,23 @@ function UrgencyBadge({ days }: { days: number }) {
   );
 }
 
+/**
+ * Renders a dashboard card listing upcoming contract renewals with cancellation deadlines
+ * and urgency indicators, respecting the global anonymization toggle.
+ *
+ * @param props - upcomingRenewals: list of upcoming renewal summaries from the dashboard API
+ */
 export function UpcomingRenewals({ upcomingRenewals }: UpcomingRenewalsProps) {
   const { t } = useTranslation();
   const { formatDate } = useLocaleFormat();
   const { isAnonymized } = useAnonymization();
 
+  /**
+   * Returns the display name for an upcoming renewal, applying anonymization when active.
+   *
+   * @param renewal - The upcoming renewal to resolve a name for
+   * @returns The renewal name or its fantasy alias
+   */
   function resolveName(renewal: UpcomingRenewal): string {
     if (isAnonymized || renewal.anonymize) {
       return getFantasyName(renewal.id, FANTASY_NAMES);

@@ -3,6 +3,11 @@ import type { CreateContractBody } from '@pcm/shared';
 import type { ColumnMapping, TargetField } from '../utils/columnMapping.js';
 import type { ImportResult } from '../utils/columnMapping.js';
 
+/**
+ * File parsing and row transformation utilities for importing contracts from JSON or Excel
+ * files.
+ */
+
 export interface ParsedImportFile {
   columns: string[];
   rows: Array<Record<string, string>>;
@@ -11,11 +16,23 @@ export interface ParsedImportFile {
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
 
+/**
+ * Converts an arbitrary cell value to a string, returning an empty string for null/undefined.
+ *
+ * @param value - Raw cell value from the parsed file
+ * @returns String representation of the value
+ */
 function cellToString(value: unknown): string {
   if (value === null || value === undefined) return '';
   return String(value);
 }
 
+/**
+ * Reads a File as a UTF-8 text string using the FileReader API.
+ *
+ * @param file - The file to read
+ * @returns The file contents as a string
+ */
 function readFileAsText(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -25,6 +42,12 @@ function readFileAsText(file: File): Promise<string> {
   });
 }
 
+/**
+ * Reads a File as an ArrayBuffer using the FileReader API.
+ *
+ * @param file - The file to read
+ * @returns The file contents as an ArrayBuffer
+ */
 function readFileAsArrayBuffer(file: File): Promise<ArrayBuffer> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -34,6 +57,12 @@ function readFileAsArrayBuffer(file: File): Promise<ArrayBuffer> {
   });
 }
 
+/**
+ * Parses a JSON file and extracts a flat list of row objects with string cell values.
+ *
+ * @param file - A JSON file containing an array of objects
+ * @returns The discovered column names, normalized string rows, and any parse warnings
+ */
 export async function parseJsonFile(file: File): Promise<ParsedImportFile> {
   if (file.size > MAX_FILE_SIZE) {
     throw new Error('File exceeds the 5 MB size limit.');
@@ -65,6 +94,12 @@ export async function parseJsonFile(file: File): Promise<ParsedImportFile> {
   return { columns, rows, warnings: [] };
 }
 
+/**
+ * Parses an Excel (XLSX) file and extracts rows from the first worksheet.
+ *
+ * @param file - An XLSX file; only the first sheet is used when multiple sheets are present
+ * @returns The discovered column names, normalized string rows, and any parse warnings
+ */
 export async function parseExcelFile(file: File): Promise<ParsedImportFile> {
   if (file.size > MAX_FILE_SIZE) {
     throw new Error('File exceeds the 5 MB size limit.');
@@ -91,16 +126,35 @@ export async function parseExcelFile(file: File): Promise<ParsedImportFile> {
   return { columns, rows, warnings };
 }
 
+/**
+ * Parses a numeric amount string, accepting either decimal comma or decimal point notation.
+ *
+ * @param value - Raw amount string from the import row
+ * @returns The parsed non-negative number, or an Error describing the validation failure
+ */
 function parseAmount(value: string): number | Error {
   const n = parseFloat(value.replace(',', '.'));
   if (isNaN(n) || n < 0) return new Error(`Invalid amount: "${value}"`);
   return n;
 }
 
+/**
+ * Converts a string cell value to a boolean, treating "true", "1", and "yes" as truthy.
+ *
+ * @param value - Raw boolean string from the import row
+ * @returns The boolean interpretation of the value
+ */
 function parseBool(value: string): boolean {
   return ['true', '1', 'yes'].includes(value.toLowerCase().trim());
 }
 
+/**
+ * Transforms a flat import row into a CreateContractBody using the provided column mappings.
+ *
+ * @param row - A single row of string cell values keyed by source column name
+ * @param mappings - The user-configured column-to-field mappings
+ * @returns A validated CreateContractBody, or an Error describing the first validation failure
+ */
 export function buildCreateContractBody(
   row: Record<string, string>,
   mappings: ColumnMapping[],
@@ -169,6 +223,15 @@ export function buildCreateContractBody(
   return body;
 }
 
+/**
+ * Iterates over import rows, builds a CreateContractBody for each, and calls the provided
+ * create function, collecting per-row errors without aborting the entire import.
+ *
+ * @param rows - The parsed import rows to process
+ * @param mappings - Column-to-field mappings to apply when building each body
+ * @param createFn - Async function that persists a single contract; called once per valid row
+ * @returns A summary of how many rows were created and which rows failed
+ */
 export async function runImport(
   rows: Array<Record<string, string>>,
   mappings: ColumnMapping[],
