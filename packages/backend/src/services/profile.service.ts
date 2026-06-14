@@ -133,6 +133,12 @@ export class ProfileService {
     }
 
     this.db.transaction(() => {
+      // Delete dependent rows explicitly before the user, because the contracts.user_id FK
+      // was added via ALTER TABLE on migrated databases and SQLite silently drops ON DELETE
+      // CASCADE from ALTER TABLE ADD COLUMN — so cascade cannot be relied upon here.
+      this.db.prepare(`DELETE FROM email_verifications WHERE user_id = ?`).run(userId);
+      this.db.prepare(`DELETE FROM sessions WHERE user_id = ?`).run(userId);
+      this.db.prepare(`DELETE FROM contracts WHERE user_id = ?`).run(userId);
       this.db.prepare(`DELETE FROM users WHERE id = ?`).run(userId);
     })();
 
