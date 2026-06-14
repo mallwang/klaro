@@ -1,3 +1,8 @@
+/**
+ * Public entry point for the shared package — re-exports all types, enums, and Zod schemas
+ * consumed by the backend and frontend packages.
+ */
+
 export * from './types/contract.js';
 export * from './types/user.js';
 export * from './types/invitation.js';

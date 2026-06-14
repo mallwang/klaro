@@ -7,8 +7,15 @@ import {
   resendInvitation,
 } from '../services/invitations.js';
 
+/**
+ * TanStack Query hooks for admin invitation management: list, send, cancel, and resend.
+ */
+
 export const INVITATIONS_QUERY_KEY = ['invitations'];
 
+/**
+ * Returns a TanStack Query result for the full invitation list.
+ */
 export function useInvitations() {
   return useQuery<Invitation[]>({
     queryKey: INVITATIONS_QUERY_KEY,
@@ -16,6 +23,10 @@ export function useInvitations() {
   });
 }
 
+/**
+ * Returns a mutation for sending a new invitation, invalidating the invitations cache on
+ * success.
+ */
 export function useSendInvitation() {
   const queryClient = useQueryClient();
   return useMutation({
@@ -24,6 +35,10 @@ export function useSendInvitation() {
   });
 }
 
+/**
+ * Returns a mutation for cancelling a pending invitation by token, invalidating the
+ * invitations cache on success.
+ */
 export function useCancelInvitation() {
   const queryClient = useQueryClient();
   return useMutation({
@@ -32,6 +47,10 @@ export function useCancelInvitation() {
   });
 }
 
+/**
+ * Returns a mutation for resending a pending invitation by token, invalidating the
+ * invitations cache on success.
+ */
 export function useResendInvitation() {
   const queryClient = useQueryClient();
   return useMutation({

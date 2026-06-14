@@ -1,5 +1,10 @@
 import { z } from 'zod';
 
+/**
+ * Zod schemas and inferred TypeScript types for user profile actions, including display name
+ * updates, email change requests, and account deletion results.
+ */
+
 export const DeleteSelfResultSchema = z.union([z.literal('deleted'), z.literal('last-admin')]);
 export type DeleteSelfResult = z.infer<typeof DeleteSelfResultSchema>;
 

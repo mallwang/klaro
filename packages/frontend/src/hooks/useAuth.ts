@@ -2,8 +2,16 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type { SessionUser, SignInBody } from '@pcm/shared';
 import { fetchCurrentUser, signIn, signOut } from '../services/auth';
 
+/**
+ * TanStack Query hooks for session authentication: current user, sign-in, and sign-out.
+ */
+
 export const CURRENT_USER_QUERY_KEY = ['auth', 'me'];
 
+/**
+ * Returns a TanStack Query result for the currently authenticated user, refreshed every
+ * 60 s.
+ */
 export function useCurrentUser() {
   return useQuery<SessionUser | null>({
     queryKey: CURRENT_USER_QUERY_KEY,
@@ -13,6 +21,10 @@ export function useCurrentUser() {
   });
 }
 
+/**
+ * Returns a mutation for signing in with email and password, populating the current-user
+ * cache on success.
+ */
 export function useSignIn() {
   const queryClient = useQueryClient();
   return useMutation({
@@ -23,6 +35,9 @@ export function useSignIn() {
   });
 }
 
+/**
+ * Returns a mutation for signing out, clearing all query cache data on success.
+ */
 export function useSignOut() {
   const queryClient = useQueryClient();
   return useMutation({

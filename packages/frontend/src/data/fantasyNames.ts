@@ -1,3 +1,7 @@
+/**
+ * Predefined list of fantasy company names used for anonymized contract display.
+ */
+
 export const FANTASY_NAMES: readonly string[] = [
   'Aether Dynamics',
   'Ironveil Corp',
@@ -51,6 +55,13 @@ export const FANTASY_NAMES: readonly string[] = [
   'Twilight Basin Inc',
 ] as const;
 
+/**
+ * Deterministically maps a contract ID to a fantasy company name by hashing the ID.
+ *
+ * @param id - the contract identifier to hash
+ * @param names - the list of available fantasy names
+ * @returns the fantasy name assigned to this ID
+ */
 export function getFantasyName(id: string, names: readonly string[]): string {
   let hash = 0;
   for (let i = 0; i < id.length; i++) {

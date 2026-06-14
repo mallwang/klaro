@@ -6,6 +6,11 @@ import { AuthError } from '../services/auth';
 import { useCurrentUser, useSignIn } from '../hooks/useAuth';
 import { PublicLayout } from '../components/PublicLayout.js';
 
+/**
+ * Sign-in page with email and password form. Redirects authenticated users to the dashboard
+ * and stores the return location for post-login navigation.
+ */
+
 interface LocationState {
   from?: Location;
 }

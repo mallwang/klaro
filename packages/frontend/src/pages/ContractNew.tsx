@@ -4,6 +4,11 @@ import { Stack, Title, Paper } from '@mantine/core';
 import { ContractForm } from '../components/ContractForm.js';
 import { useCreateContract } from '../services/contracts.js';
 
+/**
+ * Page for creating a new contract. Renders the ContractForm component and navigates
+ * to the contract list on successful submission.
+ */
+
 export function ContractNew() {
   const { t } = useTranslation();
   const navigate = useNavigate();

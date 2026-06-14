@@ -1,3 +1,7 @@
+/**
+ * Enum constants and TypeScript types for invitation lifecycle status values.
+ */
+
 export const InvitationStatus = {
   PENDING: 'PENDING',
   ACCEPTED: 'ACCEPTED',

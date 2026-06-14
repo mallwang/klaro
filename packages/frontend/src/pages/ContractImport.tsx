@@ -12,6 +12,11 @@ import { ImportResultSummary } from '../components/ImportResultSummary.js';
 import { useCreateContract } from '../services/contracts.js';
 import classes from './ContractImport.module.css';
 
+/**
+ * Multi-step contract import page. Handles file upload (JSON or Excel), column mapping,
+ * and batch creation of contracts from the parsed data.
+ */
+
 type Stage = 'idle' | 'parsing' | 'mapping' | 'importing' | 'done';
 
 export function ContractImport() {

@@ -4,10 +4,19 @@ import { Menu, Button } from '@mantine/core';
 import type { ContractData } from '@pcm/shared';
 import { exportToJson, exportToExcel } from '../services/export.js';
 
+/**
+ * Dropdown menu component for exporting the contract list to JSON or Excel.
+ */
+
 interface ExportMenuProps {
   contracts: ContractData[];
 }
 
+/**
+ * Renders a dropdown export button that triggers a JSON or XLSX file download.
+ *
+ * @param props - contracts: the contract list to include in the export
+ */
 export function ExportMenu({ contracts }: ExportMenuProps) {
   const { t } = useTranslation();
 

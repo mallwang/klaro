@@ -8,8 +8,17 @@ import {
 } from '@pcm/shared';
 import { ContractService } from '../services/contract.js';
 
+/**
+ * Fastify route plugin for contract CRUD operations scoped to the authenticated user.
+ */
+
 const IdParams = z.object({ id: z.string().uuid() });
 
+/**
+ * Registers contract routes under /api/contracts on the Fastify instance.
+ *
+ * @param fastify - The Fastify instance to register routes on
+ */
 export async function contractRoutes(fastify: FastifyInstance): Promise<void> {
   fastify.get('/api/contracts', async (request, reply) => {
     const service = new ContractService(fastify.db);

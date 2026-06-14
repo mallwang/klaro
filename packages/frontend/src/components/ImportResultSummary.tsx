@@ -2,11 +2,22 @@ import { useTranslation } from 'react-i18next';
 import { Stack, Alert, Text, List, Button, Code } from '@mantine/core';
 import type { ImportResult } from '../utils/columnMapping.js';
 
+/**
+ * Summary component displayed after a bulk import run, listing created and failed row counts
+ * with per-row error details.
+ */
+
 interface ImportResultSummaryProps {
   result: ImportResult;
   onReset: () => void;
 }
 
+/**
+ * Renders an import outcome summary with success/failure counts and a list of per-row errors.
+ *
+ * @param props - result: the ImportResult from the completed import run; onReset: callback to
+ *   start a new import
+ */
 export function ImportResultSummary({ result, onReset }: ImportResultSummaryProps) {
   const { t } = useTranslation();
   const allOk = result.failed.length === 0;

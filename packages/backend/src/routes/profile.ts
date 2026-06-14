@@ -4,8 +4,18 @@ import { UpdateDisplayNameBodySchema, RequestEmailChangeBodySchema } from '@pcm/
 import { ProfileService } from '../services/profile.service.js';
 import { SESSION_COOKIE_NAME } from '../server.js';
 
+/**
+ * Fastify route plugin for user profile operations: display name updates, email change
+ * requests, and self-service account deletion.
+ */
+
 const TokenParams = z.object({ token: z.string() });
 
+/**
+ * Registers profile routes under /api/profile on the Fastify instance.
+ *
+ * @param fastify - The Fastify instance to register routes on
+ */
 export async function profileRoutes(fastify: FastifyInstance): Promise<void> {
   const profileService = new ProfileService(fastify.db);
 

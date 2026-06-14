@@ -33,6 +33,12 @@ import {
   useResendInvitation,
 } from '../../hooks/useInvitations.js';
 
+/**
+ * Admin page for managing user accounts and invitations. Provides account listing with
+ * role/status controls, invitation sending, test email functionality, and invitation
+ * lifecycle management (resend, cancel).
+ */
+
 function localeDate(iso: string): string {
   try {
     return new Date(iso).toLocaleDateString();
@@ -281,6 +287,9 @@ function InvitationsTable() {
   );
 }
 
+/**
+ * Renders the admin panel for managing user accounts and invitations.
+ */
 export function AccountsAdmin() {
   const { t } = useTranslation();
   const { data: accounts, isLoading, isError } = useAccounts();

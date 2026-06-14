@@ -8,6 +8,11 @@ import { AuthError } from '../services/auth.js';
 import { acceptInvitation } from '../services/invitations.js';
 import { CURRENT_USER_QUERY_KEY } from '../hooks/useAuth.js';
 
+/**
+ * Invitation acceptance page. Validates the invitation token, collects a password for the
+ * new account, and redirects to the dashboard on success.
+ */
+
 type TerminalState = 'already-used' | 'expired' | 'no-longer-valid' | 'invalid' | null;
 
 export function AcceptInvitation() {

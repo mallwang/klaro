@@ -6,6 +6,11 @@ import type { ContractData } from '@pcm/shared';
 import { deleteSelf } from '../services/profile.js';
 import { exportToJson } from '../services/export.js';
 
+/**
+ * Two-step confirmation modal for permanent self-service account deletion, with an optional
+ * contract data export step before confirmation.
+ */
+
 interface DeleteAccountModalProps {
   opened: boolean;
   onClose: () => void;
@@ -14,6 +19,14 @@ interface DeleteAccountModalProps {
   isSoleAdmin: boolean;
 }
 
+/**
+ * Renders a two-step modal guiding the user through an optional data export and a final
+ * deletion confirmation.
+ *
+ * @param props - opened: modal open state; onClose: close callback; onDeleted: called on
+ *   successful deletion; contracts: the user's contracts offered for export; isSoleAdmin:
+ *   disables deletion when the user is the last active admin
+ */
 export function DeleteAccountModal({
   opened,
   onClose,
@@ -29,16 +42,25 @@ export function DeleteAccountModal({
     onSuccess: onDeleted,
   });
 
+  /**
+   * Resets the modal to step 1 and clears any mutation state before closing.
+   */
   function handleClose() {
     setStep(1);
     deleteMutation.reset();
     onClose();
   }
 
+  /**
+   * Advances the modal from the export advisory step to the final confirmation step.
+   */
   function handleSkip() {
     setStep(2);
   }
 
+  /**
+   * Submits the account deletion request.
+   */
   function handleConfirm() {
     deleteMutation.mutate();
   }

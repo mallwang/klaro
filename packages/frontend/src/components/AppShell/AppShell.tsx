@@ -6,10 +6,20 @@ import { FooterSimple } from './FooterSimple.js';
 import { TopHeader } from './TopHeader.js';
 import classes from './AppShell.module.css';
 
+/**
+ * Root application shell composing the header, collapsible sidebar navigation, main content
+ * area, and footer.
+ */
+
 interface AppShellProps {
   children: ReactNode;
 }
 
+/**
+ * Renders the full-page Mantine AppShell layout with responsive mobile navigation support.
+ *
+ * @param props - children: page content to render in the main area
+ */
 export function AppShell({ children }: AppShellProps) {
   const [mobileOpened, { toggle: toggleMobile }] = useDisclosure();
 

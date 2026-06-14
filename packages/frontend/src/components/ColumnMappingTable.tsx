@@ -3,6 +3,11 @@ import { Table, NativeSelect, Code } from '@mantine/core';
 import type { ColumnMapping, TargetField } from '../utils/columnMapping.js';
 import { REQUIRED_TARGET_FIELDS } from '../utils/columnMapping.js';
 
+/**
+ * Table component for mapping source file columns to contract field targets during the import
+ * flow.
+ */
+
 const ALL_TARGET_FIELDS: TargetField[] = [
   'name',
   'category',
@@ -25,9 +30,22 @@ interface ColumnMappingTableProps {
   onChange: (updated: ColumnMapping[]) => void;
 }
 
+/**
+ * Renders a two-column table where users assign each source file column to a target contract
+ * field or skip it.
+ *
+ * @param props - mappings: current column-to-field mapping state; onChange: called with the
+ *   updated mappings when a select value changes
+ */
 export function ColumnMappingTable({ mappings, onChange }: ColumnMappingTableProps) {
   const { t } = useTranslation();
 
+  /**
+   * Updates the target field for a single mapping row.
+   *
+   * @param index - Index of the mapping entry to update
+   * @param value - The selected target field value, or the skip sentinel
+   */
   function handleChange(index: number, value: string) {
     const updated = mappings.map((m, i) => {
       if (i !== index) return m;

@@ -4,6 +4,11 @@ import { Center, Text, Alert, Stack, Title, Paper } from '@mantine/core';
 import { useContracts, useUpdateContract } from '../services/contracts.js';
 import { ContractForm } from '../components/ContractForm.js';
 
+/**
+ * Page for editing an existing contract. Loads the contract by ID from the URL params
+ * and pre-fills the ContractForm for updates.
+ */
+
 export function ContractEdit() {
   const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();

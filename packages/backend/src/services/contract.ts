@@ -8,6 +8,16 @@ import type {
 } from '@pcm/shared';
 import type { ContractRow } from '../db/client.js';
 
+/**
+ * Service layer for contract CRUD operations scoped to the authenticated user.
+ */
+
+/**
+ * Maps a raw database row to the public ContractData shape.
+ *
+ * @param row - The raw SQLite contract row
+ * @returns The typed ContractData object
+ */
 function rowToContract(row: ContractRow): ContractData {
   const cancellationPeriod =
     row.cancellation_period_value !== null && row.cancellation_period_unit !== null
@@ -38,6 +48,12 @@ function rowToContract(row: ContractRow): ContractData {
 export class ContractService {
   constructor(private readonly db: Database.Database) {}
 
+  /**
+   * Returns all contracts owned by the given user, sorted alphabetically by name.
+   *
+   * @param ownerId - The ID of the user whose contracts to list
+   * @returns An array of ContractData objects
+   */
   list(ownerId: string): ContractData[] {
     const rows = this.db
       .prepare<[string], ContractRow>(`SELECT * FROM contracts WHERE user_id = ? ORDER BY name ASC`)
@@ -45,6 +61,13 @@ export class ContractService {
     return rows.map(rowToContract);
   }
 
+  /**
+   * Inserts a new contract row and returns the created contract.
+   *
+   * @param body - Validated contract creation payload
+   * @param ownerId - The ID of the user who will own the contract
+   * @returns The newly created ContractData object
+   */
   create(body: CreateContractBody, ownerId: string): ContractData {
     const now = new Date().toISOString();
     const id = randomUUID();
@@ -83,6 +106,14 @@ export class ContractService {
     return rowToContract(row);
   }
 
+  /**
+   * Applies partial updates to an existing contract and returns the updated state.
+   *
+   * @param id - The UUID of the contract to update
+   * @param body - Partial update payload; only provided fields are changed
+   * @param ownerId - The ID of the owner; updates are rejected if ownership does not match
+   * @returns The updated ContractData, or null if the contract was not found or not owned
+   */
   update(id: string, body: UpdateContractBody, ownerId: string): ContractData | null {
     const existing = this.db
       .prepare<
@@ -132,6 +163,13 @@ export class ContractService {
     return rowToContract(updated);
   }
 
+  /**
+   * Removes a contract row owned by the given user.
+   *
+   * @param id - The UUID of the contract to delete
+   * @param ownerId - The ID of the owner; the delete is skipped if ownership does not match
+   * @returns True if the row was deleted; false if it was not found or not owned
+   */
   delete(id: string, ownerId: string): boolean {
     const result = this.db
       .prepare(`DELETE FROM contracts WHERE id = ? AND user_id = ?`)

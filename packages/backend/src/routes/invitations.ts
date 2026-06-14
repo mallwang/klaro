@@ -10,8 +10,18 @@ import { UserService } from '../services/user.service.js';
 import { MailerError } from '../services/mailer.service.js';
 import { toSessionUser } from '../services/auth.service.js';
 
+/**
+ * Fastify route plugin for invitation lifecycle: send, list, cancel, resend, and accept.
+ */
+
 const TokenParams = z.object({ token: z.string() });
 
+/**
+ * Sends a 403 Forbidden response with a standard error body.
+ *
+ * @param reply - The Fastify reply object
+ * @returns The reply after sending the 403 status
+ */
 function forbidden(reply: import('fastify').FastifyReply) {
   return reply.status(403).send({
     statusCode: 403,
@@ -20,6 +30,11 @@ function forbidden(reply: import('fastify').FastifyReply) {
   });
 }
 
+/**
+ * Registers invitation routes under /api/invitations on the Fastify instance.
+ *
+ * @param fastify - The Fastify instance to register routes on
+ */
 export async function invitationRoutes(fastify: FastifyInstance): Promise<void> {
   const invitationService = new InvitationService(fastify.db);
   const userService = new UserService(fastify.db);

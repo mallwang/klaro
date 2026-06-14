@@ -6,6 +6,11 @@ import { SpendingOverview } from '../components/SpendingOverview.js';
 import { UpcomingRenewals } from '../components/UpcomingRenewals.js';
 import { ExpiredContracts } from '../components/ExpiredContracts.js';
 
+/**
+ * Main dashboard page showing monthly spending overview, upcoming renewals, and expired
+ * contracts for the authenticated user.
+ */
+
 export function Dashboard() {
   const { t } = useTranslation();
   const { data, isLoading, isError } = useDashboard();

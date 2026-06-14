@@ -2,6 +2,16 @@ import type { FastifyInstance } from 'fastify';
 import { SignInBodySchema, ChangePasswordBodySchema, SessionUserSchema } from '@pcm/shared';
 import { SESSION_COOKIE_NAME, toSessionUser } from '../server.js';
 
+/**
+ * Fastify route plugin for authentication: sign-in, sign-out, current-user, and password
+ * change.
+ */
+
+/**
+ * Registers authentication routes under /api/auth on the Fastify instance.
+ *
+ * @param fastify - The Fastify instance to register routes on
+ */
 export async function authRoutes(fastify: FastifyInstance): Promise<void> {
   fastify.post('/api/auth/sign-in', async (request, reply) => {
     const body = SignInBodySchema.safeParse(request.body);

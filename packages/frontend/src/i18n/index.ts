@@ -1,5 +1,9 @@
 import i18next from 'i18next';
 import { initReactI18next } from 'react-i18next';
+/**
+ * Internationalization setup for the frontend application. Initializes i18next with
+ * English and German translations and persists the user's language preference to localStorage.
+ */
 import en from './locales/en.json';
 import de from './locales/de.json';
 

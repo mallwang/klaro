@@ -7,8 +7,21 @@ import type {
 } from '@pcm/shared';
 import { CATEGORY_LABELS, type Category, type CancellationPeriodUnit } from '@pcm/shared';
 
+/**
+ * Service layer for dashboard aggregations: monthly spending totals, renewal alerts,
+ * and expired contract detection.
+ */
+
 const GRACE_PERIOD_DAYS = 30;
 
+/**
+ * Calculates the cancellation deadline by subtracting the given notice period from the
+ * end date using UTC arithmetic to avoid daylight-saving-time boundary shifts.
+ *
+ * @param endDate - The contract end date as a UTC Date
+ * @param period - The cancellation notice period, or null if no period is configured
+ * @returns A new Date representing the deadline by which the user must cancel
+ */
 function computeCancellationDeadline(
   endDate: Date,
   period: { value: number; unit: CancellationPeriodUnit } | null,
@@ -32,6 +45,12 @@ function computeCancellationDeadline(
   return result;
 }
 
+/**
+ * Formats a Date to a YYYY-MM-DD string using UTC components.
+ *
+ * @param d - The date to format
+ * @returns An ISO 8601 date string in YYYY-MM-DD format
+ */
 function toDateString(d: Date): string {
   return d.toISOString().slice(0, 10);
 }
@@ -49,6 +68,13 @@ const MONTHLY_FACTOR_SQL = `
 export class DashboardService {
   constructor(private readonly db: Database.Database) {}
 
+  /**
+   * Assembles and returns the complete dashboard payload for the given user.
+   *
+   * @param ownerId - The ID of the user whose dashboard data to compute
+   * @returns The full DashboardResponse with spending, category breakdown, renewals, and
+   *   expired contracts
+   */
   getDashboardData(ownerId: string): DashboardResponse {
     const totalMonthlySpending = this.getTotalMonthlySpending(ownerId);
     const contractsByCategory = this.getContractsByCategory(ownerId);
@@ -57,6 +83,12 @@ export class DashboardService {
     return { totalMonthlySpending, contractsByCategory, upcomingRenewals, expiredContracts };
   }
 
+  /**
+   * Computes the sum of normalised monthly costs for all active contracts owned by the user.
+   *
+   * @param ownerId - The ID of the user
+   * @returns The total monthly spending amount
+   */
   private getTotalMonthlySpending(ownerId: string): number {
     const row = this.db
       .prepare<[string], { total: number }>(
@@ -68,6 +100,12 @@ export class DashboardService {
     return row?.total ?? 0;
   }
 
+  /**
+   * Groups active contracts by category and returns per-category spending totals and counts.
+   *
+   * @param ownerId - The ID of the user
+   * @returns An array of CategorySummary objects sorted by monthly total descending
+   */
   private getContractsByCategory(ownerId: string): CategorySummary[] {
     const rows = this.db
       .prepare<[string], { category: string; count: number; monthly_total: number }>(
@@ -89,6 +127,16 @@ export class DashboardService {
     }));
   }
 
+  /**
+   * Returns non-lifetime contracts whose cancellation deadline falls within the upcoming
+   * grace-period window, sorted by deadline ascending then name.
+   *
+   * @param ownerId - The ID of the user
+   * @returns An array of UpcomingRenewal objects for contracts requiring attention
+   *
+   * Date-only strings are parsed as UTC midnight to avoid local-timezone boundary shifts
+   * when computing the number of days until the cancellation deadline.
+   */
   private getUpcomingRenewals(ownerId: string): UpcomingRenewal[] {
     const rows = this.db
       .prepare<
@@ -162,6 +210,12 @@ export class DashboardService {
     return results;
   }
 
+  /**
+   * Returns non-lifetime contracts whose end date has passed, sorted by end date descending.
+   *
+   * @param ownerId - The ID of the user
+   * @returns An array of ExpiredContract objects with the number of days overdue
+   */
   private getExpiredContracts(ownerId: string): ExpiredContract[] {
     const rows = this.db
       .prepare<

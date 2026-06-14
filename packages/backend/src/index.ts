@@ -8,6 +8,11 @@ import {
 import { buildServer } from './server.js';
 import { MailerService } from './services/mailer.service.js';
 
+/**
+ * Application bootstrap entry point: runs migrations, starts maintenance cleanup, wires up
+ * optional SMTP, and starts the Fastify HTTP server.
+ */
+
 const db = getDb(process.env['DATABASE_PATH']);
 const bootstrap = runMigrations(db);
 if (bootstrap) {

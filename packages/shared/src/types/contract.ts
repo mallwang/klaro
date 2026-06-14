@@ -1,3 +1,8 @@
+/**
+ * Enum constants, label maps, and TypeScript types for contract domain concepts such as
+ * category, billing interval, status, and cancellation period.
+ */
+
 export const Category = {
   UTILITIES: 'UTILITIES',
   SUBSCRIPTIONS: 'SUBSCRIPTIONS',

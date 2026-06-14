@@ -5,8 +5,19 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import Database from 'better-sqlite3';
 
+/**
+ * Development database seed script that inserts deterministic accounts and contracts for
+ * local testing and demo purposes.
+ */
+
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
+/**
+ * Returns an ISO date string offset by the given number of days from today.
+ *
+ * @param days - Number of days to add (positive) or subtract (negative) from today
+ * @returns YYYY-MM-DD date string in local time
+ */
 function addDays(days: number): string {
   const d = new Date();
   d.setDate(d.getDate() + days);
@@ -118,6 +129,12 @@ const seeds = [
   },
 ];
 
+/**
+ * Inserts the seed admin and member accounts using ON CONFLICT DO NOTHING so the operation
+ * is idempotent across multiple seed runs.
+ *
+ * @param db - The database connection to insert seed accounts into
+ */
 function seedAccountsIfMissing(db: Database.Database): void {
   const insertAccount = db.prepare(`
     INSERT INTO users (id, email, display_name, password_hash, password_salt, role, status, created_at, updated_at)
@@ -145,6 +162,14 @@ function seedAccountsIfMissing(db: Database.Database): void {
   );
 }
 
+/**
+ * Upserts all seed contracts into the database, seeding accounts first if needed.
+ *
+ * @param db - The database connection to seed
+ * @param options - Seed options
+ * @param options.force - When true, overwrites existing contracts; when false (default),
+ *   skips seeding if any contracts already exist
+ */
 function runSeed(db: Database.Database, { force = false } = {}): void {
   const existing = (db.prepare(`SELECT COUNT(*) as n FROM contracts`).get() as { n: number }).n;
   if (existing > 0 && !force) {

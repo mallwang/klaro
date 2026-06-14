@@ -8,16 +8,33 @@ import { useLocaleFormat } from '../hooks/useLocaleFormat.js';
 import { getFantasyName, FANTASY_NAMES } from '../data/fantasyNames.js';
 import classes from './ExpiredContracts.module.css';
 
+/**
+ * Dashboard card listing contracts whose end date has passed, with a per-item overdue day
+ * count and links to the contract edit page.
+ */
+
 interface ExpiredContractsProps {
   expiredContracts: ExpiredContract[];
 }
 
+/**
+ * Renders a card listing expired contracts with their end dates and overdue counts,
+ * respecting the global anonymization toggle.
+ *
+ * @param props - expiredContracts: list of expired contract summaries from the dashboard API
+ */
 export function ExpiredContracts({ expiredContracts }: ExpiredContractsProps) {
   const { t } = useTranslation();
   const { isAnonymized } = useAnonymization();
   const { formatDate } = useLocaleFormat();
   const hasExpired = expiredContracts.length > 0;
 
+  /**
+   * Returns the display name for an expired contract, applying anonymization when active.
+   *
+   * @param contract - The expired contract to resolve a name for
+   * @returns The contract name or its fantasy alias
+   */
   function resolveName(contract: ExpiredContract): string {
     if (isAnonymized || contract.anonymize) {
       return getFantasyName(contract.id, FANTASY_NAMES);

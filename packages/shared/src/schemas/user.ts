@@ -1,6 +1,11 @@
 import { z } from 'zod';
 import { Role, AccountStatus } from '../types/user.js';
 
+/**
+ * Zod schemas and inferred TypeScript types for user account objects and admin account
+ * management payloads.
+ */
+
 const RoleEnum = z.enum([Role.ADMIN, Role.MEMBER]);
 const AccountStatusEnum = z.enum([AccountStatus.ACTIVE, AccountStatus.ARCHIVED]);
 
