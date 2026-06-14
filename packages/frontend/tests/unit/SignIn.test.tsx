@@ -71,4 +71,11 @@ describe('SignIn', () => {
     const passwordField = screen.getByLabelText(/password/i);
     expect(passwordField).toHaveAttribute('type', 'password');
   });
+
+  it('renders a "Forgot password?" link that navigates to /forgot-password', () => {
+    render(<SignIn />, { wrapper: createWrapper() });
+    const link = screen.getByRole('link', { name: /forgot password/i });
+    expect(link).toBeInTheDocument();
+    expect(link).toHaveAttribute('href', '/forgot-password');
+  });
 });

@@ -1,6 +1,13 @@
 import type { FastifyInstance } from 'fastify';
-import { SignInBodySchema, ChangePasswordBodySchema, SessionUserSchema } from '@pcm/shared';
+import {
+  SignInBodySchema,
+  ChangePasswordBodySchema,
+  SessionUserSchema,
+  RequestPasswordResetBodySchema,
+  ResetPasswordBodySchema,
+} from '@pcm/shared';
 import { SESSION_COOKIE_NAME, toSessionUser } from '../server.js';
+import type { UserRow } from '../db/client.js';
 
 /**
  * Fastify route plugin for authentication: sign-in, sign-out, current-user, and password
@@ -103,5 +110,80 @@ export async function authRoutes(fastify: FastifyInstance): Promise<void> {
     }
 
     return reply.status(204).send();
+  });
+
+  fastify.post('/api/auth/forgot-password', async (request, reply) => {
+    const body = RequestPasswordResetBodySchema.safeParse(request.body);
+    if (!body.success) {
+      return reply.status(400).send({
+        statusCode: 400,
+        error: 'Bad Request',
+        message: body.error.issues[0]?.message ?? 'Validation error',
+      });
+    }
+
+    const result = fastify.auth.requestPasswordReset(body.data.email);
+
+    // Always return 202 with generic message to prevent email enumeration
+    const genericMessage =
+      'If an account exists with that email, a password reset link has been sent.';
+
+    if (result.outcome === 'requested' && fastify.mailer) {
+      const appUrl = process.env['APP_URL'] ?? 'http://localhost:5173';
+      const link = `${appUrl}/reset-password/${result.token}`;
+      fastify.mailer
+        .sendPasswordResetEmail(body.data.email, link, result.expiresAt)
+        .catch((err) => {
+          fastify.log.error({ err }, 'Failed to send password reset email');
+        });
+    }
+
+    return reply.status(202).send({ message: genericMessage });
+  });
+
+  fastify.post('/api/auth/reset-password/:token', async (request, reply) => {
+    const body = ResetPasswordBodySchema.safeParse(request.body);
+    if (!body.success) {
+      return reply.status(400).send({
+        statusCode: 400,
+        error: 'Bad Request',
+        message: body.error.issues[0]?.message ?? 'Validation error',
+      });
+    }
+
+    const token = (request.params as { token: string }).token;
+    const result = fastify.auth.resetPassword(token, body.data.password);
+
+    if (result.outcome === 'success') {
+      const user = fastify.db
+        .prepare(`SELECT * FROM users WHERE id = ?`)
+        .get(result.userId) as UserRow;
+      const session = fastify.auth.createSession(result.userId);
+
+      reply.setCookie(SESSION_COOKIE_NAME, session.id, {
+        httpOnly: true,
+        secure: process.env['NODE_ENV'] === 'production',
+        sameSite: 'lax',
+        path: '/',
+        expires: new Date(session.expires_at),
+      });
+
+      return reply.status(200).send(SessionUserSchema.parse(toSessionUser(user)));
+    }
+
+    if (result.outcome === 'expired') {
+      return reply.status(404).send({
+        statusCode: 404,
+        error: 'Not Found',
+        message: 'Invalid or expired reset link',
+      });
+    }
+
+    // not-found
+    return reply.status(404).send({
+      statusCode: 404,
+      error: 'Not Found',
+      message: 'Invalid or expired reset link',
+    });
   });
 }

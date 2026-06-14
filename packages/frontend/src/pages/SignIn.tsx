@@ -1,7 +1,16 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useLocation, useNavigate, Navigate, type Location } from 'react-router-dom';
-import { Stack, TextInput, PasswordInput, Button, Alert, Paper, Title } from '@mantine/core';
+import { useLocation, useNavigate, Navigate, type Location, Link } from 'react-router-dom';
+import {
+  Stack,
+  TextInput,
+  PasswordInput,
+  Button,
+  Alert,
+  Paper,
+  Title,
+  Anchor,
+} from '@mantine/core';
 import { AuthError } from '../services/auth';
 import { useCurrentUser, useSignIn } from '../hooks/useAuth';
 import { PublicLayout } from '../components/PublicLayout.js';
@@ -82,6 +91,10 @@ export function SignIn() {
             <Button type="submit" fullWidth loading={isPending}>
               {isPending ? t('auth.submitting') : t('auth.submitLabel')}
             </Button>
+
+            <Anchor component={Link} to="/forgot-password" size="sm" ta="center">
+              {t('auth.forgotPasswordLink')}
+            </Anchor>
           </Stack>
         </form>
       </Paper>

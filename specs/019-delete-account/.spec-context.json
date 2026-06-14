@@ -1,0 +1,9 @@
+{
+  "workflow": "speckit",
+  "specName": "019-delete-account",
+  "branch": "019-delete-account",
+  "selectedAt": "2026-06-14T16:25:05.099Z",
+  "currentStep": "specify",
+  "status": "draft",
+  "history": []
+}

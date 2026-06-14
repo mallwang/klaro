@@ -301,3 +301,76 @@ describe('purgeExpiredArchivedAccounts (FR-012/FR-013)', () => {
     db.close();
   });
 });
+
+describe('runMigrations – email_verifications purpose column', () => {
+  function makeOldEmailVerificationsDb(): Database.Database {
+    const db = new Database(':memory:');
+    db.pragma('journal_mode = WAL');
+    db.pragma('foreign_keys = ON');
+    // Create users table (required for foreign key)
+    db.exec(`
+      CREATE TABLE IF NOT EXISTS users (
+        id               TEXT PRIMARY KEY,
+        email            TEXT NOT NULL UNIQUE,
+        display_name     TEXT NOT NULL,
+        password_hash    TEXT NOT NULL,
+        password_salt    TEXT NOT NULL,
+        role             TEXT NOT NULL DEFAULT 'MEMBER',
+        status           TEXT NOT NULL DEFAULT 'ACTIVE',
+        created_at       TEXT NOT NULL,
+        updated_at       TEXT NOT NULL
+      );
+    `);
+    // Create email_verifications table WITHOUT purpose column
+    db.exec(`
+      CREATE TABLE IF NOT EXISTS email_verifications (
+        token       TEXT PRIMARY KEY,
+        user_id     TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        new_email   TEXT NOT NULL,
+        expires_at  TEXT NOT NULL,
+        created_at  TEXT NOT NULL
+      );
+      CREATE UNIQUE INDEX IF NOT EXISTS idx_email_verifications_user
+        ON email_verifications(user_id);
+    `);
+    return db;
+  }
+
+  it('adds purpose column to email_verifications table', () => {
+    const db = makeOldEmailVerificationsDb();
+    runMigrations(db);
+    const cols = columnNames(db, 'email_verifications');
+    expect(cols).toContain('purpose');
+    db.close();
+  });
+
+  it('sets default purpose to email-change for existing rows', () => {
+    const db = makeOldEmailVerificationsDb();
+    // Insert a row without purpose column (simulate old data)
+    db.exec(
+      `INSERT INTO users (id, email, display_name, password_hash, password_salt, role, status, created_at, updated_at) VALUES ('user1', 'test@example.com', 'Test', 'hash', 'salt', 'MEMBER', 'ACTIVE', '2026-01-01', '2026-01-01')`,
+    );
+    db.exec(
+      `INSERT INTO email_verifications (token, user_id, new_email, expires_at, created_at) VALUES ('token1', 'user1', 'new@example.com', '2026-12-31', '2026-01-01')`,
+    );
+    runMigrations(db);
+    const row = db
+      .prepare(`SELECT purpose FROM email_verifications WHERE token = 'token1'`)
+      .get() as { purpose: string };
+    expect(row.purpose).toBe('email-change');
+    db.close();
+  });
+
+  it('updates unique index to include purpose', () => {
+    const db = makeOldEmailVerificationsDb();
+    runMigrations(db);
+    // Get index definition
+    const indexes = db
+      .prepare(
+        `SELECT sql FROM sqlite_master WHERE type = 'index' AND name = 'idx_email_verifications_user'`,
+      )
+      .get() as { sql: string };
+    expect(indexes.sql).toContain('purpose');
+    db.close();
+  });
+});

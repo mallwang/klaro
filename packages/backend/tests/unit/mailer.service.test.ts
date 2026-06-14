@@ -255,3 +255,70 @@ describe('MailerService.sendInvitationEmail', () => {
     ).toThrow(MailerError);
   });
 });
+
+describe('MailerService.sendPasswordResetEmail', () => {
+  const from = 'noreply@example.test';
+  const to = 'user@example.test';
+  const link = 'https://example.test/reset-password/abc123';
+  const expiresAt = '2026-06-14T19:00:00.000Z';
+
+  it('sends to the correct recipient with a recognizable subject', async () => {
+    const captured: unknown[] = [];
+    const transport = {
+      sendMail: (opts: unknown, cb: (err: null, info: SentMessageInfo) => void) => {
+        captured.push(opts);
+        cb(null, {
+          messageId: 'x',
+          envelope: { from: '', to: [] },
+          accepted: [],
+          rejected: [],
+          pending: [],
+          response: '',
+        });
+      },
+    } as unknown as Transporter<SentMessageInfo>;
+
+    const mailer = new MailerService({ transport, from });
+    await mailer.sendPasswordResetEmail(to, link, expiresAt);
+
+    expect(captured).toHaveLength(1);
+    const msg = captured[0] as { to: string; subject: string; text: string; html: string };
+    expect(msg.to).toBe(to);
+    expect(msg.subject).toBeTruthy();
+    expect(msg.text).toContain(link);
+    expect(msg.html).toContain(link);
+  });
+
+  it('includes expiry information in the email body', async () => {
+    const captured: unknown[] = [];
+    const transport = {
+      sendMail: (opts: unknown, cb: (err: null, info: SentMessageInfo) => void) => {
+        captured.push(opts);
+        cb(null, {
+          messageId: 'x',
+          envelope: { from: '', to: [] },
+          accepted: [],
+          rejected: [],
+          pending: [],
+          response: '',
+        });
+      },
+    } as unknown as Transporter<SentMessageInfo>;
+
+    const mailer = new MailerService({ transport, from });
+    await mailer.sendPasswordResetEmail(to, link, expiresAt);
+
+    const msg = captured[0] as { text: string; html: string };
+    expect(msg.text).toContain('2026-06-14');
+    expect(msg.html).toContain('2026-06-14');
+  });
+
+  it('throws a typed MailerError when the transport reports a send failure', async () => {
+    const transport = makeStubTransport(new Error('SMTP connection refused'));
+    const mailer = new MailerService({ transport, from });
+
+    await expect(mailer.sendPasswordResetEmail(to, link, expiresAt)).rejects.toBeInstanceOf(
+      MailerError,
+    );
+  });
+});

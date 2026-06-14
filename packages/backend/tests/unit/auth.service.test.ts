@@ -218,3 +218,116 @@ describe('AuthService – change password', () => {
     expect(auth.changePassword(userId, 'wrong-current', 'new-pass-123')).toBe(false);
   });
 });
+
+describe('AuthService – password reset', () => {
+  let db: Database.Database;
+  let auth: AuthService;
+
+  beforeEach(() => {
+    db = createDb(':memory:');
+    runMigrations(db);
+    auth = new AuthService(db);
+  });
+
+  afterEach(() => {
+    db.close();
+  });
+
+  it('requestPasswordReset returns requested with token and expiry for existing email', () => {
+    const { email } = insertUser(db);
+    const result = auth.requestPasswordReset(email);
+    expect(result.outcome).toBe('requested');
+    if (result.outcome === 'requested') {
+      expect(result.token).toBeTruthy();
+      expect(result.expiresAt).toBeTruthy();
+    }
+  });
+
+  it('requestPasswordReset returns not-found for non-existent email', () => {
+    const result = auth.requestPasswordReset('nobody@example.test');
+    expect(result).toEqual({ outcome: 'not-found' });
+  });
+
+  it('requestPasswordReset stores token in email_verifications table with purpose password-reset', () => {
+    const { email } = insertUser(db);
+    const result = auth.requestPasswordReset(email);
+    expect(result.outcome).toBe('requested');
+    if (result.outcome === 'requested') {
+      const row = db
+        .prepare(`SELECT * FROM email_verifications WHERE token = ?`)
+        .get(result.token) as { purpose: string } | undefined;
+      expect(row).toBeDefined();
+      expect(row.purpose).toBe('password-reset');
+      expect(row.new_email).toBe(''); // not used for password reset
+    }
+  });
+
+  it('requestPasswordReset invalidates previous password-reset tokens for same user', () => {
+    const { email } = insertUser(db);
+    const first = auth.requestPasswordReset(email);
+    expect(first.outcome).toBe('requested');
+    const second = auth.requestPasswordReset(email);
+    expect(second.outcome).toBe('requested');
+    if (first.outcome === 'requested' && second.outcome === 'requested') {
+      // First token should be deleted
+      const firstRow = db
+        .prepare(`SELECT * FROM email_verifications WHERE token = ?`)
+        .get(first.token);
+      expect(firstRow).toBeUndefined();
+      // Second token should exist
+      const secondRow = db
+        .prepare(`SELECT * FROM email_verifications WHERE token = ?`)
+        .get(second.token);
+      expect(secondRow).toBeDefined();
+    }
+  });
+
+  it('resetPassword updates password and returns success for valid token', async () => {
+    const { id: userId, email } = insertUser(db, { password: 'old-pass' });
+    const resetResult = auth.requestPasswordReset(email);
+    expect(resetResult.outcome).toBe('requested');
+    if (resetResult.outcome === 'requested') {
+      const result = auth.resetPassword(resetResult.token, 'new-pass-123');
+      expect(result.outcome).toBe('success');
+      if (result.outcome === 'success') {
+        expect(result.userId).toBe(userId);
+      }
+      // Verify new password works
+      expect(auth.signIn(email, 'new-pass-123').outcome).toBe('success');
+      expect(auth.signIn(email, 'old-pass').outcome).toBe('invalid');
+    }
+  });
+
+  it('resetPassword deletes token after use', async () => {
+    const { email } = insertUser(db);
+    const resetResult = auth.requestPasswordReset(email);
+    expect(resetResult.outcome).toBe('requested');
+    if (resetResult.outcome === 'requested') {
+      const result = auth.resetPassword(resetResult.token, 'new-pass-123');
+      expect(result.outcome).toBe('success');
+      const row = db
+        .prepare(`SELECT * FROM email_verifications WHERE token = ?`)
+        .get(resetResult.token);
+      expect(row).toBeUndefined();
+    }
+  });
+
+  it('resetPassword returns not-found for invalid token', () => {
+    const result = auth.resetPassword('invalid-token', 'new-pass-123');
+    expect(result.outcome).toBe('not-found');
+  });
+
+  it('resetPassword returns expired for expired token', async () => {
+    const { email } = insertUser(db);
+    const resetResult = auth.requestPasswordReset(email);
+    expect(resetResult.outcome).toBe('requested');
+    if (resetResult.outcome === 'requested') {
+      // Manually expire the token by updating expires_at to past
+      db.prepare(
+        `UPDATE email_verifications SET expires_at = datetime('now', '-1 hour') WHERE token = ?`,
+      ).run(resetResult.token);
+      const result = auth.resetPassword(resetResult.token, 'new-pass-123');
+      expect(result.outcome).toBe('expired');
+    }
+  });
+});

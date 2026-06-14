@@ -226,6 +226,23 @@ export function runMigrations(instance: Database.Database): BootstrapResult | nu
       ON email_verifications(user_id);
   `);
 
+  // Add purpose column to email_verifications table (forgot password feature)
+  const hasPurpose = instance
+    .prepare<[], { name: string }>(`PRAGMA table_info(email_verifications)`)
+    .all()
+    .some((col) => col.name === 'purpose');
+
+  if (!hasPurpose) {
+    instance.exec(
+      `ALTER TABLE email_verifications ADD COLUMN purpose TEXT NOT NULL DEFAULT 'email-change' CHECK(purpose IN ('email-change', 'password-reset'))`,
+    );
+    // Recreate unique index to include purpose
+    instance.exec(`DROP INDEX IF EXISTS idx_email_verifications_user`);
+    instance.exec(
+      `CREATE UNIQUE INDEX idx_email_verifications_user ON email_verifications(user_id, purpose)`,
+    );
+  }
+
   return bootstrapResult;
 }
 
@@ -318,6 +335,7 @@ export interface EmailVerificationRow {
   token: string;
   user_id: string;
   new_email: string;
+  purpose: 'email-change' | 'password-reset';
   expires_at: string;
   created_at: string;
 }

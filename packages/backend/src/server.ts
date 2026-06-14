@@ -36,6 +36,8 @@ declare module 'fastify' {
 
 const PUBLIC_ROUTES: Array<(method: string, path: string) => boolean> = [
   (m, p) => m === 'POST' && p === '/api/auth/sign-in',
+  (m, p) => m === 'POST' && p === '/api/auth/forgot-password',
+  (m, p) => m === 'POST' && /^\/api\/auth\/reset-password\/[^/]+$/.test(p),
   (m, p) => m === 'POST' && /^\/api\/invitations\/[^/]+\/accept$/.test(p),
   (m, p) => m === 'POST' && /^\/api\/profile\/email-change\/[^/]+\/confirm$/.test(p),
 ];

@@ -14,11 +14,11 @@
 - `packages/backend/tests/unit/migration.test.ts` — verify migration adds `purpose` column
 
 **Acceptance criteria**:
-- [ ] `purpose` column exists with default `'email-change'`
-- [ ] Unique index includes `purpose`
-- [ ] Existing rows have `purpose = 'email-change'`
-- [ ] `EmailVerificationRow` interface includes `purpose` field
-- [ ] All existing tests still pass
+- [X] `purpose` column exists with default `'email-change'`
+- [X] Unique index includes `purpose`
+- [X] Existing rows have `purpose = 'email-change'`
+- [X] `EmailVerificationRow` interface includes `purpose` field
+- [X] All existing tests still pass
 
 ---
 
@@ -36,10 +36,10 @@
 - `packages/shared/tests/unit/schemas.test.ts` — verify schema validation
 
 **Acceptance criteria**:
-- [ ] `RequestPasswordResetBodySchema` validates email
-- [ ] `ResetPasswordBodySchema` validates password (min 8, max 200)
-- [ ] Types are exported correctly
-- [ ] Existing schema tests still pass
+- [X] `RequestPasswordResetBodySchema` validates email
+- [X] `ResetPasswordBodySchema` validates password (min 8, max 200)
+- [X] Types are exported correctly
+- [X] Existing schema tests still pass
 
 ---
 
@@ -56,10 +56,10 @@
 - `packages/backend/tests/unit/mailer.service.test.ts` — verify email sends correctly
 
 **Acceptance criteria**:
-- [ ] Method sends email with correct subject and content
-- [ ] Method throws `MailerError` on transport failure
-- [ ] Method follows existing promise-wrapping pattern
-- [ ] JSDoc comment is present
+- [X] Method sends email with correct subject and content
+- [X] Method throws `MailerError` on transport failure
+- [X] Method follows existing promise-wrapping pattern
+- [X] JSDoc comment is present
 
 ---
 
@@ -76,14 +76,14 @@
 - `packages/backend/tests/unit/auth.service.test.ts` — verify service methods
 
 **Acceptance criteria**:
-- [ ] `requestPasswordReset` generates token and stores in DB
-- [ ] `requestPasswordReset` invalidates previous tokens for user
-- [ ] `requestPasswordReset` returns success even for non-existent email
-- [ ] `resetPassword` updates password hash and salt
-- [ ] `resetPassword` deletes token after use
-- [ ] `resetPassword` returns 'not-found' for invalid token
-- [ ] `resetPassword` returns 'expired' for expired token
-- [ ] JSDoc comments are present
+- [X] `requestPasswordReset` generates token and stores in DB
+- [X] `requestPasswordReset` invalidates previous tokens for user
+- [X] `requestPasswordReset` returns success even for non-existent email
+- [X] `resetPassword` updates password hash and salt
+- [X] `resetPassword` deletes token after use
+- [X] `resetPassword` returns 'not-found' for invalid token
+- [X] `resetPassword` returns 'expired' for expired token
+- [X] JSDoc comments are present
 
 ---
 
@@ -127,10 +127,10 @@
 - `packages/frontend/tests/unit/auth.service.test.ts` — verify API calls
 
 **Acceptance criteria**:
-- [ ] `requestPasswordReset` sends POST to `/api/auth/forgot-password`
-- [ ] `resetPassword` sends POST to `/api/auth/reset-password/:token`
-- [ ] Both functions throw `AuthError` on failure
-- [ ] JSDoc comments are present
+- [X] `requestPasswordReset` sends POST to `/api/auth/forgot-password`
+- [X] `resetPassword` sends POST to `/api/auth/reset-password/:token`
+- [X] Both functions throw `AuthError` on failure
+- [X] JSDoc comments are present
 
 ---
 
@@ -147,9 +147,9 @@
 - `packages/frontend/tests/unit/hooks/useAuth.test.ts` — verify hook behavior
 
 **Acceptance criteria**:
-- [ ] `useRequestPasswordReset` returns mutation for forgot-password endpoint
-- [ ] `useResetPassword` returns mutation for reset-password endpoint
-- [ ] Hooks follow existing patterns
+- [X] `useRequestPasswordReset` returns mutation for forgot-password endpoint
+- [X] `useResetPassword` returns mutation for reset-password endpoint
+- [X] Hooks follow existing patterns
 
 ---
 
@@ -166,11 +166,11 @@
 - `packages/frontend/tests/unit/pages/ForgotPassword.test.tsx` — verify page renders and submits
 
 **Acceptance criteria**:
-- [ ] Page renders email form with title "Reset your password"
-- [ ] Form validates email format
-- [ ] Success message appears after submission
-- [ ] Page uses `PublicLayout`
-- [ ] JSDoc comment is present
+- [X] Page renders email form with title "Reset your password"
+- [X] Form validates email format
+- [X] Success message appears after submission
+- [X] Page uses `PublicLayout`
+- [X] JSDoc comment is present
 
 ---
 
@@ -187,13 +187,13 @@
 - `packages/frontend/tests/unit/pages/ResetPassword.test.tsx` — verify page renders and submits
 
 **Acceptance criteria**:
-- [ ] Page renders password form with title "Set a new password"
-- [ ] Form validates password length (min 8)
-- [ ] Form validates password confirmation
-- [ ] Success message appears after submission
-- [ ] Error messages for invalid/expired tokens
-- [ ] Page uses `PublicLayout`
-- [ ] JSDoc comment is present
+- [X] Page renders password form with title "Set a new password"
+- [X] Form validates password length (min 8)
+- [X] Form validates password confirmation
+- [X] Success message appears after submission
+- [X] Error messages for invalid/expired tokens
+- [X] Page uses `PublicLayout`
+- [X] JSDoc comment is present
 
 ---
 
@@ -210,9 +210,9 @@
 - `packages/frontend/tests/unit/pages/SignIn.test.tsx` — verify link exists and navigates
 
 **Acceptance criteria**:
-- [ ] "Forgot password?" link appears below the form
-- [ ] Link navigates to `/forgot-password`
-- [ ] Link is accessible (proper keyboard navigation)
+- [X] "Forgot password?" link appears below the form
+- [X] Link navigates to `/forgot-password`
+- [X] Link is accessible (proper keyboard navigation)
 
 ---
 
@@ -229,9 +229,9 @@
 - `packages/frontend/tests/unit/main.test.tsx` — verify routes are registered
 
 **Acceptance criteria**:
-- [ ] `/forgot-password` route renders `ForgotPassword`
-- [ ] `/reset-password/:token` route renders `ResetPassword`
-- [ ] Routes are public (no auth required)
+- [X] `/forgot-password` route renders `ForgotPassword`
+- [X] `/reset-password/:token` route renders `ResetPassword`
+- [X] Routes are public (no auth required)
 
 ---
 
@@ -249,9 +249,9 @@
 - `packages/frontend/tests/unit/i18n/catalogue.test.ts` — verify keys exist
 
 **Acceptance criteria**:
-- [ ] English translations are complete
-- [ ] German translations are complete
-- [ ] Both files remain consistent
+- [X] English translations are complete
+- [X] German translations are complete
+- [X] Both files remain consistent
 
 ---
 
@@ -270,7 +270,7 @@
 **Tests to write first**: N/A (documentation)
 
 **Acceptance criteria**:
-- [ ] Feature is documented in English README
-- [ ] Feature is documented in German README
-- [ ] User guide includes step-by-step instructions
-- [ ] German user guide matches English version
+- [X] Feature is documented in English README
+- [X] Feature is documented in German README
+- [X] User guide includes step-by-step instructions
+- [X] German user guide matches English version

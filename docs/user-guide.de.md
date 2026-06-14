@@ -288,6 +288,12 @@ Wenn du die App öffnest und keine aktive Sitzung hast, landest du auf der Anmel
 
 Wenn du zu oft hintereinander das falsche Passwort eingibst, wird das Konto vorübergehend gesperrt — warte ein paar Minuten und versuche es dann erneut mit dem richtigen Passwort.
 
+### Passwort vergessen
+
+Wenn du dein Passwort vergessen hast, klicke auf den Link **Passwort vergessen?** unter dem Anmeldeformular. Gib deine E-Mail-Adresse ein und klicke auf **Link zum Zurücksetzen senden**. Die App zeigt immer eine generische Erfolgsmeldung („Wenn ein Konto mit dieser E-Mail existiert, wurde ein Link zum Zurücksetzen des Passworts gesendet."), unabhängig davon, ob die E-Mail-Adresse registriert ist — dies verhindert, dass Angreifer herausfinden können, welche E-Mail-Adressen im System sind.
+
+Prüfe deinen Posteingang auf eine E-Mail mit einem Zurücksetzungslink. Klicke auf den Link, um die Seite **Neues Passwort festlegen** zu öffnen. Gib ein neues Passwort ein (mindestens 8 Zeichen) und bestätige es, dann klicke auf **Passwort zurücksetzen**. Du wirst automatisch angemeldet und zum Dashboard weitergeleitet. Der Link läuft nach 1 Stunde ab und kann nur einmal verwendet werden. Wenn du einen weiteren Zurücksetzungslink anforderst, werden alle vorherigen Links ungültig.
+
 ### Das erste Konto
 
 Beim allerersten Start der App auf einer frischen Installation wird automatisch ein **Administratorkonto** angelegt; dessen E-Mail-Adresse und ein Einmalpasswort werden im Server-Log ausgegeben (sichtbar mit `docker compose logs` oder im Terminal, in dem das Backend läuft). Melde dich mit diesen Zugangsdaten an und **ändere das Passwort sofort** über „Mein Konto".

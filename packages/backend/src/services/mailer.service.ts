@@ -178,4 +178,25 @@ export class MailerService {
       });
     });
   }
+
+  /**
+   * Sends a password reset link to the user's email address.
+   *
+   * @param to - The recipient email address
+   * @param link - The one-time password reset URL
+   * @param expiresAt - ISO timestamp after which the reset link is no longer valid
+   */
+  async sendPasswordResetEmail(to: string, link: string, expiresAt: string): Promise<void> {
+    const expiryDate = new Date(expiresAt).toISOString().slice(0, 10);
+    const subject = 'Reset your password';
+    const text = `You requested a password reset.\n\nClick the link below to set a new password:\n\n${link}\n\nThis link expires on ${expiryDate}. It can only be used once.\n\nIf you did not request this change, you can ignore this email.`;
+    const html = `<p>You requested a password reset.</p><p>Click the link below to set a new password:</p><p><a href="${link}">${link}</a></p><p>This link expires on <strong>${expiryDate}</strong>. It can only be used once.</p><p>If you did not request this change, you can ignore this email.</p>`;
+
+    await new Promise<void>((resolve, reject) => {
+      this.transport.sendMail({ from: this.from, to, subject, text, html }, (err) => {
+        if (err) reject(new MailerError(err.message));
+        else resolve();
+      });
+    });
+  }
 }
