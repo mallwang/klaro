@@ -8,12 +8,16 @@ A personal web app for tracking contracts — subscriptions, insurance, housing,
 
 - **Dashboard** — total active monthly spending, category breakdown, upcoming renewals (within 30 days), and expired contracts
 - **Contract list** — sortable table with provider logos and category icons
-- **Create / edit / delete** contracts with 14 fields including cancellation notice periods
+- **Create / edit / delete** contracts with fields for name, category, amount, billing interval, status, start/end dates, service URL, cancellation notice period, notes, and a per-contract anonymization flag
 - **Export** — download all contracts as JSON or Excel (.xlsx)
 - **Import** — upload JSON or Excel with intelligent column auto-mapping
 - **Anonymization** — hide real contract names globally or per contract using deterministic fantasy names
 - **Localization** — English and German with locale-aware currency and date formatting
-- **Multi-user accounts** — every family member signs in with their own account; contracts, dashboards, exports, and imports are scoped per account, and administrators can create, archive, reactivate, and manage roles for other accounts
+- **Multi-user accounts** — every family member signs in with their own account; contracts, dashboards, exports, and imports are scoped per account; administrators can create, archive, reactivate, delete, and manage roles for other accounts
+- **Email invitations** — administrators invite new users by email; the invitation panel tracks pending, accepted, and expired invitations and allows resending or withdrawing them
+- **Account settings** — users can update their display name, request an email address change (confirmed via a verification link), and change their password from the "My Account" page
+- **Email notifications** — transactional emails for key events: email-change verification, email-change confirmation, and password-change notification; administrators can send a test email from the admin panel to verify the SMTP connection
+- **Delete account** — users can permanently delete their own account and all associated contracts via a "Danger Zone" section on the account settings page; a modal prompts for an optional JSON export before confirming; sole administrators are blocked from deleting until a second admin exists
 
 For a full walkthrough of the UI, see [docs/user-guide.md](docs/user-guide.md).
 
@@ -23,7 +27,7 @@ For a full walkthrough of the UI, see [docs/user-guide.md](docs/user-guide.md).
 |-------|-----------|
 | Backend | Fastify + TypeScript + SQLite (better-sqlite3) |
 | Frontend | React + TypeScript + Vite + TanStack Query |
-| Styling | Tailwind CSS v4 + shadcn-style components |
+| UI | Mantine 7 |
 | Testing | Vitest (unit + integration), Playwright (e2e) |
 | Monorepo | pnpm workspaces |
 

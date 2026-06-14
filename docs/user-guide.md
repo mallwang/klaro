@@ -22,14 +22,23 @@ Personal Contract Management is a local web app that keeps all your contracts �
 
 ## 1. Getting around
 
-The app has two main areas:
+The app has a persistent navigation sidebar on the left. It is divided into two segments:
+
+**App** — available to every signed-in user:
 
 | Page | URL | Purpose |
 |------|-----|---------|
 | Dashboard | `/` | Spending overview, renewals, expired contracts |
 | Contracts | `/contracts` | Full list; create, import, export |
+| My Account | `/account` | Display name, email, password, delete account |
 
-Use the navigation links at the top of each page to move between them. Every detail page has a back link in the top-left corner.
+**Admin** — visible only to administrators:
+
+| Page | URL | Purpose |
+|------|-----|---------|
+| Accounts | `/admin/accounts` | Invite users, manage accounts |
+
+The **Sign out** button is at the bottom of the sidebar. Your display name and role (Administrator / Member) are shown just above it.
 
 ---
 
@@ -271,34 +280,81 @@ Currency amounts and dates are formatted according to the selected locale (e.g. 
 
 ## 10. Accounts & sign-in
 
-The app now requires every visitor to sign in — each family member gets their own account, and contracts belong to the account that created them. Nobody can see or change another account's contracts, including on the dashboard, exports, and imports.
+Every visitor must sign in. Contracts, dashboards, exports, and imports are scoped to the signed-in account — nobody can see or change another account's contracts.
 
 ### Signing in and out
 
-Open the app and you'll land on the sign-in page if you don't already have an active session. Enter your email and password to continue. Use the **Sign out** button in the top-right corner to end your session on this device.
+Open the app and you'll land on the sign-in page if you don't already have an active session. Enter your email and password to continue. Use the **Sign out** button at the bottom of the sidebar to end your session on this device.
 
 If you enter the wrong password too many times in a row, the account is temporarily locked — wait a few minutes and try again with the correct password.
 
 ### The first account
 
-The very first time the app starts on a fresh installation, it automatically creates an **administrator** account and prints its email address and a one-time password to the server log (visible with `docker compose logs` or in the terminal running the backend). Sign in with those credentials and **change the password immediately** from "My Account" (see below).
+The very first time the app starts on a fresh installation, it automatically creates an **administrator** account and prints its email address and a one-time password to the server log (visible with `docker compose logs` or in the terminal running the backend). Sign in with those credentials and **change the password immediately** from My Account.
 
-If you're upgrading from an older version of the app, this same bootstrap administrator account is created and **all of your existing contracts are automatically assigned to it** — nothing is lost, and you can then create separate accounts for other family members and, if you like, recreate or reassign contracts as needed.
+If you're upgrading from an older version of the app, this same bootstrap administrator account is created and **all of your existing contracts are automatically assigned to it** — nothing is lost.
 
 ### My Account
 
-Every signed-in user can open **My Account** (link in the top-right corner) to change their own password. You'll need your current password plus a new one (at least 8 characters).
+Open **My Account** from the sidebar to manage your own profile. It has three sections:
 
-### Manage Accounts (administrators only)
+**Display name** — change the name shown in the sidebar and on the accounts admin page. Enter a new name and click **Save**.
 
-Administrators see an additional **Manage Accounts** link in the top-right corner. From there you can:
+**Email address** — your current address is shown. To change it, enter the new address and click **Request change**. The app sends a verification link to the new address; click it to confirm. Until confirmed, your old address remains active and a notice is shown on this page. You can request a new link at any time by submitting again.
 
-- **Create** a new account — provide an email, display name, role (Administrator or Member), and an initial password that the person should change after their first sign-in
-- **Archive** an account to remove someone's access (e.g. when a family member moves out). Archived accounts can no longer sign in, but their data is kept for a retention period in case you change your mind
-- **Reactivate** an archived account within that retention period to restore access with all of its contracts intact
-- **Promote/demote** an account between Administrator and Member roles
+**Password** — enter your current password and a new one (at least 8 characters), then click **Change password**.
 
-The app always keeps at least one active administrator — you cannot archive or demote the last remaining admin, to make sure the household never locks itself out of account management.
+### Email notifications
+
+The app sends transactional emails for security-relevant events:
+
+| Event | Who receives it |
+|-------|----------------|
+| Email address change requested | Verification link sent to the **new** address |
+| Email address change confirmed | Confirmation sent to the **new** address |
+| Password changed | Notification sent to your **current** address |
+| Invitation to join | Invitation link sent to the **invited** address |
+
+### Deleting your account
+
+Open **My Account** and scroll to the **Danger Zone** section at the bottom. Click **Delete account** to open the deletion modal. The modal walks you through two steps:
+
+1. **Export (optional)** — if you have contracts, a button lets you download them as JSON before you proceed. Click **Skip** if you don't need a backup.
+2. **Confirm** — click **Delete account** to permanently remove your account and all its contracts. This cannot be undone.
+
+> **Sole-admin guard**: if you are the only active administrator, the confirm button is disabled. You must promote another member to administrator first, or ask another admin to do it.
+
+### Inviting new members (administrators only)
+
+To add someone to the household, go to **Accounts** in the admin sidebar section and enter their email address in the **Invite** form, then click **Send invitation**. The app emails them a link that lets them set their own password and sign in. The invitation expires after 7 days; you can resend it at any time from the invitations table.
+
+The invitations table below the form shows all past invitations and their status:
+
+| Status | Meaning |
+|--------|---------|
+| Pending | Sent, not yet accepted |
+| Expired | Deadline passed before the person accepted |
+| Accepted | The person has set their password and signed in |
+| Cancelled | You withdrew the invitation |
+
+For pending and expired invitations, two actions are available: **Resend** (sends a fresh link) and **Withdraw** (cancels the invitation).
+
+### Managing accounts (administrators only)
+
+The accounts table on the **Accounts** admin page lists every account with its display name, email address, role, and status. Available actions:
+
+- **Archive** — removes the person's access. Archived accounts cannot sign in; their contracts are kept. You can undo this with Reactivate.
+- **Reactivate** — restores access to an archived account with all contracts intact.
+- **Make Administrator / Make Member** — changes the account's role.
+- **Delete** — permanently removes an archived account and all its data. This cannot be undone. Only available for archived accounts.
+
+The app always keeps at least one active administrator. Archive, demote, and delete actions are disabled for the last remaining admin to prevent the household from locking itself out.
+
+> **Note**: when an account is permanently deleted, its email address is freed for re-use. If the address has already been reassigned to a new account (e.g. the person was re-invited), the old archived record shows "email reassigned" instead of the address, and Reactivate is no longer available.
+
+### SMTP test (administrators only)
+
+At the top of the **Accounts** page there is a **Send test email** panel. Enter any email address and click **Send** to check whether outgoing mail is configured correctly. Use this after changing your SMTP settings to verify delivery before inviting users.
 
 ---
 

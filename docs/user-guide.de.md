@@ -22,14 +22,23 @@ Personal Contract Management ist eine lokale Web-App, die alle deine Verträge �
 
 ## 1. Orientierung
 
-Die App hat zwei Hauptbereiche:
+Die App hat eine dauerhaft sichtbare Navigationsleiste auf der linken Seite. Sie ist in zwei Bereiche unterteilt:
+
+**App** — für jeden angemeldeten Benutzer verfügbar:
 
 | Seite | URL | Zweck |
 |-------|-----|-------|
 | Dashboard | `/` | Ausgabenübersicht, Verlängerungen, abgelaufene Verträge |
 | Verträge | `/contracts` | Vollständige Liste; Erstellen, Importieren, Exportieren |
+| Mein Konto | `/account` | Anzeigename, E-Mail, Passwort, Konto löschen |
 
-Navigiere über die Links oben auf jeder Seite zwischen den Bereichen. Jede Detailseite hat einen Zurück-Link in der oberen linken Ecke.
+**Admin** — nur für Administratoren sichtbar:
+
+| Seite | URL | Zweck |
+|-------|-----|-------|
+| Konten | `/admin/accounts` | Benutzer einladen, Konten verwalten |
+
+Die Schaltfläche **Abmelden** befindet sich am unteren Rand der Seitenleiste. Dein Anzeigename und deine Rolle (Administrator / Mitglied) werden direkt darüber angezeigt.
 
 ---
 
@@ -271,34 +280,81 @@ Währungsbeträge und Datumsangaben werden entsprechend dem gewählten Gebietssc
 
 ## 10. Konten & Anmeldung
 
-Die App verlangt jetzt von jedem Besucher eine Anmeldung — jedes Familienmitglied erhält ein eigenes Konto, und Verträge gehören dem Konto, das sie angelegt hat. Niemand kann die Verträge eines anderen Kontos sehen oder ändern — auch nicht im Dashboard, bei Exporten oder Importen.
+Jeder Besucher muss sich anmelden. Verträge, Dashboards, Exporte und Importe sind auf das angemeldete Konto beschränkt — niemand kann die Verträge eines anderen Kontos sehen oder ändern.
 
 ### An- und Abmelden
 
-Wenn du die App öffnest und keine aktive Sitzung hast, landest du auf der Anmeldeseite. Gib deine E-Mail-Adresse und dein Passwort ein, um fortzufahren. Über die Schaltfläche **Abmelden** in der oberen rechten Ecke beendest du deine Sitzung auf diesem Gerät.
+Wenn du die App öffnest und keine aktive Sitzung hast, landest du auf der Anmeldeseite. Gib deine E-Mail-Adresse und dein Passwort ein, um fortzufahren. Über die Schaltfläche **Abmelden** am unteren Rand der Seitenleiste beendest du deine Sitzung auf diesem Gerät.
 
 Wenn du zu oft hintereinander das falsche Passwort eingibst, wird das Konto vorübergehend gesperrt — warte ein paar Minuten und versuche es dann erneut mit dem richtigen Passwort.
 
 ### Das erste Konto
 
-Beim allerersten Start der App auf einer frischen Installation wird automatisch ein **Administratorkonto** angelegt; dessen E-Mail-Adresse und ein Einmalpasswort werden im Server-Log ausgegeben (sichtbar mit `docker compose logs` oder im Terminal, in dem das Backend läuft). Melde dich mit diesen Zugangsdaten an und **ändere das Passwort sofort** über „Mein Konto" (siehe unten).
+Beim allerersten Start der App auf einer frischen Installation wird automatisch ein **Administratorkonto** angelegt; dessen E-Mail-Adresse und ein Einmalpasswort werden im Server-Log ausgegeben (sichtbar mit `docker compose logs` oder im Terminal, in dem das Backend läuft). Melde dich mit diesen Zugangsdaten an und **ändere das Passwort sofort** über „Mein Konto".
 
-Falls du von einer älteren Version der App aktualisierst, wird genau dieses Administratorkonto angelegt und **alle deine bestehenden Verträge werden automatisch diesem Konto zugewiesen** — nichts geht verloren. Anschließend kannst du eigene Konten für die übrigen Familienmitglieder anlegen und bei Bedarf Verträge neu anlegen oder zuordnen.
+Falls du von einer älteren Version der App aktualisierst, wird genau dieses Administratorkonto angelegt und **alle deine bestehenden Verträge werden automatisch diesem Konto zugewiesen** — nichts geht verloren.
 
 ### Mein Konto
 
-Jeder angemeldete Benutzer kann über **Mein Konto** (Link in der oberen rechten Ecke) sein eigenes Passwort ändern. Du benötigst dazu dein aktuelles Passwort sowie ein neues (mindestens 8 Zeichen).
+Öffne **Mein Konto** über die Seitenleiste, um dein eigenes Profil zu verwalten. Die Seite hat drei Bereiche:
+
+**Anzeigename** — ändere den Namen, der in der Seitenleiste und auf der Kontoverwaltungsseite angezeigt wird. Gib einen neuen Namen ein und klicke auf **Speichern**.
+
+**E-Mail-Adresse** — deine aktuelle Adresse wird angezeigt. Um sie zu ändern, gib die neue Adresse ein und klicke auf **Änderung beantragen**. Die App sendet einen Bestätigungslink an die neue Adresse; klicke darauf, um die Änderung zu bestätigen. Bis zur Bestätigung bleibt deine alte Adresse aktiv, und auf dieser Seite wird ein Hinweis angezeigt. Du kannst jederzeit einen neuen Link anfordern, indem du das Formular erneut absendest.
+
+**Passwort** — gib dein aktuelles Passwort und ein neues ein (mindestens 8 Zeichen) und klicke auf **Passwort ändern**.
+
+### E-Mail-Benachrichtigungen
+
+Die App sendet transaktionale E-Mails bei sicherheitsrelevanten Ereignissen:
+
+| Ereignis | Empfänger |
+|----------|----------|
+| E-Mail-Adressänderung beantragt | Bestätigungslink an die **neue** Adresse |
+| E-Mail-Adressänderung bestätigt | Bestätigung an die **neue** Adresse |
+| Passwort geändert | Benachrichtigung an die **aktuelle** Adresse |
+| Einladung zum Beitritt | Einladungslink an die **eingeladene** Adresse |
+
+### Konto löschen
+
+Öffne **Mein Konto** und scrolle zum Bereich **Gefahrenzone** am unteren Ende. Klicke auf **Konto löschen**, um den Löschdialog zu öffnen. Der Dialog führt dich durch zwei Schritte:
+
+1. **Export (optional)** — wenn du Verträge hast, kannst du sie per Schaltfläche als JSON herunterladen, bevor du fortfährst. Klicke auf **Überspringen**, wenn du kein Backup benötigst.
+2. **Bestätigen** — klicke auf **Konto löschen**, um dein Konto und alle zugehörigen Verträge dauerhaft zu entfernen. Dieser Vorgang kann nicht rückgängig gemacht werden.
+
+> **Alleiniger Administrator**: Bist du der einzige aktive Administrator, ist die Bestätigungsschaltfläche deaktiviert. Du musst zunächst ein anderes Mitglied zum Administrator befördern oder einen anderen Administrator darum bitten.
+
+### Neue Mitglieder einladen (nur Administratoren)
+
+Um jemanden zum Haushalt hinzuzufügen, öffne **Konten** im Admin-Bereich der Seitenleiste und gib die E-Mail-Adresse der Person in das **Einladen**-Formular ein, dann klicke auf **Einladung senden**. Die App schickt der Person einen Link, über den sie ihr eigenes Passwort festlegen und sich anmelden kann. Die Einladung läuft nach 7 Tagen ab; du kannst sie jederzeit aus der Einladungstabelle heraus erneut senden.
+
+Die Einladungstabelle unterhalb des Formulars zeigt alle bisherigen Einladungen und ihren Status:
+
+| Status | Bedeutung |
+|--------|----------|
+| Ausstehend | Gesendet, noch nicht angenommen |
+| Abgelaufen | Frist abgelaufen, bevor die Person angenommen hat |
+| Angenommen | Die Person hat ihr Passwort festgelegt und sich angemeldet |
+| Widerrufen | Du hast die Einladung zurückgezogen |
+
+Für ausstehende und abgelaufene Einladungen stehen zwei Aktionen zur Verfügung: **Erneut senden** (sendet einen neuen Link) und **Widerrufen** (bricht die Einladung ab).
 
 ### Konten verwalten (nur Administratoren)
 
-Administratoren sehen zusätzlich den Link **Konten verwalten** in der oberen rechten Ecke. Dort kannst du:
+Die Kontentabelle auf der **Konten**-Seite listet alle Konten mit Anzeigename, E-Mail-Adresse, Rolle und Status auf. Verfügbare Aktionen:
 
-- Ein neues Konto **anlegen** — mit E-Mail-Adresse, Anzeigename, Rolle (Administrator oder Mitglied) und einem Anfangspasswort, das die Person nach der ersten Anmeldung ändern sollte
-- Ein Konto **archivieren**, um jemandem den Zugriff zu entziehen (z. B. wenn ein Familienmitglied auszieht). Archivierte Konten können sich nicht mehr anmelden, ihre Daten bleiben jedoch für eine Aufbewahrungsfrist erhalten, falls du es dir anders überlegst
-- Ein archiviertes Konto innerhalb dieser Frist **reaktivieren**, um den Zugriff samt aller zugehörigen Verträge wiederherzustellen
-- Ein Konto zwischen den Rollen Administrator und Mitglied **befördern/zurückstufen**
+- **Archivieren** — entzieht der Person den Zugriff. Archivierte Konten können sich nicht anmelden; ihre Verträge bleiben erhalten. Du kannst dies mit „Reaktivieren" rückgängig machen.
+- **Reaktivieren** — stellt den Zugriff auf ein archiviertes Konto samt aller zugehörigen Verträge wieder her.
+- **Zum Administrator machen / Zum Mitglied machen** — ändert die Rolle des Kontos.
+- **Löschen** — entfernt ein archiviertes Konto und alle zugehörigen Daten dauerhaft. Dieser Vorgang kann nicht rückgängig gemacht werden. Nur für archivierte Konten verfügbar.
 
-Die App stellt stets sicher, dass mindestens ein aktiver Administrator bestehen bleibt — du kannst den letzten verbleibenden Administrator weder archivieren noch zurückstufen, damit sich der Haushalt nie selbst aus der Kontoverwaltung aussperrt.
+Die App stellt sicher, dass stets mindestens ein aktiver Administrator vorhanden ist. Archivieren, Zurückstufen und Löschen sind für den letzten verbliebenen Administrator deaktiviert, damit sich der Haushalt nie selbst aus der Kontoverwaltung aussperrt.
+
+> **Hinweis**: Wenn ein Konto dauerhaft gelöscht wird, wird seine E-Mail-Adresse für eine erneute Verwendung freigegeben. Wurde die Adresse bereits einem neuen Konto zugewiesen (z. B. nach einer erneuten Einladung), zeigt der alte archivierte Eintrag „E-Mail neu vergeben" statt der Adresse, und „Reaktivieren" ist nicht mehr verfügbar.
+
+### SMTP-Test (nur Administratoren)
+
+Am oberen Rand der **Konten**-Seite befindet sich ein Bereich **Test-E-Mail senden**. Gib eine beliebige E-Mail-Adresse ein und klicke auf **Senden**, um zu prüfen, ob der ausgehende E-Mail-Versand korrekt konfiguriert ist. Nutze dies nach einer Änderung der SMTP-Einstellungen, um den Versand zu testen, bevor du Benutzer einlädst.
 
 ---
 
