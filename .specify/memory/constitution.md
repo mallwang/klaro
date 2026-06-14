@@ -87,6 +87,30 @@ The canonical stack for this project is:
 Any deviation from this stack MUST be justified in the relevant feature's `plan.md` and
 approved before implementation begins.
 
+## Documentation Standards
+
+### README
+Both `README.md` (English) and `README.de.md` (German) MUST be updated after every feature
+implementation. The two files MUST remain consistent with each other.
+
+### User guides
+Both `docs/user-guide.md` (English) and `docs/user-guide.de.md` (German) MUST be updated
+after every feature implementation to document the new functionality from a user perspective —
+what the feature does, how to reach it, and any relevant edge cases. The two files MUST
+remain consistent with each other.
+
+### JSDoc
+Every new or modified function MUST carry a JSDoc comment with:
+- A one-sentence description in imperative mood.
+- `@param` entries for every parameter.
+- A `@returns` entry describing the return value.
+- An optional prose paragraph for non-trivial logic (hidden constraints, subtle invariants,
+  surprising behavior). Omit when the implementation is self-explanatory.
+
+### File-level description
+Every source file MUST include a file-level JSDoc block placed after imports and before the
+first exported symbol, class, or function. One or two sentences describing the module's role.
+
 ## Development Workflow
 
 1. **Specification first**: Every feature MUST have an approved `spec.md` before planning.
@@ -112,4 +136,4 @@ This constitution supersedes all other development practices and conventions for
 - **MINOR**: Addition of a new principle or materially expanded guidance.
 - **PATCH**: Clarifications, wording refinements, typo fixes.
 
-**Version**: 1.0.1 | **Ratified**: 2026-06-04 | **Last Amended**: 2026-06-04
+**Version**: 1.1.0 | **Ratified**: 2026-06-04 | **Last Amended**: 2026-06-14

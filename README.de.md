@@ -8,12 +8,16 @@ Eine persönliche Web-App zum Verwalten von Verträgen — Abonnements, Versiche
 
 - **Dashboard** — gesamte monatliche Ausgaben aktiver Verträge, Aufschlüsselung nach Kategorie, anstehende Verlängerungen (innerhalb von 30 Tagen) und abgelaufene Verträge
 - **Vertragsliste** — sortierbare Tabelle mit Anbieter-Logos und Kategorie-Icons
-- **Erstellen / Bearbeiten / Löschen** von Verträgen mit 14 Feldern einschließlich Kündigungsfristen
+- **Erstellen / Bearbeiten / Löschen** von Verträgen mit Feldern für Name, Kategorie, Betrag, Abrechnungsintervall, Status, Start-/Enddatum, Service-URL, Kündigungsfrist, Notizen und einem vertragsspezifischen Anonymisierungsschalter
 - **Export** — alle Verträge als JSON oder Excel (.xlsx) herunterladen
 - **Import** — JSON oder Excel hochladen mit intelligenter Spaltenzuordnung
 - **Anonymisierung** — echte Vertragsnamen global oder pro Vertrag mit deterministischen Fantasienamen verbergen
 - **Lokalisierung** — Englisch und Deutsch mit gebietsschemaabhängiger Währungs- und Datumsformatierung
-- **Mehrbenutzer-Konten** — jedes Familienmitglied meldet sich mit einem eigenen Konto an; Verträge, Dashboards, Exporte und Importe sind pro Konto getrennt, und Administratoren können andere Konten erstellen, archivieren, reaktivieren und deren Rollen verwalten
+- **Mehrbenutzer-Konten** — jedes Familienmitglied meldet sich mit einem eigenen Konto an; Verträge, Dashboards, Exporte und Importe sind pro Konto getrennt; Administratoren können andere Konten erstellen, archivieren, reaktivieren, löschen und deren Rollen verwalten
+- **E-Mail-Einladungen** — Administratoren laden neue Benutzer per E-Mail ein; das Einladungs-Panel zeigt ausstehende, angenommene und abgelaufene Einladungen und ermöglicht das erneute Versenden und Widerrufen
+- **Kontoeinstellungen** — Benutzer können ihren Anzeigenamen aktualisieren, eine E-Mail-Adressänderung beantragen (per Bestätigungslink verifiziert) und ihr Passwort über die Seite "Mein Konto" ändern
+- **E-Mail-Benachrichtigungen** — transaktionale E-Mails für wichtige Ereignisse: E-Mail-Änderungsverifizierung, E-Mail-Änderungsbestätigung und Passwortänderungsbenachrichtigung; Administratoren können über das Admin-Panel eine Test-E-Mail versenden, um die SMTP-Verbindung zu prüfen
+- **Konto löschen** — Benutzer können ihr eigenes Konto und alle zugehörigen Verträge dauerhaft löschen; ein "Gefahrenbereich" auf der Kontoeinstellungsseite führt durch den Prozess; ein Modal bietet einen optionalen JSON-Export vor der Bestätigung; alleinige Administratoren werden blockiert, bis ein weiterer Administrator existiert
 
 Eine vollständige Anleitung zur Benutzeroberfläche findest du unter [docs/user-guide.de.md](docs/user-guide.de.md).
 
@@ -23,7 +27,7 @@ Eine vollständige Anleitung zur Benutzeroberfläche findest du unter [docs/user
 |---------|-------------|
 | Backend | Fastify + TypeScript + SQLite (better-sqlite3) |
 | Frontend | React + TypeScript + Vite + TanStack Query |
-| Styling | Tailwind CSS v4 + shadcn-style components |
+| UI | Mantine 7 |
 | Testing | Vitest (Unit + Integration), Playwright (E2E) |
 | Monorepo | pnpm workspaces |
 
