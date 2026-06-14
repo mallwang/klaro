@@ -40,6 +40,10 @@ The app has a persistent navigation sidebar on the left. It is divided into two 
 
 The **Sign out** button is at the bottom of the sidebar. Your display name and role (Administrator / Member) are shown just above it.
 
+### Feedback notifications
+
+Success and error messages on authenticated pages (account settings, admin, contract management) appear as **toast notifications** in the top-right corner of the screen. Each toast dismisses automatically after 5 seconds. Public pages (sign-in, password reset, invitation acceptance) continue to show feedback inline.
+
 ---
 
 ## 2. Dashboard

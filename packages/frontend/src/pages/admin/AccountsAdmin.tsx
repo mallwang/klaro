@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Stack,
@@ -10,7 +10,6 @@ import {
   Badge,
   Group,
   Button,
-  Alert,
   TextInput,
   Center,
   Modal,
@@ -32,6 +31,7 @@ import {
   useCancelInvitation,
   useResendInvitation,
 } from '../../hooks/useInvitations.js';
+import { showSuccess, showError } from '../../lib/notifications.js';
 
 /**
  * Admin page for managing user accounts and invitations. Provides account listing with
@@ -62,33 +62,45 @@ function InvitationStatusBadge({ invitation }: { invitation: Invitation }) {
   return <Badge color={c.color}>{c.label}</Badge>;
 }
 
+/**
+ * Renders the invite-by-email form. Shows a success toast on send and an error toast on failure.
+ */
 function InviteForm() {
   const { t } = useTranslation();
-  const { mutate: sendInvitation, isPending, error } = useSendInvitation();
+  const { mutate: sendInvitation, isPending } = useSendInvitation();
   const [email, setEmail] = useState('');
-  const [success, setSuccess] = useState(false);
 
-  function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setSuccess(false);
-    sendInvitation(
-      { email: email.trim() },
-      {
-        onSuccess: () => {
-          setEmail('');
-          setSuccess(true);
-        },
-      },
-    );
-  }
-
-  function errorMessage(): string | null {
-    if (!error) return null;
+  /**
+   * Returns the localised error message for an invitation failure.
+   *
+   * @param error - the error thrown by the mutation
+   * @returns localised error string
+   */
+  function resolveInviteError(error: unknown): string {
     if (error instanceof AuthError) {
       if (error.status === 409) return t('accountsAdmin.duplicateEmailError');
       if (error.status === 502) return t('accountsAdmin.mailerError');
     }
     return t('accountsAdmin.inviteError');
+  }
+
+  /**
+   * Submits the invite form and shows toast feedback on completion.
+   */
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    sendInvitation(
+      { email: email.trim() },
+      {
+        onSuccess: () => {
+          setEmail('');
+          showSuccess(t('accountsAdmin.inviteSuccess'));
+        },
+        onError: (error) => {
+          showError(resolveInviteError(error));
+        },
+      },
+    );
   }
 
   return (
@@ -98,16 +110,6 @@ function InviteForm() {
       </Text>
       <form onSubmit={handleSubmit}>
         <Stack gap="sm">
-          {errorMessage() && (
-            <Alert role="alert" color="red">
-              {errorMessage()}
-            </Alert>
-          )}
-          {success && !error && (
-            <Alert role="status" color="green">
-              {t('accountsAdmin.inviteSuccess')}
-            </Alert>
-          )}
           <Group align="flex-end" gap="sm">
             <TextInput
               id="invite-email"
@@ -128,35 +130,42 @@ function InviteForm() {
   );
 }
 
+/**
+ * Renders the test-email delivery form. Shows a success toast on send and an error toast on failure.
+ */
 function TestEmailForm() {
   const { t } = useTranslation();
   const { data: currentUser } = useCurrentUser();
   const [email, setEmail] = useState(currentUser?.email ?? '');
   const [isPending, setIsPending] = useState(false);
-  const [success, setSuccess] = useState(false);
-  const [error, setError] = useState<Error | null>(null);
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setSuccess(false);
-    setError(null);
-    setIsPending(true);
-    try {
-      await sendTestEmail({ email: email.trim() });
-      setSuccess(true);
-    } catch (err) {
-      setError(err instanceof Error ? err : new Error('Unknown error'));
-    } finally {
-      setIsPending(false);
-    }
-  }
-
-  function errorMessage(): string | null {
-    if (!error) return null;
+  /**
+   * Returns the localised error message for a test email failure.
+   *
+   * @param error - the error thrown by the send call
+   * @returns localised error string
+   */
+  function resolveTestEmailError(error: unknown): string {
     if (error instanceof AuthError && error.status === 502) {
       return t('accountsAdmin.testEmailMailerError');
     }
     return t('accountsAdmin.testEmailError');
+  }
+
+  /**
+   * Submits the test email form and shows toast feedback on completion.
+   */
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setIsPending(true);
+    try {
+      await sendTestEmail({ email: email.trim() });
+      showSuccess(t('accountsAdmin.testEmailSuccess'));
+    } catch (err) {
+      showError(resolveTestEmailError(err));
+    } finally {
+      setIsPending(false);
+    }
   }
 
   return (
@@ -169,16 +178,6 @@ function TestEmailForm() {
       </Text>
       <form onSubmit={handleSubmit}>
         <Stack gap="sm">
-          {errorMessage() && (
-            <Alert role="alert" color="red">
-              {errorMessage()}
-            </Alert>
-          )}
-          {success && !error && (
-            <Alert role="status" color="green">
-              {t('accountsAdmin.testEmailSuccess')}
-            </Alert>
-          )}
           <Group align="flex-end" gap="sm">
             <TextInput
               id="test-email-recipient"
@@ -293,24 +292,33 @@ function InvitationsTable() {
 export function AccountsAdmin() {
   const { t } = useTranslation();
   const { data: accounts, isLoading, isError } = useAccounts();
-  const { mutate: archiveAccount, error: archiveError } = useArchiveAccount();
-  const { mutate: reactivateAccount, error: reactivateError } = useReactivateAccount();
-  const { mutate: deleteAccount, error: deleteError } = useDeleteAccount();
-  const { mutate: changeRole, error: roleError } = useChangeAccountRole();
+  const { mutate: archiveAccount } = useArchiveAccount();
+  const { mutate: reactivateAccount } = useReactivateAccount();
+  const { mutate: deleteAccount } = useDeleteAccount();
+  const { mutate: changeRole } = useChangeAccountRole();
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
-  function isEmailReassigned(email: string): boolean {
-    return email.endsWith('@archived.invalid');
-  }
-
-  function actionErrorMessage(error: unknown): string | null {
-    if (!error) return null;
+  /**
+   * Returns the localised error message for an account action failure.
+   *
+   * @param error - the error thrown by the mutation
+   * @returns localised error string
+   */
+  function actionErrorMessage(error: unknown): string {
     if (error instanceof AuthError) {
       if (error.status === 409 && (error.message ?? '').toLowerCase().includes('administrator')) {
         return t('accountsAdmin.lastAdminError');
       }
     }
     return t('accountsAdmin.actionError');
+  }
+
+  useEffect(() => {
+    if (isError) showError(t('accountsAdmin.loadError'));
+  }, [isError, t]);
+
+  function isEmailReassigned(email: string): boolean {
+    return email.endsWith('@archived.invalid');
   }
 
   function otherActiveAdminExists(account: Account): boolean {
@@ -340,18 +348,11 @@ export function AccountsAdmin() {
       <TestEmailForm />
       <InvitationsTable />
 
-      {(archiveError || reactivateError || deleteError || roleError) && (
-        <Alert role="alert" color="red">
-          {actionErrorMessage(archiveError ?? reactivateError ?? deleteError ?? roleError)}
-        </Alert>
-      )}
-
       {isLoading && (
         <Center py="xl">
           <Text c="dimmed">{t('common.loading')}</Text>
         </Center>
       )}
-      {isError && <Alert color="red">{t('accountsAdmin.loadError')}</Alert>}
 
       {accounts && (
         <Paper withBorder>
@@ -413,7 +414,11 @@ export function AccountsAdmin() {
                               <Button
                                 size="compact-sm"
                                 variant="default"
-                                onClick={() => archiveAccount(account.id)}
+                                onClick={() =>
+                                  archiveAccount(account.id, {
+                                    onError: (err) => showError(actionErrorMessage(err)),
+                                  })
+                                }
                                 disabled={account.role === 'ADMIN' && !canChangeRoleOrArchive}
                               >
                                 {t('accountsAdmin.archiveButton')}
@@ -422,7 +427,12 @@ export function AccountsAdmin() {
                                 <Button
                                   size="compact-sm"
                                   variant="default"
-                                  onClick={() => changeRole({ id: account.id, role: 'MEMBER' })}
+                                  onClick={() =>
+                                    changeRole(
+                                      { id: account.id, role: 'MEMBER' },
+                                      { onError: (err) => showError(actionErrorMessage(err)) },
+                                    )
+                                  }
                                   disabled={!canChangeRoleOrArchive}
                                 >
                                   {t('accountsAdmin.makeMemberButton')}
@@ -431,7 +441,12 @@ export function AccountsAdmin() {
                                 <Button
                                   size="compact-sm"
                                   variant="default"
-                                  onClick={() => changeRole({ id: account.id, role: 'ADMIN' })}
+                                  onClick={() =>
+                                    changeRole(
+                                      { id: account.id, role: 'ADMIN' },
+                                      { onError: (err) => showError(actionErrorMessage(err)) },
+                                    )
+                                  }
                                 >
                                   {t('accountsAdmin.makeAdminButton')}
                                 </Button>
@@ -443,7 +458,11 @@ export function AccountsAdmin() {
                                 <Button
                                   size="compact-sm"
                                   variant="default"
-                                  onClick={() => reactivateAccount(account.id)}
+                                  onClick={() =>
+                                    reactivateAccount(account.id, {
+                                      onError: (err) => showError(actionErrorMessage(err)),
+                                    })
+                                  }
                                 >
                                   {t('accountsAdmin.reactivateButton')}
                                 </Button>
@@ -484,7 +503,10 @@ export function AccountsAdmin() {
             <Button
               color="red"
               onClick={() => {
-                if (confirmDeleteId) deleteAccount(confirmDeleteId);
+                if (confirmDeleteId)
+                  deleteAccount(confirmDeleteId, {
+                    onError: (err) => showError(actionErrorMessage(err)),
+                  });
                 setConfirmDeleteId(null);
               }}
             >

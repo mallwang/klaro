@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MantineProvider } from '@mantine/core';
+import { Notifications, notifications } from '@mantine/notifications';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import type { ContractData } from '@pcm/shared';
 
@@ -56,6 +57,7 @@ function renderModal(props: Partial<Parameters<typeof DeleteAccountModal>[0]> = 
     ...render(
       <QueryClientProvider client={queryClient}>
         <MantineProvider>
+          <Notifications />
           <DeleteAccountModal {...defaults} {...props} />
         </MantineProvider>
       </QueryClientProvider>,
@@ -65,11 +67,28 @@ function renderModal(props: Partial<Parameters<typeof DeleteAccountModal>[0]> = 
   };
 }
 
+async function advanceToStep2(props: Partial<Parameters<typeof DeleteAccountModal>[0]> = {}) {
+  const user = userEvent.setup();
+  const onClose = props.onClose ?? vi.fn();
+  const onDeleted = props.onDeleted ?? vi.fn();
+  renderModal({ onClose, onDeleted, ...props });
+  await user.click(screen.getByRole('button', { name: /skip/i }));
+  return { user, onClose, onDeleted };
+}
+
+async function skipToStep2(isSoleAdmin: boolean) {
+  const user = userEvent.setup();
+  renderModal({ isSoleAdmin });
+  await user.click(screen.getByRole('button', { name: /skip/i }));
+  return { user };
+}
+
 // ─── US1: Step 1 — Export advisory ───────────────────────────────────────────
 
 describe('DeleteAccountModal – step 1 (export advisory)', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    notifications.clean();
   });
 
   it('renders export warning text', () => {
@@ -123,16 +142,8 @@ describe('DeleteAccountModal – step 1 (export advisory)', () => {
 describe('DeleteAccountModal – step 2 (confirmation)', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    notifications.clean();
   });
-
-  async function advanceToStep2() {
-    const user = userEvent.setup();
-    const onClose = vi.fn();
-    const onDeleted = vi.fn();
-    renderModal({ onClose, onDeleted });
-    await user.click(screen.getByRole('button', { name: /skip/i }));
-    return { user, onClose, onDeleted };
-  }
 
   it('after skip: confirmation button is visible and labelled', async () => {
     await advanceToStep2();
@@ -151,13 +162,15 @@ describe('DeleteAccountModal – step 2 (confirmation)', () => {
     expect(profileService.deleteSelf).toHaveBeenCalled();
   });
 
-  it('error alert rendered when deleteSelf() rejects', async () => {
+  it('error toast shown when deleteSelf() rejects', async () => {
     vi.mocked(profileService.deleteSelf).mockRejectedValue(new Error('server error'));
     const { user } = await advanceToStep2();
     await user.click(
       screen.getByRole('button', { name: /permanently delete|confirm.*delete|delete.*account/i }),
     );
-    expect(await screen.findByRole('alert')).toBeInTheDocument();
+    expect(
+      await screen.findByText('Failed to delete account. Please try again.'),
+    ).toBeInTheDocument();
   });
 
   it('cancel button at step 2 calls onClose and does not call deleteSelf()', async () => {
@@ -166,6 +179,11 @@ describe('DeleteAccountModal – step 2 (confirmation)', () => {
     expect(onClose).toHaveBeenCalled();
     expect(profileService.deleteSelf).not.toHaveBeenCalled();
   });
+
+  it('sole-admin orange Alert still renders at step 2 when isSoleAdmin=true', async () => {
+    await advanceToStep2({ isSoleAdmin: true });
+    expect(screen.getByText(/only administrator|sole admin|promote another/i)).toBeInTheDocument();
+  });
 });
 
 // ─── US3: Sole-admin disabled state ──────────────────────────────────────────
@@ -173,14 +191,8 @@ describe('DeleteAccountModal – step 2 (confirmation)', () => {
 describe('DeleteAccountModal – sole-admin disabled state', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    notifications.clean();
   });
-
-  async function skipToStep2(isSoleAdmin: boolean) {
-    const user = userEvent.setup();
-    renderModal({ isSoleAdmin });
-    await user.click(screen.getByRole('button', { name: /skip/i }));
-    return { user };
-  }
 
   it('when isSoleAdmin=true: confirm button is disabled and sole-admin message is visible', async () => {
     await skipToStep2(true);

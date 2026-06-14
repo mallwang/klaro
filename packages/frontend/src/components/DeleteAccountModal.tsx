@@ -5,6 +5,7 @@ import { Modal, Stack, Text, Button, Alert, Group } from '@mantine/core';
 import type { ContractData } from '@pcm/shared';
 import { deleteSelf } from '../services/profile.js';
 import { exportToJson } from '../services/export.js';
+import { showError } from '../lib/notifications.js';
 
 /**
  * Two-step confirmation modal for permanent self-service account deletion, with an optional
@@ -40,6 +41,7 @@ export function DeleteAccountModal({
   const deleteMutation = useMutation({
     mutationFn: deleteSelf,
     onSuccess: onDeleted,
+    onError: () => showError(t('deleteModal.deleteError')),
   });
 
   /**
@@ -97,12 +99,6 @@ export function DeleteAccountModal({
           <Text fw={600}>{t('deleteModal.confirmTitle')}</Text>
 
           {isSoleAdmin && <Alert color="orange">{t('deleteModal.soleAdminWarning')}</Alert>}
-
-          {deleteMutation.isError && (
-            <Alert role="alert" color="red">
-              {t('deleteModal.deleteError')}
-            </Alert>
-          )}
 
           <Group justify="flex-end">
             <Button variant="subtle" onClick={handleClose}>

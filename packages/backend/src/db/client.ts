@@ -247,19 +247,40 @@ export function runMigrations(instance: Database.Database): BootstrapResult | nu
 }
 
 /**
- * Permanently deletes archived accounts (and, via ON DELETE CASCADE, their sessions and
- * contracts) once their retention period has elapsed (FR-012/FR-013). Intended to run once
- * at server startup, alongside runMigrations — the household's storage tolerates "a bit late"
- * cleanup, so no scheduler is needed (see research.md §4).
+ * Permanently deletes archived accounts (and their associated contracts, sessions, and
+ * email verifications) once their retention period has elapsed (FR-012/FR-013). Intended to
+ * run once at server startup. Dependent rows are deleted explicitly rather than relying on
+ * ON DELETE CASCADE, because databases migrated from older schema versions have the
+ * contracts.user_id FK without a cascade action.
  */
 export function purgeExpiredArchivedAccounts(instance: Database.Database): number {
   const cutoff = new Date(Date.now() - ARCHIVE_RETENTION_DAYS * 24 * 60 * 60 * 1000).toISOString();
-  const result = instance
-    .prepare(
-      `DELETE FROM users WHERE status = 'ARCHIVED' AND archived_at IS NOT NULL AND archived_at < ?`,
+  const expiredUserIds = instance
+    .prepare<[string], { id: string }>(
+      `SELECT id FROM users WHERE status = 'ARCHIVED' AND archived_at IS NOT NULL AND archived_at < ?`,
     )
-    .run(cutoff);
-  return result.changes;
+    .all(cutoff)
+    .map((r) => r.id);
+
+  if (expiredUserIds.length === 0) return 0;
+
+  const purge = instance.transaction(() => {
+    const placeholders = expiredUserIds.map(() => '?').join(',');
+    instance
+      .prepare(`DELETE FROM email_verifications WHERE user_id IN (${placeholders})`)
+      .run(...expiredUserIds);
+    instance
+      .prepare(`DELETE FROM sessions WHERE user_id IN (${placeholders})`)
+      .run(...expiredUserIds);
+    instance
+      .prepare(`DELETE FROM contracts WHERE user_id IN (${placeholders})`)
+      .run(...expiredUserIds);
+    return instance
+      .prepare(`DELETE FROM users WHERE id IN (${placeholders})`)
+      .run(...expiredUserIds).changes;
+  });
+
+  return purge();
 }
 
 /**

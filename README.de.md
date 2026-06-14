@@ -19,6 +19,7 @@ Eine persönliche Web-App zum Verwalten von Verträgen — Abonnements, Versiche
 - **E-Mail-Benachrichtigungen** — transaktionale E-Mails für wichtige Ereignisse: E-Mail-Änderungsverifizierung, E-Mail-Änderungsbestätigung und Passwortänderungsbenachrichtigung; Administratoren können über das Admin-Panel eine Test-E-Mail versenden, um die SMTP-Verbindung zu prüfen
 - **Konto löschen** — Benutzer können ihr eigenes Konto und alle zugehörigen Verträge dauerhaft löschen; ein "Gefahrenbereich" auf der Kontoeinstellungsseite führt durch den Prozess; ein Modal bietet einen optionalen JSON-Export vor der Bestätigung; alleinige Administratoren werden blockiert, bis ein weiterer Administrator existiert
 - **Passwort vergessen** — Benutzer können einen Link zum Zurücksetzen des Passworts per E-Mail anfordern; der Link läuft nach 1 Stunde ab und ist nur einmal gültig; der Ablauf verhindert E-Mail-Aufzählung durch eine generische Erfolgsmeldung unabhängig von der Gültigkeit der E-Mail-Adresse
+- **Toast-Benachrichtigungen** — Erfolgs- und Fehlermeldungen auf angemeldeten Seiten (Kontoeinstellungen, Admin-Panel, Vertragsverwaltung) erscheinen als automatisch ausgeblendete Toast-Benachrichtigungen in der oberen rechten Ecke; öffentliche Seiten behalten die direkte Anzeige von Rückmeldungen bei
 
 Eine vollständige Anleitung zur Benutzeroberfläche findest du unter [docs/user-guide.de.md](docs/user-guide.de.md).
 

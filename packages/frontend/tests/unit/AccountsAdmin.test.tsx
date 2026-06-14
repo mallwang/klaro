@@ -1,6 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { MantineProvider } from '@mantine/core';
+import { Notifications, notifications } from '@mantine/notifications';
 import { MemoryRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
@@ -19,6 +21,14 @@ vi.mock('../../src/hooks/useInvitations.js', () => ({
   useResendInvitation: vi.fn(),
 }));
 
+vi.mock('../../src/hooks/useAuth.js', () => ({
+  useCurrentUser: vi.fn(() => ({ data: { email: 'admin@example.com' } })),
+}));
+
+vi.mock('../../src/services/users.js', () => ({
+  sendTestEmail: vi.fn(),
+}));
+
 import {
   useAccounts,
   useArchiveAccount,
@@ -32,6 +42,7 @@ import {
   useCancelInvitation,
   useResendInvitation,
 } from '../../src/hooks/useInvitations.js';
+import * as usersService from '../../src/services/users.js';
 import { AccountsAdmin } from '../../src/pages/admin/AccountsAdmin.js';
 import type { Account, Invitation } from '@pcm/shared';
 
@@ -68,7 +79,12 @@ function noop() {
   return { mutate: vi.fn(), isPending: false, error: null };
 }
 
-function renderPage(accounts: Account[] = sampleAccounts) {
+interface RenderPageOptions {
+  accounts?: Account[];
+  sendInvitationOverride?: ReturnType<typeof useSendInvitation>;
+}
+
+function renderPage({ accounts = sampleAccounts, sendInvitationOverride }: RenderPageOptions = {}) {
   vi.mocked(useAccounts).mockReturnValue({
     data: accounts,
     isLoading: false,
@@ -92,7 +108,7 @@ function renderPage(accounts: Account[] = sampleAccounts) {
     noop() as unknown as ReturnType<typeof useChangeAccountRole>,
   );
   vi.mocked(useSendInvitation).mockReturnValue(
-    noop() as unknown as ReturnType<typeof useSendInvitation>,
+    sendInvitationOverride ?? (noop() as unknown as ReturnType<typeof useSendInvitation>),
   );
   vi.mocked(useCancelInvitation).mockReturnValue(
     noop() as unknown as ReturnType<typeof useCancelInvitation>,
@@ -105,6 +121,7 @@ function renderPage(accounts: Account[] = sampleAccounts) {
   return render(
     <QueryClientProvider client={qc}>
       <MantineProvider>
+        <Notifications />
         <MemoryRouter>
           <AccountsAdmin />
         </MemoryRouter>
@@ -116,6 +133,7 @@ function renderPage(accounts: Account[] = sampleAccounts) {
 describe('AccountsAdmin – user table', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    notifications.clean();
   });
 
   it('renders a row for each account with display name', () => {
@@ -133,8 +151,7 @@ describe('AccountsAdmin – user table', () => {
 
   it('renders an Avatar for each user (Mantine Users Table pattern)', () => {
     renderPage();
-    // Mantine Avatar renders an element with role="img" or an abbr with user initial
-    const avatars = screen.getAllByText(/^[ABC]$/); // first letters A, B, C
+    const avatars = screen.getAllByText(/^[ABC]$/);
     expect(avatars.length).toBeGreaterThanOrEqual(3);
   });
 
@@ -147,7 +164,6 @@ describe('AccountsAdmin – user table', () => {
   it('renders an Archive button for active users', () => {
     renderPage();
     const archiveButtons = screen.getAllByRole('button', { name: /archive/i });
-    // Alice (ADMIN) and Bob (MEMBER) are ACTIVE → 2 archive buttons
     expect(archiveButtons.length).toBeGreaterThanOrEqual(1);
   });
 
@@ -173,8 +189,109 @@ describe('AccountsAdmin – user table', () => {
         createdAt: '2026-01-01T00:00:00.000Z',
       },
     ];
-    renderPage(accountsWithReassigned);
+    renderPage({ accounts: accountsWithReassigned });
     expect(screen.queryByRole('button', { name: /reactivate/i })).not.toBeInTheDocument();
     expect(screen.getByText(/email reassigned/i)).toBeInTheDocument();
+  });
+});
+
+describe('AccountsAdmin – InviteForm', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    notifications.clean();
+  });
+
+  it('shows a success toast when invitation is sent', async () => {
+    const mutate = vi.fn((_args: unknown, options: Record<string, unknown>) => {
+      (options.onSuccess as () => void)();
+    });
+    renderPage({
+      sendInvitationOverride: {
+        mutate,
+        isPending: false,
+        error: null,
+      } as unknown as ReturnType<typeof useSendInvitation>,
+    });
+
+    const user = userEvent.setup();
+    await user.type(screen.getByRole('textbox', { name: /^email$/i }), 'new@example.com');
+    await user.click(screen.getByRole('button', { name: /send invitation/i }));
+
+    expect(await screen.findByText(/invitation sent/i)).toBeInTheDocument();
+  });
+
+  it('shows an error toast when invitation fails with 409', async () => {
+    const { AuthError } = await import('../../src/services/auth.js');
+    const mutate = vi.fn((_args: unknown, options: Record<string, unknown>) => {
+      (options.onError as (e: unknown) => void)(new AuthError(409, 'dup'));
+    });
+    renderPage({
+      sendInvitationOverride: {
+        mutate,
+        isPending: false,
+        error: null,
+      } as unknown as ReturnType<typeof useSendInvitation>,
+    });
+
+    const user = userEvent.setup();
+    await user.type(screen.getByRole('textbox', { name: /^email$/i }), 'dup@example.com');
+    await user.click(screen.getByRole('button', { name: /send invitation/i }));
+
+    expect(
+      await screen.findByText('This email address already has an account.'),
+    ).toBeInTheDocument();
+  });
+
+  it('shows an error toast when invitation fails with 502', async () => {
+    const { AuthError } = await import('../../src/services/auth.js');
+    const mutate = vi.fn((_args: unknown, options: Record<string, unknown>) => {
+      (options.onError as (e: unknown) => void)(new AuthError(502, 'mailer'));
+    });
+    renderPage({
+      sendInvitationOverride: {
+        mutate,
+        isPending: false,
+        error: null,
+      } as unknown as ReturnType<typeof useSendInvitation>,
+    });
+
+    const user = userEvent.setup();
+    await user.type(screen.getByRole('textbox', { name: /^email$/i }), 'smtp@example.com');
+    await user.click(screen.getByRole('button', { name: /send invitation/i }));
+
+    expect(
+      await screen.findByText(
+        'The invitation email could not be sent. Please check the SMTP configuration.',
+      ),
+    ).toBeInTheDocument();
+  });
+});
+
+describe('AccountsAdmin – TestEmailForm', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    notifications.clean();
+  });
+
+  it('shows a success toast when test email is sent', async () => {
+    vi.mocked(usersService.sendTestEmail).mockResolvedValue(undefined);
+    renderPage();
+
+    const user = userEvent.setup();
+    await user.click(screen.getByRole('button', { name: /send test email/i }));
+
+    expect(await screen.findByText('Test email sent successfully.')).toBeInTheDocument();
+  });
+
+  it('shows an error toast when test email fails', async () => {
+    vi.mocked(usersService.sendTestEmail).mockRejectedValue(new Error('smtp error'));
+    renderPage();
+
+    const user = userEvent.setup();
+    await user.click(screen.getByRole('button', { name: /send test email/i }));
+
+    expect(
+      await screen.findByText('Failed to send test email. Please check your SMTP configuration.'),
+    ).toBeInTheDocument();
   });
 });

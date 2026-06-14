@@ -3,7 +3,8 @@ import './i18n/index.js';
 import { StrictMode } from 'react';
 /**
  * Application bootstrap entry point. Mounts the React root with Mantine theming,
- * React Query provider, client-side routing, and the global app shell layout.
+ * global toast notifications, React Query provider, client-side routing, and the
+ * global app shell layout.
  */
 
 import { createRoot } from 'react-dom/client';
@@ -15,6 +16,7 @@ import {
   localStorageColorSchemeManager,
   ColorSchemeScript,
 } from '@mantine/core';
+import { Notifications } from '@mantine/notifications';
 import { Dashboard } from './pages/Dashboard.js';
 import { ContractList } from './pages/ContractList.js';
 import { ContractNew } from './pages/ContractNew.js';
@@ -54,6 +56,7 @@ createRoot(root).render(
       colorSchemeManager={colorSchemeManager}
       defaultColorScheme="auto"
     >
+      <Notifications position="top-right" />
       <QueryClientProvider client={queryClient}>
         <BrowserRouter>
           <Routes>
