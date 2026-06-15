@@ -22,7 +22,7 @@ const GRACE_PERIOD_DAYS = 30;
  * @param period - The cancellation notice period, or null if no period is configured
  * @returns A new Date representing the deadline by which the user must cancel
  */
-function computeCancellationDeadline(
+export function computeCancellationDeadline(
   endDate: Date,
   period: { value: number; unit: CancellationPeriodUnit } | null,
 ): Date {

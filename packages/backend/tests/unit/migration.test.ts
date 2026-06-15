@@ -339,6 +339,80 @@ function makeOldEmailVerificationsDb(): Database.Database {
   return db;
 }
 
+describe('runMigrations – summary email columns', () => {
+  it('adds summary_email_enabled and summary_email_frequency to users on a fresh database', () => {
+    const db = createDb(':memory:');
+    runMigrations(db);
+    const cols = columnNames(db, 'users');
+    expect(cols).toContain('summary_email_enabled');
+    expect(cols).toContain('summary_email_frequency');
+    db.close();
+  });
+
+  it('adds the columns to an existing database that is missing them', () => {
+    const db = new Database(':memory:');
+    db.pragma('journal_mode = WAL');
+    db.pragma('foreign_keys = ON');
+    // Create users table without the new columns
+    db.exec(`
+      CREATE TABLE users (
+        id            TEXT PRIMARY KEY,
+        email         TEXT NOT NULL UNIQUE,
+        display_name  TEXT NOT NULL,
+        password_hash TEXT NOT NULL,
+        password_salt TEXT NOT NULL,
+        role          TEXT NOT NULL DEFAULT 'MEMBER',
+        status        TEXT NOT NULL DEFAULT 'ACTIVE',
+        created_at    TEXT NOT NULL,
+        updated_at    TEXT NOT NULL
+      );
+    `);
+    runMigrations(db);
+    const cols = columnNames(db, 'users');
+    expect(cols).toContain('summary_email_enabled');
+    expect(cols).toContain('summary_email_frequency');
+    db.close();
+  });
+
+  it('is idempotent — running migrations twice does not fail', () => {
+    const db = createDb(':memory:');
+    runMigrations(db);
+    expect(() => runMigrations(db)).not.toThrow();
+    db.close();
+  });
+
+  it('defaults summary_email_enabled to 0 for existing users', () => {
+    const db = new Database(':memory:');
+    db.pragma('journal_mode = WAL');
+    db.pragma('foreign_keys = ON');
+    db.exec(`
+      CREATE TABLE users (
+        id            TEXT PRIMARY KEY,
+        email         TEXT NOT NULL UNIQUE,
+        display_name  TEXT NOT NULL,
+        password_hash TEXT NOT NULL,
+        password_salt TEXT NOT NULL,
+        role          TEXT NOT NULL DEFAULT 'MEMBER',
+        status        TEXT NOT NULL DEFAULT 'ACTIVE',
+        created_at    TEXT NOT NULL,
+        updated_at    TEXT NOT NULL
+      );
+      INSERT INTO users (id, email, display_name, password_hash, password_salt, created_at, updated_at)
+      VALUES ('u1', 'test@example.test', 'Test', 'h', 's', '2026-01-01', '2026-01-01');
+    `);
+    runMigrations(db);
+    const row = db
+      .prepare<
+        [],
+        { summary_email_enabled: number; summary_email_frequency: string | null }
+      >(`SELECT summary_email_enabled, summary_email_frequency FROM users WHERE id = 'u1'`)
+      .get()!;
+    expect(row.summary_email_enabled).toBe(0);
+    expect(row.summary_email_frequency).toBeNull();
+    db.close();
+  });
+});
+
 describe('runMigrations – email_verifications purpose column', () => {
   it('adds purpose column to email_verifications table', () => {
     const db = makeOldEmailVerificationsDb();

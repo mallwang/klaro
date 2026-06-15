@@ -1,7 +1,12 @@
 import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
-import { UpdateDisplayNameBodySchema, RequestEmailChangeBodySchema } from '@pcm/shared';
+import {
+  UpdateDisplayNameBodySchema,
+  RequestEmailChangeBodySchema,
+  UpdateNotificationPreferencesBodySchema,
+} from '@pcm/shared';
 import { ProfileService } from '../services/profile.service.js';
+import { computeNextSendAt } from '../services/notification.service.js';
 import { SESSION_COOKIE_NAME } from '../server.js';
 
 /**
@@ -100,6 +105,54 @@ export async function profileRoutes(fastify: FastifyInstance): Promise<void> {
   fastify.get('/api/profile/email-change/pending', async (request, reply) => {
     const pending = profileService.getPendingEmailChange(request.user!.id);
     return reply.send({ pendingEmail: pending?.pendingEmail ?? null });
+  });
+
+  // GET /api/profile/notification-preferences
+  fastify.get('/api/profile/notification-preferences', async (request, reply) => {
+    const row = fastify.db
+      .prepare<
+        [string],
+        { summary_email_enabled: number; summary_email_frequency: string | null }
+      >(`SELECT summary_email_enabled, summary_email_frequency FROM users WHERE id = ?`)
+      .get(request.user!.id);
+
+    const enabled = (row?.summary_email_enabled ?? 0) !== 0;
+    const frequency = row?.summary_email_frequency ?? null;
+
+    return reply.send({
+      summaryEmailEnabled: enabled,
+      summaryEmailFrequency: frequency,
+      nextSendAt:
+        enabled && frequency ? computeNextSendAt(frequency as 'WEEKLY' | 'MONTHLY') : null,
+    });
+  });
+
+  // PATCH /api/profile/notification-preferences
+  fastify.patch('/api/profile/notification-preferences', async (request, reply) => {
+    const body = UpdateNotificationPreferencesBodySchema.safeParse(request.body);
+    if (!body.success) {
+      return reply.status(400).send({
+        statusCode: 400,
+        error: 'Bad Request',
+        message: body.error.issues[0]?.message ?? 'Validation error',
+      });
+    }
+
+    const { summaryEmailEnabled, summaryEmailFrequency } = body.data;
+    fastify.db
+      .prepare(
+        `UPDATE users
+         SET summary_email_enabled = ?,
+             summary_email_frequency = ?
+         WHERE id = ?`,
+      )
+      .run(
+        summaryEmailEnabled ? 1 : 0,
+        summaryEmailEnabled ? (summaryEmailFrequency ?? null) : null,
+        request.user!.id,
+      );
+
+    return reply.status(204).send();
   });
 
   // POST /api/profile/email-change/:token/confirm — confirm email change (public)

@@ -16,7 +16,8 @@ Personal Contract Management ist eine lokale Web-App, die alle deine Verträge �
 8. [Anonymisierung](#8-anonymisierung)
 9. [Sprache](#9-sprache)
 10. [Konten & Anmeldung](#10-konten--anmeldung)
-11. [Feldreferenz](#11-feldreferenz)
+11. [Zusammenfassungs-E-Mail](#11-zusammenfassungs-e-mail)
+12. [Feldreferenz](#12-feldreferenz)
 
 ---
 
@@ -368,7 +369,46 @@ Am oberen Rand der **Konten**-Seite befindet sich ein Bereich **Test-E-Mail send
 
 ---
 
-## 11. Feldreferenz
+## 11. Zusammenfassungs-E-Mail
+
+Die Funktion **Zusammenfassungs-E-Mail** ermöglicht es jedem Benutzer, sich für eine regelmäßige Vertragszusammenfassung per E-Mail anzumelden.
+
+### Zusammenfassungs-E-Mail aktivieren
+
+1. Gehe zu **Mein Konto** (`/account`).
+2. Suche den Bereich **Zusammenfassungs-E-Mail**.
+3. Aktiviere den Schalter **"Sende mir eine regelmäßige Vertragszusammenfassung per E-Mail"**.
+4. Wähle eine Häufigkeit — **Wöchentlich** (jeden Montag um 10:00 UTC) oder **Monatlich** (1. des Monats um 10:00 UTC).
+5. Klicke auf **Speichern**. Die Einstellungsseite zeigt den nächsten geplanten Sendezeitpunkt an.
+
+### Zusammenfassungs-E-Mail deaktivieren
+
+Deaktiviere den Schalter und klicke auf **Speichern**. Der nächste Sendezeitpunkt verschwindet und es werden keine weiteren E-Mails gesendet.
+
+### Inhalt der E-Mail
+
+- **Gesamte monatliche Ausgaben** — Summe aller aktiven Verträge, normiert auf einen monatlichen Kostenwert.
+- **Aufschlüsselung pro Vertrag** — Name, Abrechnungsintervall und monatliches Äquivalent für jeden aktiven Vertrag.
+- **Bevorstehende Verlängerungen** — Verträge, deren Enddatum innerhalb der nächsten 30 Tage liegt, sortiert nach Datum.
+- **Dashboard-Link** — direkter Link zurück zur App.
+- **Handlungsaufruf** — kontextsensitive Nachricht:
+  - Wenn keine aktiven Verträge vorhanden sind: Aufforderung, den ersten Vertrag hinzuzufügen.
+  - Wenn ein oder mehrere Verträge innerhalb ihrer Kündigungsfrist liegen: Erinnerung, diese vor Ablauf der Frist zu überprüfen.
+  - Andernfalls: kein Handlungsaufruf.
+
+### Anonymisierung in E-Mails
+
+Vertragsnamen, die als **anonymisiert** markiert sind, werden in der Zusammenfassungs-E-Mail ausgeblendet (ersetzt durch `––––`), konsistent mit dem Anonymisierungsverhalten in der App.
+
+### Sonderfälle
+
+- **Keine Verträge**: Die E-Mail wird trotzdem gesendet; sie zeigt null Gesamtausgaben und eine leere Aufschlüsselung.
+- **Häufigkeitsänderung**: Die nächste E-Mail folgt der neuen Häufigkeit ab dem nächsten geplanten Sendezeitpunkt — keine doppelten oder verpassten Sendungen.
+- **SMTP nicht konfiguriert**: Der Scheduler wird nur gestartet, wenn SMTP-Zugangsdaten vorhanden sind. Ohne SMTP-Konfiguration werden keine Zusammenfassungs-E-Mails gesendet.
+
+---
+
+## 12. Feldreferenz
 
 | Feld | Pflicht | Einschränkungen | Hinweise |
 |------|---------|-----------------|---------|

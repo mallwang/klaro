@@ -310,5 +310,15 @@
     "invalidToken": "Ungültiger oder abgelaufener Link.",
     "expiredToken": "Dieser Link ist abgelaufen.",
     "errorGeneric": "Etwas ist schiefgelaufen. Bitte erneut versuchen."
+  },
+  "summaryEmail": {
+    "title": "Zusammenfassungs-E-Mail",
+    "toggle": "Sende mir eine regelmäßige Vertragszusammenfassung per E-Mail",
+    "frequency": "Häufigkeit",
+    "weekly": "Wöchentlich",
+    "monthly": "Monatlich",
+    "nextSend": "Nächste E-Mail: {{local}} ({{utc}} UTC)",
+    "saved": "E-Mail-Einstellungen gespeichert",
+    "save": "Einstellungen speichern"
   }
 }
