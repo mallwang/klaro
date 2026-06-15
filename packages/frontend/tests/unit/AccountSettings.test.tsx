@@ -71,7 +71,9 @@ function mockNotificationPrefs(emailLanguage = 'en') {
       emailLanguage: emailLanguage as 'en' | 'de',
     },
     isLoading: false,
-    updatePreferences: vi.fn(),
+    updatePreferences: vi.fn() as unknown as ReturnType<
+      typeof useNotificationPreferences
+    >['updatePreferences'],
     isPending: false,
   });
 }
@@ -271,7 +273,8 @@ describe('AccountSettings – Danger Zone section', () => {
 // ─── Email Language section ───────────────────────────────────────────────────
 
 describe('AccountSettings – Email Language section', () => {
-  let updatePreferences: ReturnType<typeof vi.fn>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let updatePreferences: ReturnType<typeof vi.fn<any>>;
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -286,7 +289,9 @@ describe('AccountSettings – Email Language section', () => {
         emailLanguage: 'en',
       },
       isLoading: false,
-      updatePreferences,
+      updatePreferences: updatePreferences as unknown as ReturnType<
+        typeof useNotificationPreferences
+      >['updatePreferences'],
       isPending: false,
     });
   });
@@ -314,7 +319,8 @@ describe('AccountSettings – Email Language section', () => {
   });
 
   it('shows a success toast after saving email language', async () => {
-    updatePreferences.mockImplementation((_body: unknown, opts: { onSuccess?: () => void }) => {
+    updatePreferences.mockImplementation((...args: unknown[]) => {
+      const opts = args[1] as { onSuccess?: () => void } | undefined;
       opts?.onSuccess?.();
     });
     const user = userEvent.setup();

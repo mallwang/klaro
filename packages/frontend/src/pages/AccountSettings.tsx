@@ -64,7 +64,7 @@ export function AccountSettings() {
    */
   function handleDeleted() {
     queryClient.clear();
-    navigate('/sign-in').catch(() => {});
+    navigate('/sign-in');
   }
 
   // ── Summary Email Preferences ───────────────────────────────────────────────
