@@ -258,7 +258,9 @@
     "emailChangeSubmitLabel": "Request email change",
     "emailChangeSent": "Check your inbox — a verification email has been sent to your new address.",
     "emailChangeConflict": "This email address is already in use by another account.",
-    "emailChangeError": "Failed to request email change. Please try again."
+    "emailChangeError": "Failed to request email change. Please try again.",
+    "emailSettingsSectionTitle": "Email Settings",
+    "accountSectionTitle": "Account"
   },
   "emailVerify": {
     "loading": "Verifying your email address…",
