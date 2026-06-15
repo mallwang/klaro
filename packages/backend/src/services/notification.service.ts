@@ -1,5 +1,6 @@
 import type Database from 'better-sqlite3';
 import type {
+  BillingInterval,
   EmailSummaryFrequency,
   SummaryEmailData,
   SummaryExpiredRow,
@@ -170,7 +171,7 @@ export class NotificationService {
 
     const contracts = contractRows.map((r) => ({
       name: r.name,
-      billingInterval: r.billing_interval,
+      billingInterval: r.billing_interval as BillingInterval,
       monthlyCost: r.monthly_cost,
       anonymize: r.anonymize !== 0,
     }));
