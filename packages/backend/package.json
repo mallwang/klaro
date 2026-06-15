@@ -11,7 +11,8 @@
     "test:watch": "vitest",
     "db:migrate": "tsx src/db/migrate.ts",
     "db:seed": "tsx src/db/seed.ts",
-    "db:reset": "tsx src/db/reset.ts"
+    "db:reset": "tsx src/db/reset.ts",
+    "send-summary-email": "tsx src/scripts/send-summary-email.ts"
   },
   "dependencies": {
     "@fastify/cookie": "^11.0.0",

@@ -1,19 +1,19 @@
 import type Database from 'better-sqlite3';
-import type { EmailSummaryFrequency, SummaryEmailData, CtaState } from '@pcm/shared';
+import type {
+  EmailSummaryFrequency,
+  SummaryEmailData,
+  SummaryExpiredRow,
+  CtaState,
+  CancellationPeriodUnit,
+} from '@pcm/shared';
 import type { MailerService } from './mailer.service.js';
+import { computeCancellationDeadline } from './dashboard.js';
 
 /**
  * Service for building and dispatching summary emails to opted-in users, and a pure utility
  * for computing the next scheduled send datetime.
  */
 
-const ANONYMIZE_PLACEHOLDER = '––––';
-
-/**
- * SQL expression that normalises contract amounts to a monthly cost equivalent.
- *
- * LIFETIME contracts evaluate to 0 — they are excluded from spending totals.
- */
 const MONTHLY_FACTOR_SQL = `
   amount * CASE billing_interval
     WHEN 'WEEKLY'    THEN 52.0/12.0
@@ -91,9 +91,14 @@ interface ContractDbRow {
 interface RenewalDbRow {
   name: string;
   end_date: string;
-  cancellation_deadline: string | null;
-  days_until_deadline: number;
+  cancellation_period_value: number | null;
+  cancellation_period_unit: string | null;
   anonymize: number;
+}
+
+interface ExpiredDbRow {
+  name: string;
+  end_date: string;
 }
 
 export class NotificationService {
@@ -163,7 +168,7 @@ export class NotificationService {
     const totalMonthlySpending = contractRows.reduce((sum, r) => sum + r.monthly_cost, 0);
 
     const contracts = contractRows.map((r) => ({
-      name: r.anonymize ? ANONYMIZE_PLACEHOLDER : r.name,
+      name: r.name,
       billingInterval: r.billing_interval,
       monthlyCost: r.monthly_cost,
       anonymize: r.anonymize !== 0,
@@ -171,31 +176,65 @@ export class NotificationService {
 
     const renewalRows = this.db
       .prepare<[string], RenewalDbRow>(
-        `SELECT
-           name,
-           end_date,
-           end_date AS cancellation_deadline,
-           CAST(
-             (julianday(end_date) - julianday('now'))
-           AS INTEGER) AS days_until_deadline,
-           anonymize
+        `SELECT name, end_date, cancellation_period_value, cancellation_period_unit, anonymize
          FROM contracts
          WHERE end_date IS NOT NULL
            AND billing_interval != 'LIFETIME'
            AND end_date >= DATE('now')
-           AND julianday(end_date) - julianday('now') <= 30
-           AND user_id = ?
-         ORDER BY end_date ASC`,
+           AND user_id = ?`,
       )
       .all(userId);
 
-    const upcomingRenewals = renewalRows.map((r) => ({
-      name: r.anonymize ? ANONYMIZE_PLACEHOLDER : r.name,
-      endDate: r.end_date,
-      cancellationDeadline: r.cancellation_deadline ?? r.end_date,
-      daysUntilDeadline: r.days_until_deadline,
-      anonymize: r.anonymize !== 0,
-    }));
+    const now = new Date();
+    const today = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+    const GRACE_PERIOD_DAYS = 30;
+
+    const upcomingRenewals = renewalRows
+      .flatMap((r) => {
+        const endDate = new Date(r.end_date + 'T00:00:00Z');
+        const period =
+          r.cancellation_period_value !== null && r.cancellation_period_unit !== null
+            ? {
+                value: r.cancellation_period_value,
+                unit: r.cancellation_period_unit as CancellationPeriodUnit,
+              }
+            : null;
+        const cancellationDeadline = computeCancellationDeadline(endDate, period);
+        const panelEntryDate = new Date(cancellationDeadline);
+        panelEntryDate.setUTCDate(panelEntryDate.getUTCDate() - GRACE_PERIOD_DAYS);
+        if (today < panelEntryDate) return [];
+        const daysUntilDeadline = Math.round(
+          (cancellationDeadline.getTime() - today.getTime()) / 86_400_000,
+        );
+        return [
+          {
+            name: r.name,
+            endDate: r.end_date,
+            cancellationDeadline: cancellationDeadline.toISOString().slice(0, 10),
+            daysUntilDeadline,
+            anonymize: r.anonymize !== 0,
+          },
+        ];
+      })
+      .sort((a, b) => a.daysUntilDeadline - b.daysUntilDeadline);
+
+    const expiredRows = this.db
+      .prepare<[string], ExpiredDbRow>(
+        `SELECT name, end_date
+         FROM contracts
+         WHERE end_date IS NOT NULL
+           AND billing_interval != 'LIFETIME'
+           AND end_date < DATE('now')
+           AND user_id = ?
+         ORDER BY end_date DESC`,
+      )
+      .all(userId);
+
+    const expiredContracts: SummaryExpiredRow[] = expiredRows.map((r) => {
+      const endUtc = new Date(r.end_date + 'T00:00:00Z').getTime();
+      const daysOverdue = Math.round((today.getTime() - endUtc) / 86_400_000);
+      return { name: r.name, endDate: r.end_date, daysOverdue };
+    });
 
     let ctaState: CtaState = 'none';
     if (contracts.length === 0) {
@@ -211,6 +250,7 @@ export class NotificationService {
       totalMonthlySpending,
       contracts,
       upcomingRenewals,
+      expiredContracts,
       ctaState,
       dashboardUrl: this.appUrl,
     };

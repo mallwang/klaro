@@ -317,7 +317,7 @@
     "frequency": "Frequency",
     "weekly": "Weekly",
     "monthly": "Monthly",
-    "nextSend": "Next email: {{datetime}} UTC",
+    "nextSend": "Next email: {{local}} ({{utc}} UTC)",
     "saved": "Email preferences saved",
     "save": "Save preferences"
   }

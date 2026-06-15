@@ -52,6 +52,12 @@ export interface SummaryRenewalRow {
   anonymize: boolean;
 }
 
+export interface SummaryExpiredRow {
+  name: string;
+  endDate: string;
+  daysOverdue: number;
+}
+
 export interface SummaryEmailData {
   userEmail: string;
   displayName: string;
@@ -59,6 +65,7 @@ export interface SummaryEmailData {
   totalMonthlySpending: number;
   contracts: SummaryContractRow[];
   upcomingRenewals: SummaryRenewalRow[];
+  expiredContracts: SummaryExpiredRow[];
   ctaState: CtaState;
   dashboardUrl: string;
 }

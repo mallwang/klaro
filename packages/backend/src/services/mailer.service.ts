@@ -178,23 +178,38 @@ export class MailerService {
     const contractRows = data.contracts
       .map(
         (c) =>
-          `<tr><td>${c.name}</td><td>${c.billingInterval}</td><td>${c.monthlyCost.toFixed(2)}</td></tr>`,
+          `<tr><td style="padding:8px 12px;">${c.name}</td><td style="padding:8px 12px;">${c.billingInterval}</td><td style="padding:8px 12px;text-align:center;">${c.monthlyCost.toFixed(2)}</td></tr>`,
       )
       .join('');
 
     const contractTable =
       data.contracts.length > 0
-        ? `<table border="1" cellpadding="4" cellspacing="0">
-             <thead><tr><th>Contract</th><th>Billing</th><th>Monthly (€)</th></tr></thead>
+        ? `<table border="1" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
+             <thead><tr>
+               <th style="padding:8px 12px;">Contract</th>
+               <th style="padding:8px 12px;">Billing</th>
+               <th style="padding:8px 12px;text-align:center;">Monthly (€)</th>
+             </tr></thead>
              <tbody>${contractRows}</tbody>
            </table>`
         : '<p>You have no active contracts.</p>';
+
+    const expiredSection =
+      data.expiredContracts.length > 0
+        ? `<h3>Expired Contracts</h3><ul>${data.expiredContracts
+            .map(
+              (e) =>
+                `<li>${e.name} — expired ${e.endDate} (${e.daysOverdue} day${e.daysOverdue === 1 ? '' : 's'} overdue)</li>`,
+            )
+            .join('')}</ul>`
+        : '';
 
     const renewalSection =
       data.upcomingRenewals.length > 0
         ? `<h3>Upcoming Renewals</h3><ul>${data.upcomingRenewals
             .map(
-              (r) => `<li>${r.name} — ends ${r.endDate} (deadline: ${r.cancellationDeadline})</li>`,
+              (r) =>
+                `<li>${r.name} — ends ${r.endDate} / cancel by ${r.cancellationDeadline} (${r.daysUntilDeadline} day${r.daysUntilDeadline === 1 ? '' : 's'} left)</li>`,
             )
             .join('')}</ul>`
         : '<p>No upcoming renewals in the next 30 days.</p>';
@@ -211,20 +226,26 @@ export class MailerService {
       <p>Here is your ${freqLabel} contract summary.</p>
       <h3>Total Monthly Spending: ${totalFormatted}</h3>
       ${contractTable}
+      ${expiredSection}
       ${renewalSection}
       ${ctaBlock}
-      <p><a href="${data.dashboardUrl}">Go to Dashboard</a></p>
+      ${data.ctaState === 'none' ? `<p><a href="${data.dashboardUrl}">Go to Dashboard</a></p>` : ''}
       <hr/>
-      <p style="color:#888;font-size:12px;">To change your email frequency or opt out, visit Account Settings.</p>
+      <p style="color:#888;font-size:12px;">To change your email frequency or opt out, visit <a href="${data.dashboardUrl}/account">Account Settings</a>.</p>
     `;
 
     const contractText = data.contracts
       .map((c) => `  ${c.name} | ${c.billingInterval} | ${c.monthlyCost.toFixed(2)}/mo`)
       .join('\n');
 
+    const expiredText =
+      data.expiredContracts.length > 0
+        ? `Expired contracts:\n${data.expiredContracts.map((e) => `  ${e.name} — expired ${e.endDate} (${e.daysOverdue} day${e.daysOverdue === 1 ? '' : 's'} overdue)`).join('\n')}`
+        : '';
+
     const renewalText =
       data.upcomingRenewals.length > 0
-        ? `Upcoming renewals:\n${data.upcomingRenewals.map((r) => `  ${r.name} ends ${r.endDate}`).join('\n')}`
+        ? `Upcoming renewals:\n${data.upcomingRenewals.map((r) => `  ${r.name} — ends ${r.endDate} / cancel by ${r.cancellationDeadline} (${r.daysUntilDeadline} day${r.daysUntilDeadline === 1 ? '' : 's'} left)`).join('\n')}`
         : 'No upcoming renewals in the next 30 days.';
 
     const ctaText =
@@ -239,10 +260,11 @@ export class MailerService {
       `Your ${freqLabel} contract summary`,
       `Total monthly spending: ${totalFormatted}`,
       contractText || 'No active contracts.',
+      expiredText,
       renewalText,
       ctaText,
       `Dashboard: ${data.dashboardUrl}`,
-      'To change your email preferences, visit Account Settings.',
+      `To change your email preferences, visit Account Settings: ${data.dashboardUrl}/account`,
     ]
       .filter(Boolean)
       .join('\n\n');

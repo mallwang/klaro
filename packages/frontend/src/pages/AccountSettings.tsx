@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
@@ -78,6 +78,14 @@ export function AccountSettings() {
   const [summaryFrequency, setSummaryFrequency] = useState<'WEEKLY' | 'MONTHLY'>(
     notifPrefs?.summaryEmailFrequency ?? 'WEEKLY',
   );
+
+  useEffect(() => {
+    if (notifPrefs) {
+      setSummaryEnabled(notifPrefs.summaryEmailEnabled);
+      setSummaryFrequency(notifPrefs.summaryEmailFrequency ?? 'WEEKLY');
+    }
+  }, [notifPrefs]);
+
 
   /**
    * Submits the summary email preference form and shows toast feedback on success.
@@ -233,8 +241,11 @@ export function AccountSettings() {
                 {notifPrefs?.nextSendAt && (
                   <Text size="sm" c="dimmed">
                     {t('summaryEmail.nextSend', {
-                      datetime: new Intl.DateTimeFormat(undefined, {
+                      local: new Intl.DateTimeFormat(undefined, {
                         dateStyle: 'medium',
+                        timeStyle: 'short',
+                      }).format(new Date(notifPrefs.nextSendAt)),
+                      utc: new Intl.DateTimeFormat(undefined, {
                         timeStyle: 'short',
                         timeZone: 'UTC',
                       }).format(new Date(notifPrefs.nextSendAt)),

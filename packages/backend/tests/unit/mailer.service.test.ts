@@ -215,6 +215,7 @@ describe('MailerService.sendSummaryEmail', () => {
         },
       ],
       upcomingRenewals: [],
+      expiredContracts: [],
       ctaState: 'none',
       dashboardUrl: 'http://localhost:5173',
       ...overrides,

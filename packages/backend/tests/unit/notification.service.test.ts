@@ -199,29 +199,19 @@ describe('NotificationService.sendSummaryEmailForUser', () => {
     db.close();
   });
 
-  it('replaces anonymized contract name with placeholder', async () => {
+  it('always uses the real contract name regardless of the anonymize flag', async () => {
     const db = makeDb();
     const userId = insertUser(db, { enabled: true, frequency: 'WEEKLY' });
     insertContract(db, userId, { name: 'Secret Contract', anonymize: true });
-    const { mailer, captured } = makeCapturingMailer();
-    const service = new NotificationService(db, mailer, 'http://localhost:5173');
-
-    await service.sendSummaryEmailForUser(userId);
-
-    expect(captured[0]!.contracts[0]!.name).toBe('––––');
-    db.close();
-  });
-
-  it('does not anonymize contracts where anonymize is false', async () => {
-    const db = makeDb();
-    const userId = insertUser(db, { enabled: true, frequency: 'WEEKLY' });
     insertContract(db, userId, { name: 'Visible Contract', anonymize: false });
     const { mailer, captured } = makeCapturingMailer();
     const service = new NotificationService(db, mailer, 'http://localhost:5173');
 
     await service.sendSummaryEmailForUser(userId);
 
-    expect(captured[0]!.contracts[0]!.name).toBe('Visible Contract');
+    const names = captured[0]!.contracts.map((c) => c.name);
+    expect(names).toContain('Secret Contract');
+    expect(names).toContain('Visible Contract');
     db.close();
   });
 });

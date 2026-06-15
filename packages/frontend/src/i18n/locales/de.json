@@ -317,7 +317,7 @@
     "frequency": "Häufigkeit",
     "weekly": "Wöchentlich",
     "monthly": "Monatlich",
-    "nextSend": "Nächste E-Mail: {{datetime}} UTC",
+    "nextSend": "Nächste E-Mail: {{local}} ({{utc}} UTC)",
     "saved": "E-Mail-Einstellungen gespeichert",
     "save": "Einstellungen speichern"
   }
