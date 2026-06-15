@@ -68,11 +68,7 @@ export function AccountSettings() {
   }
 
   // ── Summary Email Preferences ───────────────────────────────────────────────
-  const {
-    data: notifPrefs,
-    updatePreferences,
-    isPending: isUpdatingPrefs,
-  } = useNotificationPreferences();
+  const { data: notifPrefs, updatePreferences } = useNotificationPreferences();
 
   const [summaryEnabled, setSummaryEnabled] = useState(notifPrefs?.summaryEmailEnabled ?? false);
   const [summaryFrequency, setSummaryFrequency] = useState<'WEEKLY' | 'MONTHLY'>(
@@ -81,6 +77,8 @@ export function AccountSettings() {
   const [emailLanguage, setEmailLanguage] = useState<SupportedEmailLanguage>(
     notifPrefs?.emailLanguage ?? 'en',
   );
+  const [isSavingSummary, setIsSavingSummary] = useState(false);
+  const [isSavingLanguage, setIsSavingLanguage] = useState(false);
 
   useEffect(() => {
     if (notifPrefs) {
@@ -94,26 +92,43 @@ export function AccountSettings() {
    * Submits the summary email preference form and shows toast feedback on success.
    */
   function handleSummaryEmailSave() {
+    setIsSavingSummary(true);
     updatePreferences(
       summaryEnabled
         ? { summaryEmailEnabled: true, summaryEmailFrequency: summaryFrequency }
         : { summaryEmailEnabled: false },
       {
-        onSuccess: () => showSuccess(t('summaryEmail.saved')),
-        onError: () => showError(t('accountSettings.errorGeneric')),
+        onSuccess: () => {
+          setIsSavingSummary(false);
+          showSuccess(t('summaryEmail.saved'));
+        },
+        onError: () => {
+          setIsSavingSummary(false);
+          showError(t('accountSettings.errorGeneric'));
+        },
       },
     );
   }
 
   /**
    * Persists the user's selected email language preference and shows toast feedback.
+   * Always includes the full notification preferences payload to satisfy schema validation.
    */
   function handleEmailLanguageSave() {
+    setIsSavingLanguage(true);
     updatePreferences(
-      { summaryEmailEnabled: summaryEnabled, emailLanguage },
+      summaryEnabled
+        ? { summaryEmailEnabled: true, summaryEmailFrequency: summaryFrequency, emailLanguage }
+        : { summaryEmailEnabled: false, emailLanguage },
       {
-        onSuccess: () => showSuccess(t('emailLanguage.saved')),
-        onError: () => showError(t('accountSettings.errorGeneric')),
+        onSuccess: () => {
+          setIsSavingLanguage(false);
+          showSuccess(t('emailLanguage.saved'));
+        },
+        onError: () => {
+          setIsSavingLanguage(false);
+          showError(t('emailLanguage.error'));
+        },
       },
     );
   }
@@ -270,7 +285,7 @@ export function AccountSettings() {
                 )}
               </>
             )}
-            <Button onClick={handleSummaryEmailSave} loading={isUpdatingPrefs} fullWidth>
+            <Button onClick={handleSummaryEmailSave} loading={isSavingSummary} fullWidth>
               {t('summaryEmail.save')}
             </Button>
           </Stack>
@@ -293,7 +308,7 @@ export function AccountSettings() {
                 }))}
               />
             </div>
-            <Button onClick={handleEmailLanguageSave} loading={isUpdatingPrefs} fullWidth>
+            <Button onClick={handleEmailLanguageSave} loading={isSavingLanguage} fullWidth>
               {t('emailLanguage.save')}
             </Button>
           </Stack>

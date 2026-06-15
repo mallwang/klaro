@@ -327,6 +327,7 @@
     "en": "Englisch",
     "de": "Deutsch",
     "save": "E-Mail-Sprache speichern",
-    "saved": "E-Mail-Sprache gespeichert"
+    "saved": "E-Mail-Sprache gespeichert",
+    "error": "E-Mail-Sprache konnte nicht gespeichert werden. Bitte erneut versuchen."
   }
 }

@@ -284,7 +284,9 @@ function buildSummaryHtml(data: SummaryEmailArgs): { subject: string; text: stri
   const expiredSection =
     data.expiredContracts.length > 0
       ? `<h3>${s.expiredTitle}</h3><ul>${data.expiredContracts
-          .map((e) => `<li>${s.expiredItem(e.name, e.endDate, e.daysOverdue)}</li>`)
+          .map(
+            (e) => `<li>${s.expiredItem(e.name, fmtDate(e.endDate, locale), e.daysOverdue)}</li>`,
+          )
           .join('')}</ul>`
       : '';
 
@@ -293,7 +295,7 @@ function buildSummaryHtml(data: SummaryEmailArgs): { subject: string; text: stri
       ? `<h3>${s.renewalsTitle}</h3><ul>${data.upcomingRenewals
           .map(
             (r) =>
-              `<li>${s.renewalItem(r.name, r.endDate, r.cancellationDeadline, r.daysUntilDeadline)}</li>`,
+              `<li>${s.renewalItem(r.name, fmtDate(r.endDate, locale), fmtDate(r.cancellationDeadline, locale), r.daysUntilDeadline)}</li>`,
           )
           .join('')}</ul>`
       : `<p>${s.noRenewals}</p>`;
@@ -332,14 +334,18 @@ function buildSummaryHtml(data: SummaryEmailArgs): { subject: string; text: stri
     data.expiredContracts.length > 0
       ? s.textExpiredLabel +
         ':\n' +
-        data.expiredContracts.map((e) => `  ${s.textExpiredItem(e.name, e.endDate)}`).join('\n')
+        data.expiredContracts
+          .map((e) => `  ${s.textExpiredItem(e.name, fmtDate(e.endDate, locale))}`)
+          .join('\n')
       : '';
 
   const renewalText =
     data.upcomingRenewals.length > 0
       ? s.textRenewalsLabel +
         ':\n' +
-        data.upcomingRenewals.map((r) => `  ${s.textRenewalItem(r.name, r.endDate)}`).join('\n')
+        data.upcomingRenewals
+          .map((r) => `  ${s.textRenewalItem(r.name, fmtDate(r.endDate, locale))}`)
+          .join('\n')
       : s.textNoRenewals;
 
   const text = [

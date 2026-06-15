@@ -327,6 +327,7 @@
     "en": "English",
     "de": "Deutsch",
     "save": "Save email language",
-    "saved": "Email language saved"
+    "saved": "Email language saved",
+    "error": "Email language could not be saved. Please try again."
   }
 }
