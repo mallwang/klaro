@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { SUPPORTED_EMAIL_LANGUAGES } from '../types/user.js';
 
 /**
  * Zod schemas and inferred TypeScript types for user profile actions, including display name
@@ -33,6 +34,7 @@ export const UpdateNotificationPreferencesBodySchema = z
   .object({
     summaryEmailEnabled: z.boolean(),
     summaryEmailFrequency: z.enum(['WEEKLY', 'MONTHLY']).optional(),
+    emailLanguage: z.enum(SUPPORTED_EMAIL_LANGUAGES).optional(),
   })
   .superRefine((val, ctx) => {
     if (val.summaryEmailEnabled && !val.summaryEmailFrequency) {

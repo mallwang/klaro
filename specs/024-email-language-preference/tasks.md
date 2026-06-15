@@ -20,7 +20,7 @@
 
 **Purpose**: No new project scaffolding required — this is an extension of an existing monorepo. Only a new module file needs to be bootstrapped.
 
-- [ ] T001 Create empty module file `packages/backend/src/services/mailer.strings.ts` (needed so Phase 2 imports compile; initially exports nothing)
+- [X] T001 Create empty module file `packages/backend/src/services/mailer.strings.ts` (needed so Phase 2 imports compile; initially exports nothing)
 
 ---
 
@@ -30,13 +30,13 @@
 
 > **⚠️ CRITICAL**: Write tests FIRST (T002, T005) and confirm they FAIL before writing implementation code (T003, T004, T006, T007).
 
-- [ ] T002 Write failing migration test: assert `users` table contains `email_language` column after `runMigrations` in `packages/backend/tests/unit/migration.test.ts`
-- [ ] T003 Update `packages/backend/src/db/schema.sql` — add `email_language TEXT NOT NULL DEFAULT 'en' CHECK(email_language IN ('en','de'))` to the `CREATE TABLE IF NOT EXISTS users` definition
-- [ ] T004 Add migration guard to `packages/backend/src/db/client.ts` — `PRAGMA table_info(users)` check for `email_language`; `ALTER TABLE users ADD COLUMN email_language TEXT NOT NULL DEFAULT 'en' CHECK(email_language IN ('en','de'))` when absent (matches existing guard pattern for `summary_email_enabled`)
-- [ ] T005 Write failing schema test: assert `UpdateNotificationPreferencesBodySchema` accepts and rejects `emailLanguage` in `packages/backend/tests/unit/notification-preferences.schema.test.ts`
-- [ ] T006 [P] Add `SUPPORTED_EMAIL_LANGUAGES = ['en', 'de'] as const` and `type SupportedEmailLanguage` to `packages/shared/src/types/user.ts`
-- [ ] T007 [P] Extend `NotificationPreferences` interface in `packages/shared/src/types/user.ts` with `emailLanguage: SupportedEmailLanguage`
-- [ ] T008 Extend `UpdateNotificationPreferencesBodySchema` in `packages/shared/src/schemas/profile.ts` — add optional `emailLanguage: z.enum(SUPPORTED_EMAIL_LANGUAGES)` field (import `SUPPORTED_EMAIL_LANGUAGES` from `./user` — note: may need to re-export from shared index or import directly)
+- [X] T002 Write failing migration test: assert `users` table contains `email_language` column after `runMigrations` in `packages/backend/tests/unit/migration.test.ts`
+- [X] T003 Update `packages/backend/src/db/schema.sql` — add `email_language TEXT NOT NULL DEFAULT 'en' CHECK(email_language IN ('en','de'))` to the `CREATE TABLE IF NOT EXISTS users` definition
+- [X] T004 Add migration guard to `packages/backend/src/db/client.ts` — `PRAGMA table_info(users)` check for `email_language`; `ALTER TABLE users ADD COLUMN email_language TEXT NOT NULL DEFAULT 'en' CHECK(email_language IN ('en','de'))` when absent (matches existing guard pattern for `summary_email_enabled`)
+- [X] T005 Write failing schema test: assert `UpdateNotificationPreferencesBodySchema` accepts and rejects `emailLanguage` in `packages/backend/tests/unit/notification-preferences.schema.test.ts`
+- [X] T006 [P] Add `SUPPORTED_EMAIL_LANGUAGES = ['en', 'de'] as const` and `type SupportedEmailLanguage` to `packages/shared/src/types/user.ts`
+- [X] T007 [P] Extend `NotificationPreferences` interface in `packages/shared/src/types/user.ts` with `emailLanguage: SupportedEmailLanguage`
+- [X] T008 Extend `UpdateNotificationPreferencesBodySchema` in `packages/shared/src/schemas/profile.ts` — add optional `emailLanguage: z.enum(SUPPORTED_EMAIL_LANGUAGES)` field (import `SUPPORTED_EMAIL_LANGUAGES` from `./user` — note: may need to re-export from shared index or import directly)
 
 **Checkpoint**: Migration test passes. Schema test passes. Shared type exports compile without errors across both packages.
 
@@ -50,14 +50,14 @@
 
 > **Write tests FIRST (T009, T010, T013) — confirm they FAIL before implementing T011, T012, T014, T015, T016.**
 
-- [ ] T009 Write failing integration test: `GET /api/profile/notification-preferences` returns `emailLanguage: "en"` (default) in `packages/backend/tests/integration/notification-preferences.route.test.ts`
-- [ ] T010 Write failing integration test: `PATCH /api/profile/notification-preferences` with `{ emailLanguage: "de" }` persists value and subsequent GET returns `"de"` in `packages/backend/tests/integration/notification-preferences.route.test.ts`
-- [ ] T011 Update `GET /api/profile/notification-preferences` handler in `packages/backend/src/routes/profile.ts` — add `email_language` to the SELECT query and include `emailLanguage` in the JSON response
-- [ ] T012 Update `PATCH /api/profile/notification-preferences` handler in `packages/backend/src/routes/profile.ts` — when `body.data.emailLanguage` is present, include `email_language = ?` in the UPDATE statement
-- [ ] T013 Write failing unit test: `AccountSettings` renders an "Email Language" section with "English" and "Deutsch" options, saves correctly via `updatePreferences` in `packages/frontend/tests/unit/AccountSettings.test.tsx`
-- [ ] T014 [P] Add `emailLanguage` i18n keys to `packages/frontend/src/i18n/locales/en.json`: `"emailLanguage": { "title": "Email Language", "label": "Language for emails", "en": "English", "de": "Deutsch", "save": "Save email language", "saved": "Email language saved" }`
-- [ ] T015 [P] Add `emailLanguage` i18n keys to `packages/frontend/src/i18n/locales/de.json` with German translations (title: "E-Mail-Sprache", label: "Sprache für E-Mails", en: "Englisch", de: "Deutsch", save: "E-Mail-Sprache speichern", saved: "E-Mail-Sprache gespeichert")
-- [ ] T016 Add Email Language selector panel to `packages/frontend/src/pages/AccountSettings.tsx` — new `<Paper>` section using Mantine `SegmentedControl` with options from `SUPPORTED_EMAIL_LANGUAGES`; local `emailLanguage` state synced from `notifPrefs.emailLanguage`; save button calls `updatePreferences({ emailLanguage })` with success/error toasts using `showSuccess(t('emailLanguage.saved'))` / `showError(t('accountSettings.errorGeneric'))`
+- [X] T009 Write failing integration test: `GET /api/profile/notification-preferences` returns `emailLanguage: "en"` (default) in `packages/backend/tests/integration/notification-preferences.route.test.ts`
+- [X] T010 Write failing integration test: `PATCH /api/profile/notification-preferences` with `{ emailLanguage: "de" }` persists value and subsequent GET returns `"de"` in `packages/backend/tests/integration/notification-preferences.route.test.ts`
+- [X] T011 Update `GET /api/profile/notification-preferences` handler in `packages/backend/src/routes/profile.ts` — add `email_language` to the SELECT query and include `emailLanguage` in the JSON response
+- [X] T012 Update `PATCH /api/profile/notification-preferences` handler in `packages/backend/src/routes/profile.ts` — when `body.data.emailLanguage` is present, include `email_language = ?` in the UPDATE statement
+- [X] T013 Write failing unit test: `AccountSettings` renders an "Email Language" section with "English" and "Deutsch" options, saves correctly via `updatePreferences` in `packages/frontend/tests/unit/AccountSettings.test.tsx`
+- [X] T014 [P] Add `emailLanguage` i18n keys to `packages/frontend/src/i18n/locales/en.json`: `"emailLanguage": { "title": "Email Language", "label": "Language for emails", "en": "English", "de": "Deutsch", "save": "Save email language", "saved": "Email language saved" }`
+- [X] T015 [P] Add `emailLanguage` i18n keys to `packages/frontend/src/i18n/locales/de.json` with German translations (title: "E-Mail-Sprache", label: "Sprache für E-Mails", en: "Englisch", de: "Deutsch", save: "E-Mail-Sprache speichern", saved: "E-Mail-Sprache gespeichert")
+- [X] T016 Add Email Language selector panel to `packages/frontend/src/pages/AccountSettings.tsx` — new `<Paper>` section using Mantine `SegmentedControl` with options from `SUPPORTED_EMAIL_LANGUAGES`; local `emailLanguage` state synced from `notifPrefs.emailLanguage`; save button calls `updatePreferences({ emailLanguage })` with success/error toasts using `showSuccess(t('emailLanguage.saved'))` / `showError(t('accountSettings.errorGeneric'))`
 
 **Checkpoint**: Unit test and integration tests pass. `GET` returns `emailLanguage`. `PATCH` with `emailLanguage` persists correctly. Frontend selector visible and functional.
 
@@ -71,14 +71,14 @@
 
 > **Write tests FIRST (T017, T019) — confirm they FAIL before implementing T018, T020, T021, T022, T023.**
 
-- [ ] T017 Write failing CI coverage test in `packages/backend/tests/unit/mailer.strings.test.ts`: import each string map from `mailer.strings.ts` and assert every `SupportedEmailLanguage` entry produces a non-empty `{ subject, text, html }` for all 8 email types (test will fail with import error until T018)
-- [ ] T018 Write failing unit tests for locale variants in `packages/backend/tests/unit/mailer.service.test.ts`: for each `send*` method, assert that passing `locale: 'de'` produces German subject and body (will fail until T020)
-- [ ] T019 [P] Implement `packages/backend/src/services/mailer.strings.ts` — define `Record<SupportedEmailLanguage, (args) => { subject: string; text: string; html: string }>` for all 8 email types: `testEmailStrings`, `welcomeEmailStrings`, `passwordChangeEmailStrings`, `emailChangeConfirmationStrings`, `emailVerificationStrings`, `invitationEmailStrings`, `passwordResetEmailStrings`, `summaryEmailStrings`. English strings: extracted from existing inline strings in `mailer.service.ts`. German strings: translated equivalents with `Intl.DateTimeFormat('de')` and `Intl.NumberFormat('de')` for date/currency values.
-- [ ] T020 Refactor `packages/backend/src/services/mailer.service.ts` — add `locale: SupportedEmailLanguage = 'en'` parameter to each `send*` method; replace inline subject/body string construction with a call to the corresponding locale string map from `mailer.strings.ts`
-- [ ] T021 Write failing integration test: email change request for a user with `email_language = 'de'` triggers German verification email (spy on mailer) in `packages/backend/tests/integration/profile.route.test.ts`
-- [ ] T022 Look up and forward `email_language` in email-change call sites in `packages/backend/src/routes/profile.ts`: (a) in `POST /api/profile/email-change`: query `email_language` for `request.user!.id`, pass as `locale` to `sendEmailVerificationEmail`; (b) in `POST /api/profile/email-change/:token/confirm`: use `email_language` from the confirmed user row, pass to `sendEmailChangeConfirmationEmail`
-- [ ] T023 Look up and forward `email_language` in `packages/backend/src/routes/auth.ts`: (a) password reset request — query `email_language` for target user, pass to `sendPasswordResetEmail`; (b) password change confirmation — query `email_language` for `request.user!.id`, pass to `sendPasswordChangeEmail`
-- [ ] T024 Use default `'en'` locale for invitation accept welcome email in `packages/backend/src/routes/invitations.ts` — new user has no stored preference; pass `locale: 'en'` explicitly to `sendWelcomeEmail`
+- [X] T017 Write failing CI coverage test in `packages/backend/tests/unit/mailer.strings.test.ts`: import each string map from `mailer.strings.ts` and assert every `SupportedEmailLanguage` entry produces a non-empty `{ subject, text, html }` for all 8 email types (test will fail with import error until T018)
+- [X] T018 Write failing unit tests for locale variants in `packages/backend/tests/unit/mailer.service.test.ts`: for each `send*` method, assert that passing `locale: 'de'` produces German subject and body (will fail until T020)
+- [X] T019 [P] Implement `packages/backend/src/services/mailer.strings.ts` — define `Record<SupportedEmailLanguage, (args) => { subject: string; text: string; html: string }>` for all 8 email types: `testEmailStrings`, `welcomeEmailStrings`, `passwordChangeEmailStrings`, `emailChangeConfirmationStrings`, `emailVerificationStrings`, `invitationEmailStrings`, `passwordResetEmailStrings`, `summaryEmailStrings`. English strings: extracted from existing inline strings in `mailer.service.ts`. German strings: translated equivalents with `Intl.DateTimeFormat('de')` and `Intl.NumberFormat('de')` for date/currency values.
+- [X] T020 Refactor `packages/backend/src/services/mailer.service.ts` — add `locale: SupportedEmailLanguage = 'en'` parameter to each `send*` method; replace inline subject/body string construction with a call to the corresponding locale string map from `mailer.strings.ts`
+- [X] T021 Write failing integration test: email change request for a user with `email_language = 'de'` triggers German verification email (spy on mailer) in `packages/backend/tests/integration/profile.route.test.ts`
+- [X] T022 Look up and forward `email_language` in email-change call sites in `packages/backend/src/routes/profile.ts`: (a) in `POST /api/profile/email-change`: query `email_language` for `request.user!.id`, pass as `locale` to `sendEmailVerificationEmail`; (b) in `POST /api/profile/email-change/:token/confirm`: use `email_language` from the confirmed user row, pass to `sendEmailChangeConfirmationEmail`
+- [X] T023 Look up and forward `email_language` in `packages/backend/src/routes/auth.ts`: (a) password reset request — query `email_language` for target user, pass to `sendPasswordResetEmail`; (b) password change confirmation — query `email_language` for `request.user!.id`, pass to `sendPasswordChangeEmail`
+- [X] T024 Use default `'en'` locale for invitation accept welcome email in `packages/backend/src/routes/invitations.ts` — new user has no stored preference; pass `locale: 'en'` explicitly to `sendWelcomeEmail`
 
 **Checkpoint**: `mailer.strings.test.ts` passes for all locales × email types. `mailer.service.test.ts` German locale assertions pass. Profile and auth route integration tests assert locale is forwarded.
 
@@ -92,8 +92,8 @@
 
 > **Write tests FIRST (T025) — confirm they FAIL before implementing T026.**
 
-- [ ] T025 Write failing unit test in `packages/backend/tests/unit/notification.service.test.ts`: when a user has `email_language = 'de'`, `sendSummaryEmailForUser` calls `mailer.sendSummaryEmail` with `locale: 'de'` (spy/mock assertion)
-- [ ] T026 Update `sendSummaryEmailForUser` in `packages/backend/src/services/notification.service.ts` — add `email_language` to the user SELECT query; pass it as `locale` when calling `mailer.sendSummaryEmail`; also update `sendSummaryEmails` to ensure `email_language` is available per user in the batch path
+- [X] T025 Write failing unit test in `packages/backend/tests/unit/notification.service.test.ts`: when a user has `email_language = 'de'`, `sendSummaryEmailForUser` calls `mailer.sendSummaryEmail` with `locale: 'de'` (spy/mock assertion)
+- [X] T026 Update `sendSummaryEmailForUser` in `packages/backend/src/services/notification.service.ts` — add `email_language` to the user SELECT query; pass it as `locale` when calling `mailer.sendSummaryEmail`; also update `sendSummaryEmails` to ensure `email_language` is available per user in the batch path
 
 **Checkpoint**: Notification service test passes. Running `send-summary-email.ts WEEKLY <german-user-id>` produces a German email verified via mail inbox.
 
@@ -107,7 +107,7 @@
 
 > **T017 (written in Phase 4) already provides this guard. This phase adds one additional structural assertion.**
 
-- [ ] T027 Extend `packages/backend/tests/unit/mailer.strings.test.ts` with a structural test: assert that the set of keys in each locale string map exactly equals `new Set(SUPPORTED_EMAIL_LANGUAGES)` — this catches the case where a locale is added to the constant but no string entry is added to the map
+- [X] T027 Extend `packages/backend/tests/unit/mailer.strings.test.ts` with a structural test: assert that the set of keys in each locale string map exactly equals `new Set(SUPPORTED_EMAIL_LANGUAGES)` — this catches the case where a locale is added to the constant but no string entry is added to the map
 
 **Checkpoint**: Adding a new language to `SUPPORTED_EMAIL_LANGUAGES` without adding string maps causes `mailer.strings.test.ts` to fail immediately, blocking CI.
 
@@ -117,11 +117,11 @@
 
 **Purpose**: Documentation, README updates, and final validation run.
 
-- [ ] T028 [P] Update `README.md` — add section describing the email language preference feature (where to find it, what it affects, independence from browser language)
-- [ ] T029 [P] Update `README.de.md` — German equivalent of T028, consistent with English version
-- [ ] T030 [P] Update `docs/user-guide.md` — add user-facing documentation for email language preference: how to find and change the setting, what emails are affected, fallback behaviour
-- [ ] T031 [P] Update `docs/user-guide.de.md` — German equivalent of T030, consistent with English version
-- [ ] T032 Run all quickstart.md validation scenarios (Scenarios 1–8) and confirm each passes; fix any regressions found
+- [X] T028 [P] Update `README.md` — add section describing the email language preference feature (where to find it, what it affects, independence from browser language)
+- [X] T029 [P] Update `README.de.md` — German equivalent of T028, consistent with English version
+- [X] T030 [P] Update `docs/user-guide.md` — add user-facing documentation for email language preference: how to find and change the setting, what emails are affected, fallback behaviour
+- [X] T031 [P] Update `docs/user-guide.de.md` — German equivalent of T030, consistent with English version
+- [X] T032 Run all quickstart.md validation scenarios (Scenarios 1–8) and confirm each passes; fix any regressions found
 
 ---
 

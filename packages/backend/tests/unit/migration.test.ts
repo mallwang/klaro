@@ -452,3 +452,76 @@ describe('runMigrations – email_verifications purpose column', () => {
     db.close();
   });
 });
+
+describe('runMigrations – email_language column', () => {
+  it('adds email_language column with default en on a fresh database', () => {
+    const db = new Database(':memory:');
+    db.pragma('journal_mode = WAL');
+    runMigrations(db);
+    expect(columnNames(db, 'users')).toContain('email_language');
+    const row = db
+      .prepare<
+        [string],
+        { email_language: string }
+      >(`SELECT email_language FROM users WHERE email = ?`)
+      .get('admin@localhost.local');
+    expect(row?.email_language).toBe('en');
+    db.close();
+  });
+
+  it('adds email_language column when migrating a database without it', () => {
+    const db = new Database(':memory:');
+    db.pragma('journal_mode = WAL');
+    db.pragma('foreign_keys = ON');
+    db.exec(`
+      CREATE TABLE users (
+        id TEXT PRIMARY KEY,
+        email TEXT NOT NULL UNIQUE,
+        display_name TEXT NOT NULL,
+        password_hash TEXT NOT NULL,
+        password_salt TEXT NOT NULL,
+        role TEXT NOT NULL DEFAULT 'MEMBER',
+        status TEXT NOT NULL DEFAULT 'ACTIVE',
+        failed_attempts INTEGER NOT NULL DEFAULT 0,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL
+      );
+      CREATE TABLE sessions (
+        id TEXT PRIMARY KEY,
+        user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        created_at TEXT NOT NULL,
+        last_seen_at TEXT NOT NULL,
+        expires_at TEXT NOT NULL
+      );
+      CREATE TABLE invitations (
+        token TEXT PRIMARY KEY,
+        email TEXT NOT NULL,
+        invited_by TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        status TEXT NOT NULL DEFAULT 'PENDING',
+        expires_at TEXT NOT NULL,
+        created_at TEXT NOT NULL
+      );
+      CREATE TABLE contracts (
+        id TEXT PRIMARY KEY,
+        name TEXT NOT NULL,
+        category TEXT NOT NULL,
+        amount REAL NOT NULL DEFAULT 0.0,
+        billing_interval TEXT NOT NULL DEFAULT 'MONTHLY'
+          CHECK(billing_interval IN ('WEEKLY','MONTHLY','QUARTERLY','YEARLY','LIFETIME')),
+        status TEXT NOT NULL DEFAULT 'ACTIVE',
+        end_date TEXT,
+        start_date TEXT,
+        details TEXT,
+        service_url TEXT,
+        cancellation_period_value INTEGER,
+        cancellation_period_unit TEXT,
+        anonymize INTEGER NOT NULL DEFAULT 0,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL
+      );
+    `);
+    runMigrations(db);
+    expect(columnNames(db, 'users')).toContain('email_language');
+    db.close();
+  });
+});

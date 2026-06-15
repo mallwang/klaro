@@ -420,6 +420,43 @@ function insertVerificationTokenForApp(db: Database.Database, userId: string, ne
   return token;
 }
 
+// ─── T021: email language forwarded to confirmation email ────────────────────
+
+describe('POST /api/profile/email-change/:token/confirm — locale forwarding', () => {
+  it('passes the user email_language to sendEmailChangeConfirmationEmail', async () => {
+    let capturedLocale: string | undefined;
+    const trackingMailer: MailerService = {
+      sendInvitationEmail: async () => {},
+      sendEmailVerificationEmail: async () => {},
+      sendEmailChangeConfirmationEmail: async (_to: string, _changedAt: string, locale: string) => {
+        capturedLocale = locale;
+      },
+    } as unknown as MailerService;
+
+    const { db, app } = await setup(trackingMailer);
+    try {
+      const { userId } = createAuthenticatedSession(db, {
+        role: 'MEMBER',
+        email: 'german@example.test',
+        displayName: 'German User',
+      });
+      db.prepare(`UPDATE users SET email_language = 'de' WHERE id = ?`).run(userId);
+
+      const token = insertVerificationTokenForApp(db, userId, 'german-new@example.test');
+      const res = await app.inject({
+        method: 'POST',
+        url: `/api/profile/email-change/${token}/confirm`,
+      });
+      expect(res.statusCode).toBe(200);
+      await new Promise((r) => setTimeout(r, 20));
+      expect(capturedLocale).toBe('de');
+    } finally {
+      await app.close();
+      db.close();
+    }
+  });
+});
+
 // ─── DELETE /api/profile ──────────────────────────────────────────────────────
 
 describe('DELETE /api/profile', () => {

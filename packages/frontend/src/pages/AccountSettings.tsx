@@ -14,7 +14,7 @@ import {
   Switch,
   SegmentedControl,
 } from '@mantine/core';
-import type { Account } from '@pcm/shared';
+import { SUPPORTED_EMAIL_LANGUAGES, type Account, type SupportedEmailLanguage } from '@pcm/shared';
 import { AuthError, changePassword } from '../services/auth.js';
 import {
   updateDisplayName,
@@ -64,7 +64,7 @@ export function AccountSettings() {
    */
   function handleDeleted() {
     queryClient.clear();
-    void navigate('/sign-in');
+    navigate('/sign-in').catch(() => {});
   }
 
   // ── Summary Email Preferences ───────────────────────────────────────────────
@@ -78,14 +78,17 @@ export function AccountSettings() {
   const [summaryFrequency, setSummaryFrequency] = useState<'WEEKLY' | 'MONTHLY'>(
     notifPrefs?.summaryEmailFrequency ?? 'WEEKLY',
   );
+  const [emailLanguage, setEmailLanguage] = useState<SupportedEmailLanguage>(
+    notifPrefs?.emailLanguage ?? 'en',
+  );
 
   useEffect(() => {
     if (notifPrefs) {
       setSummaryEnabled(notifPrefs.summaryEmailEnabled);
       setSummaryFrequency(notifPrefs.summaryEmailFrequency ?? 'WEEKLY');
+      setEmailLanguage(notifPrefs.emailLanguage ?? 'en');
     }
   }, [notifPrefs]);
-
 
   /**
    * Submits the summary email preference form and shows toast feedback on success.
@@ -102,13 +105,26 @@ export function AccountSettings() {
     );
   }
 
+  /**
+   * Persists the user's selected email language preference and shows toast feedback.
+   */
+  function handleEmailLanguageSave() {
+    updatePreferences(
+      { summaryEmailEnabled: summaryEnabled, emailLanguage },
+      {
+        onSuccess: () => showSuccess(t('emailLanguage.saved')),
+        onError: () => showError(t('accountSettings.errorGeneric')),
+      },
+    );
+  }
+
   // ── Display Name ────────────────────────────────────────────────────────────
   const [displayName, setDisplayName] = useState(user?.displayName ?? '');
 
   const displayNameMutation = useMutation({
     mutationFn: (name: string) => updateDisplayName(name),
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: CURRENT_USER_QUERY_KEY });
+      queryClient.invalidateQueries({ queryKey: CURRENT_USER_QUERY_KEY }).catch(() => {});
       showSuccess(t('accountSettings.displayNameSuccess'));
     },
     onError: () => {
@@ -256,6 +272,29 @@ export function AccountSettings() {
             )}
             <Button onClick={handleSummaryEmailSave} loading={isUpdatingPrefs} fullWidth>
               {t('summaryEmail.save')}
+            </Button>
+          </Stack>
+        </Paper>
+
+        {/* Email Language */}
+        <Paper withBorder p="lg">
+          <Stack gap="md">
+            <Title order={4}>{t('emailLanguage.title')}</Title>
+            <div>
+              <Text size="sm" fw={500} mb={4}>
+                {t('emailLanguage.label')}
+              </Text>
+              <SegmentedControl
+                value={emailLanguage}
+                onChange={(v) => setEmailLanguage(v as SupportedEmailLanguage)}
+                data={SUPPORTED_EMAIL_LANGUAGES.map((lang) => ({
+                  label: t(`emailLanguage.${lang}`),
+                  value: lang,
+                }))}
+              />
+            </div>
+            <Button onClick={handleEmailLanguageSave} loading={isUpdatingPrefs} fullWidth>
+              {t('emailLanguage.save')}
             </Button>
           </Stack>
         </Paper>

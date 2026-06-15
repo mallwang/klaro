@@ -1,5 +1,16 @@
 import nodemailer, { type Transporter, type SentMessageInfo } from 'nodemailer';
-import type { SummaryEmailData } from '@pcm/shared';
+import type { SummaryEmailData, SupportedEmailLanguage } from '@pcm/shared';
+import { SUPPORTED_EMAIL_LANGUAGES } from '@pcm/shared';
+import {
+  testEmailStrings,
+  welcomeEmailStrings,
+  passwordChangeEmailStrings,
+  emailChangeConfirmationStrings,
+  emailVerificationStrings,
+  invitationEmailStrings,
+  passwordResetEmailStrings,
+  summaryEmailStrings,
+} from './mailer.strings.js';
 
 /**
  * Email delivery service wrapping a Nodemailer transporter with typed, purpose-specific
@@ -38,7 +49,7 @@ export class MailerService {
    */
   static fromEnv(): MailerService {
     const host = process.env['SMTP_HOST'];
-    const port = parseInt(process.env['SMTP_PORT'] ?? '587');
+    const port = Number.parseInt(process.env['SMTP_PORT'] ?? '587', 10);
     const user = process.env['SMTP_USER'];
     const pass = process.env['SMTP_PASSWORD'];
     const fromAddress = process.env['SMTP_FROM'] ?? '';
@@ -60,6 +71,21 @@ export class MailerService {
     });
 
     return new MailerService({ transport, from });
+  }
+
+  /**
+   * Resolves a locale string to a supported email language, falling back to 'en' with a
+   * warning when the stored value is no longer in the supported set (e.g. after a downgrade).
+   *
+   * @param locale - The locale code to resolve
+   * @returns A guaranteed-valid SupportedEmailLanguage
+   */
+  private resolveLocale(locale: string): SupportedEmailLanguage {
+    if ((SUPPORTED_EMAIL_LANGUAGES as readonly string[]).includes(locale)) {
+      return locale as SupportedEmailLanguage;
+    }
+    console.warn(`[mailer] Unknown email locale "${locale}", falling back to "en"`);
+    return 'en';
   }
 
   /**
@@ -87,9 +113,7 @@ export class MailerService {
    * @param to - The recipient email address
    */
   async sendTestEmail(to: string): Promise<void> {
-    const subject = 'Test email — SMTP configuration check';
-    const text = `This is a test email sent from your Personal Contract Management app.\n\nIf you received this, your SMTP configuration is working correctly.`;
-    const html = `<p>This is a test email sent from your Personal Contract Management app.</p><p>If you received this, your SMTP configuration is working correctly.</p>`;
+    const { subject, text, html } = testEmailStrings['en']({ to });
     await this.send({ to, subject, text, html });
   }
 
@@ -98,11 +122,10 @@ export class MailerService {
    *
    * @param to - The recipient email address
    * @param link - The URL the user should visit to sign in
+   * @param locale - The locale to use for the email content; defaults to 'en'
    */
-  async sendWelcomeEmail(to: string, link: string): Promise<void> {
-    const subject = 'Welcome — your account is ready';
-    const text = `Your account has been activated.\n\nClick the link below to sign in:\n\n${link}\n\nWelcome aboard!`;
-    const html = `<p>Your account has been activated.</p><p>Click the link below to sign in:</p><p><a href="${link}">${link}</a></p><p>Welcome aboard!</p>`;
+  async sendWelcomeEmail(to: string, link: string, locale: string = 'en'): Promise<void> {
+    const { subject, text, html } = welcomeEmailStrings[this.resolveLocale(locale)]({ link });
     await this.send({ to, subject, text, html });
   }
 
@@ -111,11 +134,12 @@ export class MailerService {
    *
    * @param to - The recipient email address
    * @param link - The URL the user should visit to sign in
+   * @param locale - The locale to use for the email content; defaults to 'en'
    */
-  async sendPasswordChangeEmail(to: string, link: string): Promise<void> {
-    const subject = 'Your password has been changed';
-    const text = `Your password was successfully changed.\n\nIf you did not make this change, please contact your administrator immediately.\n\nClick the link below to sign in:\n\n${link}`;
-    const html = `<p>Your password was successfully changed.</p><p>If you did not make this change, please contact your administrator immediately.</p><p>Click the link below to sign in:</p><p><a href="${link}">${link}</a></p>`;
+  async sendPasswordChangeEmail(to: string, link: string, locale: string = 'en'): Promise<void> {
+    const { subject, text, html } = passwordChangeEmailStrings[this.resolveLocale(locale)]({
+      link,
+    });
     await this.send({ to, subject, text, html });
   }
 
@@ -124,12 +148,16 @@ export class MailerService {
    *
    * @param to - The old (previous) email address to notify
    * @param changedAt - ISO timestamp of when the change was confirmed
+   * @param locale - The locale to use for the email content; defaults to 'en'
    */
-  async sendEmailChangeConfirmationEmail(to: string, changedAt: string): Promise<void> {
-    const changedDate = new Date(changedAt).toISOString().slice(0, 10);
-    const subject = 'Your email address has been updated';
-    const text = `Your email address was successfully changed on ${changedDate}.\n\nIf you did not make this change, please contact your administrator immediately.`;
-    const html = `<p>Your email address was successfully changed on <strong>${changedDate}</strong>.</p><p>If you did not make this change, please contact your administrator immediately.</p>`;
+  async sendEmailChangeConfirmationEmail(
+    to: string,
+    changedAt: string,
+    locale: string = 'en',
+  ): Promise<void> {
+    const { subject, text, html } = emailChangeConfirmationStrings[this.resolveLocale(locale)]({
+      changedAt,
+    });
     await this.send({ to, subject, text, html });
   }
 
@@ -139,12 +167,19 @@ export class MailerService {
    * @param to - The new email address that must be verified
    * @param link - The one-time verification URL
    * @param expiresAt - ISO timestamp after which the verification link is no longer valid
+   * @param locale - The locale to use for the email content; defaults to 'en'
    */
-  async sendEmailVerificationEmail(to: string, link: string, expiresAt: string): Promise<void> {
+  async sendEmailVerificationEmail(
+    to: string,
+    link: string,
+    expiresAt: string,
+    locale: string = 'en',
+  ): Promise<void> {
     const expiryDate = new Date(expiresAt).toISOString().slice(0, 10);
-    const subject = 'Verify your new email address';
-    const text = `You requested an email address change.\n\nClick the link below to confirm your new email address:\n\n${link}\n\nThis link expires on ${expiryDate}. It can only be used once.\n\nIf you did not request this change, you can ignore this email.`;
-    const html = `<p>You requested an email address change.</p><p>Click the link below to confirm your new email address:</p><p><a href="${link}">${link}</a></p><p>This link expires on <strong>${expiryDate}</strong>. It can only be used once.</p><p>If you did not request this change, you can ignore this email.</p>`;
+    const { subject, text, html } = emailVerificationStrings[this.resolveLocale(locale)]({
+      link,
+      expiryDate,
+    });
     await this.send({ to, subject, text, html });
   }
 
@@ -154,12 +189,19 @@ export class MailerService {
    * @param to - The invited email address
    * @param link - The one-time invitation URL
    * @param expiresAt - ISO timestamp after which the invitation link is no longer valid
+   * @param locale - The locale to use for the email content; defaults to 'en'
    */
-  async sendInvitationEmail(to: string, link: string, expiresAt: string): Promise<void> {
+  async sendInvitationEmail(
+    to: string,
+    link: string,
+    expiresAt: string,
+    locale: string = 'en',
+  ): Promise<void> {
     const expiryDate = new Date(expiresAt).toISOString().slice(0, 10);
-    const subject = "You've been invited";
-    const text = `You've been invited to join the app.\n\nClick the link below to set up your account:\n\n${link}\n\nThis link expires on ${expiryDate}. It can only be used once.\n\nIf you did not expect this invitation, you can ignore this email.`;
-    const html = `<p>You've been invited to join the app.</p><p>Click the link below to set up your account:</p><p><a href="${link}">${link}</a></p><p>This link expires on <strong>${expiryDate}</strong>. It can only be used once.</p><p>If you did not expect this invitation, you can ignore this email.</p>`;
+    const { subject, text, html } = invitationEmailStrings[this.resolveLocale(locale)]({
+      link,
+      expiryDate,
+    });
     await this.send({ to, subject, text, html });
   }
 
@@ -168,108 +210,16 @@ export class MailerService {
    *
    * @param data - The summary payload assembled for this user including spending totals,
    *   contract rows, upcoming renewals, CTA state, and the dashboard URL
+   * @param locale - The locale to use for the email content; defaults to 'en'
    */
-  async sendSummaryEmail(data: SummaryEmailData): Promise<void> {
-    const freqLabel = data.frequency === 'WEEKLY' ? 'weekly' : 'monthly';
-    const subject = `Your ${freqLabel} contract summary`;
-
-    const totalFormatted = data.totalMonthlySpending.toFixed(2);
-
-    const contractRows = data.contracts
-      .map(
-        (c) =>
-          `<tr><td style="padding:8px 12px;">${c.name}</td><td style="padding:8px 12px;">${c.billingInterval}</td><td style="padding:8px 12px;text-align:center;">${c.monthlyCost.toFixed(2)}</td></tr>`,
-      )
-      .join('');
-
-    const contractTable =
-      data.contracts.length > 0
-        ? `<table border="1" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
-             <thead><tr>
-               <th style="padding:8px 12px;">Contract</th>
-               <th style="padding:8px 12px;">Billing</th>
-               <th style="padding:8px 12px;text-align:center;">Monthly (€)</th>
-             </tr></thead>
-             <tbody>${contractRows}</tbody>
-           </table>`
-        : '<p>You have no active contracts.</p>';
-
-    const expiredSection =
-      data.expiredContracts.length > 0
-        ? `<h3>Expired Contracts</h3><ul>${data.expiredContracts
-            .map(
-              (e) =>
-                `<li>${e.name} — expired ${e.endDate} (${e.daysOverdue} day${e.daysOverdue === 1 ? '' : 's'} overdue)</li>`,
-            )
-            .join('')}</ul>`
-        : '';
-
-    const renewalSection =
-      data.upcomingRenewals.length > 0
-        ? `<h3>Upcoming Renewals</h3><ul>${data.upcomingRenewals
-            .map(
-              (r) =>
-                `<li>${r.name} — ends ${r.endDate} / cancel by ${r.cancellationDeadline} (${r.daysUntilDeadline} day${r.daysUntilDeadline === 1 ? '' : 's'} left)</li>`,
-            )
-            .join('')}</ul>`
-        : '<p>No upcoming renewals in the next 30 days.</p>';
-
-    const ctaBlock =
-      data.ctaState === 'no-contracts'
-        ? `<p><strong>Get started:</strong> Add your first contract to start tracking your spending. <a href="${data.dashboardUrl}">Go to Dashboard</a></p>`
-        : data.ctaState === 'cancellation-due'
-          ? `<p><strong>Action required:</strong> One or more contracts are approaching their cancellation deadline — review them before the deadline passes. <a href="${data.dashboardUrl}">Go to Dashboard</a></p>`
-          : '';
-
-    const html = `
-      <h2>${data.displayName ? `Hi ${data.displayName},` : 'Hi,'}</h2>
-      <p>Here is your ${freqLabel} contract summary.</p>
-      <h3>Total Monthly Spending: ${totalFormatted}</h3>
-      ${contractTable}
-      ${expiredSection}
-      ${renewalSection}
-      ${ctaBlock}
-      ${data.ctaState === 'none' ? `<p><a href="${data.dashboardUrl}">Go to Dashboard</a></p>` : ''}
-      <hr/>
-      <p style="color:#888;font-size:12px;">To change your email frequency or opt out, visit <a href="${data.dashboardUrl}/account">Account Settings</a>.</p>
-    `;
-
-    const contractText = data.contracts
-      .map((c) => `  ${c.name} | ${c.billingInterval} | ${c.monthlyCost.toFixed(2)}/mo`)
-      .join('\n');
-
-    const expiredText =
-      data.expiredContracts.length > 0
-        ? `Expired contracts:\n${data.expiredContracts.map((e) => `  ${e.name} — expired ${e.endDate} (${e.daysOverdue} day${e.daysOverdue === 1 ? '' : 's'} overdue)`).join('\n')}`
-        : '';
-
-    const renewalText =
-      data.upcomingRenewals.length > 0
-        ? `Upcoming renewals:\n${data.upcomingRenewals.map((r) => `  ${r.name} — ends ${r.endDate} / cancel by ${r.cancellationDeadline} (${r.daysUntilDeadline} day${r.daysUntilDeadline === 1 ? '' : 's'} left)`).join('\n')}`
-        : 'No upcoming renewals in the next 30 days.';
-
-    const ctaText =
-      data.ctaState === 'no-contracts'
-        ? 'Get started: Add your first contract — ' + data.dashboardUrl
-        : data.ctaState === 'cancellation-due'
-          ? 'Action required: Review contracts approaching their cancellation deadline — ' +
-            data.dashboardUrl
-          : '';
-
-    const text = [
-      `Your ${freqLabel} contract summary`,
-      `Total monthly spending: ${totalFormatted}`,
-      contractText || 'No active contracts.',
-      expiredText,
-      renewalText,
-      ctaText,
-      `Dashboard: ${data.dashboardUrl}`,
-      `To change your email preferences, visit Account Settings: ${data.dashboardUrl}/account`,
-    ]
-      .filter(Boolean)
-      .join('\n\n');
-
-    await this.send({ to: data.userEmail, subject, text, html });
+  async sendSummaryEmail(data: SummaryEmailData, locale: string = 'en'): Promise<void> {
+    const resolvedLocale = this.resolveLocale(locale);
+    const { userEmail, ...rest } = data;
+    const { subject, text, html } = summaryEmailStrings[resolvedLocale]({
+      ...rest,
+      locale: resolvedLocale,
+    });
+    await this.send({ to: userEmail, subject, text, html });
   }
 
   /**
@@ -278,12 +228,19 @@ export class MailerService {
    * @param to - The recipient email address
    * @param link - The one-time password reset URL
    * @param expiresAt - ISO timestamp after which the reset link is no longer valid
+   * @param locale - The locale to use for the email content; defaults to 'en'
    */
-  async sendPasswordResetEmail(to: string, link: string, expiresAt: string): Promise<void> {
+  async sendPasswordResetEmail(
+    to: string,
+    link: string,
+    expiresAt: string,
+    locale: string = 'en',
+  ): Promise<void> {
     const expiryDate = new Date(expiresAt).toISOString().slice(0, 10);
-    const subject = 'Reset your password';
-    const text = `You requested a password reset.\n\nClick the link below to set a new password:\n\n${link}\n\nThis link expires on ${expiryDate}. It can only be used once.\n\nIf you did not request this change, you can ignore this email.`;
-    const html = `<p>You requested a password reset.</p><p>Click the link below to set a new password:</p><p><a href="${link}">${link}</a></p><p>This link expires on <strong>${expiryDate}</strong>. It can only be used once.</p><p>If you did not request this change, you can ignore this email.</p>`;
+    const { subject, text, html } = passwordResetEmailStrings[this.resolveLocale(locale)]({
+      link,
+      expiryDate,
+    });
     await this.send({ to, subject, text, html });
   }
 }

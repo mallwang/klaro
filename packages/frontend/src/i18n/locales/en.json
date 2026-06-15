@@ -320,5 +320,13 @@
     "nextSend": "Next email: {{local}} ({{utc}} UTC)",
     "saved": "Email preferences saved",
     "save": "Save preferences"
+  },
+  "emailLanguage": {
+    "title": "Email Language",
+    "label": "Language for emails",
+    "en": "English",
+    "de": "Deutsch",
+    "save": "Save email language",
+    "saved": "Email language saved"
   }
 }

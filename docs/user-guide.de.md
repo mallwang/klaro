@@ -17,7 +17,8 @@ Personal Contract Management ist eine lokale Web-App, die alle deine Verträge �
 9. [Sprache](#9-sprache)
 10. [Konten & Anmeldung](#10-konten--anmeldung)
 11. [Zusammenfassungs-E-Mail](#11-zusammenfassungs-e-mail)
-12. [Feldreferenz](#12-feldreferenz)
+12. [E-Mail-Sprache](#12-e-mail-sprache)
+13. [Feldreferenz](#13-feldreferenz)
 
 ---
 
@@ -408,7 +409,34 @@ Vertragsnamen, die als **anonymisiert** markiert sind, werden in der Zusammenfas
 
 ---
 
-## 12. Feldreferenz
+## 12. E-Mail-Sprache
+
+Die Einstellung **E-Mail-Sprache** legt fest, in welcher Sprache alle E-Mails der App an dich verschickt werden — unabhängig von der im Browser eingestellten Sprache.
+
+### E-Mail-Sprache festlegen
+
+1. Gehe zu **Mein Konto** (`/account`).
+2. Suche den Bereich **E-Mail-Sprache**.
+3. Wähle **English** oder **Deutsch**.
+4. Klicke auf **E-Mail-Sprache speichern**.
+
+Alle nachfolgenden E-Mails — Bestätigungslinks, Passwortzurücksetzung, Zusammenfassungen und Benachrichtigungen — werden in der gewählten Sprache zugestellt. Datumsangaben und Beträge werden ebenfalls entsprechend des Gebietsschemas formatiert (z. B. deutsches Format DD.MM.JJJJ und Komma als Dezimaltrennzeichen).
+
+### Standardwert
+
+Neue Konten verwenden standardmäßig **Englisch**.
+
+### Geltungsbereich
+
+Die E-Mail-Sprache ist **unabhängig** von der Browser-/UI-Sprache. Das Ändern der Browsersprache hat keinen Einfluss auf die E-Mail-Sprache und umgekehrt.
+
+### Neue Sprachen hinzufügen
+
+E-Mail-Vorlagen müssen für jede Sprache vorhanden sein, die die UI unterstützt. Wenn eine neue UI-Sprache hinzugefügt wird, müssen gleichzeitig die entsprechenden E-Mail-Vorlagen erstellt werden — ein Vitest-CI-Test erzwingt dies und blockiert den Build, falls Vorlagen fehlen.
+
+---
+
+## 13. Feldreferenz
 
 | Feld | Pflicht | Einschränkungen | Hinweise |
 |------|---------|-----------------|---------|

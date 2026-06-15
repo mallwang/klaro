@@ -146,9 +146,10 @@ export class NotificationService {
           email: string;
           display_name: string;
           summary_email_frequency: string | null;
+          email_language: string;
         }
       >(
-        `SELECT email, display_name, summary_email_frequency
+        `SELECT email, display_name, summary_email_frequency, email_language
          FROM users WHERE id = ?`,
       )
       .get(userId);
@@ -255,6 +256,6 @@ export class NotificationService {
       dashboardUrl: this.appUrl,
     };
 
-    await this.mailer.sendSummaryEmail(data);
+    await this.mailer.sendSummaryEmail(data, user.email_language ?? 'en');
   }
 }

@@ -219,6 +219,19 @@ export function runMigrations(instance: Database.Database): BootstrapResult | nu
     `);
   }
 
+  // Add email language preference column introduced in feature 024
+  const hasEmailLanguage = instance
+    .prepare<[], { name: string }>(`PRAGMA table_info(users)`)
+    .all()
+    .some((col) => col.name === 'email_language');
+
+  if (!hasEmailLanguage) {
+    instance.exec(
+      `ALTER TABLE users ADD COLUMN email_language TEXT NOT NULL DEFAULT 'en'
+         CHECK(email_language IN ('en','de'))`,
+    );
+  }
+
   const hasCancelledAt = instance
     .prepare<[], { name: string }>(`PRAGMA table_info(invitations)`)
     .all()

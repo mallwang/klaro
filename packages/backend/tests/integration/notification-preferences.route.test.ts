@@ -190,4 +190,59 @@ describe('PATCH /api/profile/notification-preferences', () => {
     });
     expect(res.statusCode).toBe(401);
   });
+
+  it('persists emailLanguage "de" and GET returns it', async () => {
+    const patch = await app.inject({
+      method: 'PATCH',
+      url: '/api/profile/notification-preferences',
+      payload: { summaryEmailEnabled: false, emailLanguage: 'de' },
+      cookies: { [SESSION_COOKIE_NAME]: memberCookie },
+    });
+    expect(patch.statusCode).toBe(204);
+
+    const get = await app.inject({
+      method: 'GET',
+      url: '/api/profile/notification-preferences',
+      cookies: { [SESSION_COOKIE_NAME]: memberCookie },
+    });
+    expect(get.statusCode).toBe(200);
+    const body = get.json<{ emailLanguage: string }>();
+    expect(body.emailLanguage).toBe('de');
+  });
+
+  it('returns 400 for an unknown emailLanguage value', async () => {
+    const res = await app.inject({
+      method: 'PATCH',
+      url: '/api/profile/notification-preferences',
+      payload: { summaryEmailEnabled: false, emailLanguage: 'it' },
+      cookies: { [SESSION_COOKIE_NAME]: memberCookie },
+    });
+    expect(res.statusCode).toBe(400);
+  });
+});
+
+describe('GET /api/profile/notification-preferences – emailLanguage default', () => {
+  let db: Database.Database;
+  let app: FastifyInstance;
+  let memberCookie: string;
+
+  beforeEach(async () => {
+    ({ db, app, memberCookie } = await setup());
+  });
+
+  afterEach(async () => {
+    await app.close();
+    db.close();
+  });
+
+  it('returns emailLanguage "en" by default for a new user', async () => {
+    const res = await app.inject({
+      method: 'GET',
+      url: '/api/profile/notification-preferences',
+      cookies: { [SESSION_COOKIE_NAME]: memberCookie },
+    });
+    expect(res.statusCode).toBe(200);
+    const body = res.json<{ emailLanguage: string }>();
+    expect(body.emailLanguage).toBe('en');
+  });
 });
