@@ -3,6 +3,8 @@
  * domain object.
  */
 
+import type { BillingInterval } from './contract.js';
+
 export const Role = {
   ADMIN: 'ADMIN',
   MEMBER: 'MEMBER',
@@ -43,7 +45,7 @@ export type CtaState = 'cancellation-due' | 'no-contracts' | 'none';
 
 export interface SummaryContractRow {
   name: string;
-  billingInterval: string;
+  billingInterval: BillingInterval;
   monthlyCost: number;
   anonymize: boolean;
 }

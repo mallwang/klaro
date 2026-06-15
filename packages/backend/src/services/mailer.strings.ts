@@ -1,4 +1,4 @@
-import type { SupportedEmailLanguage, SummaryEmailData } from '@pcm/shared';
+import type { BillingInterval, SupportedEmailLanguage, SummaryEmailData } from '@pcm/shared';
 
 /**
  * Locale-keyed string maps for every email type sent by the application.
@@ -17,6 +17,27 @@ function fmtCurrency(amount: number, locale: string): string {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   }).format(amount);
+}
+
+const billingIntervalLabels: Record<SupportedEmailLanguage, Record<BillingInterval, string>> = {
+  en: {
+    WEEKLY: 'Weekly',
+    MONTHLY: 'Monthly',
+    QUARTERLY: 'Quarterly',
+    YEARLY: 'Yearly',
+    LIFETIME: 'Lifetime',
+  },
+  de: {
+    WEEKLY: 'Wöchentlich',
+    MONTHLY: 'Monatlich',
+    QUARTERLY: 'Vierteljährlich',
+    YEARLY: 'Jährlich',
+    LIFETIME: 'Einmalig',
+  },
+};
+
+function fmtBillingInterval(interval: BillingInterval, locale: SupportedEmailLanguage): string {
+  return billingIntervalLabels[locale]?.[interval] ?? interval;
 }
 
 // ─── Test email ──────────────────────────────────────────────────────────────
@@ -265,7 +286,7 @@ function buildSummaryHtml(data: SummaryEmailArgs): { subject: string; text: stri
   const contractRows = data.contracts
     .map(
       (c) =>
-        `<tr><td style="padding:8px 12px;">${c.name}</td><td style="padding:8px 12px;">${c.billingInterval}</td><td style="padding:8px 12px;text-align:center;">${fmtCurrency(c.monthlyCost, locale)}</td></tr>`,
+        `<tr><td style="padding:8px 12px;">${c.name}</td><td style="padding:8px 12px;">${fmtBillingInterval(c.billingInterval, locale as SupportedEmailLanguage)}</td><td style="padding:8px 12px;text-align:center;">${fmtCurrency(c.monthlyCost, locale)}</td></tr>`,
     )
     .join('');
 
@@ -326,7 +347,7 @@ function buildSummaryHtml(data: SummaryEmailArgs): { subject: string; text: stri
   const contractText = data.contracts
     .map(
       (c) =>
-        `  ${c.name} | ${c.billingInterval} | ${fmtCurrency(c.monthlyCost, locale)}/${s.perMonth}`,
+        `  ${c.name} | ${fmtBillingInterval(c.billingInterval, locale as SupportedEmailLanguage)} | ${fmtCurrency(c.monthlyCost, locale)}/${s.perMonth}`,
     )
     .join('\n');
 
