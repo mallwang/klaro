@@ -250,6 +250,44 @@ describe('ContractForm – new fields submission', () => {
   });
 });
 
+describe('ContractForm – edit mode layout grouping', () => {
+  it('pre-filled name and category values appear in the same twoColumnRow wrapper', () => {
+    renderForm({
+      defaultValues: {
+        name: 'Netflix',
+        category: 'SUBSCRIPTIONS',
+        status: 'ACTIVE',
+        startDate: '2025-01-01',
+        endDate: '2025-12-31',
+      },
+    });
+    const nameInput = screen.getByDisplayValue('Netflix');
+    const categoryCombobox = getCombobox(/category/i);
+    expect(nameInput.closest('[class*="twoColumnRow"]')).not.toBeNull();
+    expect(nameInput.closest('[class*="twoColumnRow"]')).toBe(
+      categoryCombobox.closest('[class*="twoColumnRow"]'),
+    );
+  });
+
+  it('pre-filled status, start date, and end date appear in the same statusDateRow wrapper', () => {
+    renderForm({
+      defaultValues: {
+        name: 'Netflix',
+        status: 'ACTIVE',
+        startDate: '2025-01-01',
+        endDate: '2025-12-31',
+      },
+    });
+    const statusCombobox = getCombobox(/status/i);
+    const startDateInput = screen.getByDisplayValue('2025-01-01');
+    const endDateInput = screen.getByDisplayValue('2025-12-31');
+    const statusParent = statusCombobox.closest('[class*="statusDateRow"]');
+    expect(statusParent).not.toBeNull();
+    expect(statusParent).toBe(startDateInput.closest('[class*="statusDateRow"]'));
+    expect(statusParent).toBe(endDateInput.closest('[class*="statusDateRow"]'));
+  });
+});
+
 describe('ContractForm – cancel', () => {
   it('calls onCancel when the Cancel button is clicked', async () => {
     const onCancel = vi.fn();
@@ -257,6 +295,48 @@ describe('ContractForm – cancel', () => {
     renderForm({ onCancel });
     await user.click(screen.getByRole('button', { name: /cancel/i }));
     expect(onCancel).toHaveBeenCalledOnce();
+  });
+});
+
+describe('ContractForm – layout grouping (DOM structure)', () => {
+  it('name and category inputs share the same immediate parent wrapper', () => {
+    renderForm();
+    const nameInput = screen.getByLabelText(/name/i);
+    const categoryCombobox = getCombobox(/category/i);
+    const nameParent = nameInput.closest('[class*="twoColumnRow"]');
+    const categoryParent = categoryCombobox.closest('[class*="twoColumnRow"]');
+    expect(nameParent).not.toBeNull();
+    expect(nameParent).toBe(categoryParent);
+  });
+
+  it('amount and billing interval inputs share the same immediate parent wrapper', () => {
+    renderForm();
+    const amountInput = screen.getByLabelText(/^amount/i);
+    const billingCombobox = getCombobox(/billing interval/i);
+    const amountParent = amountInput.closest('[class*="twoColumnRow"]');
+    const billingParent = billingCombobox.closest('[class*="twoColumnRow"]');
+    expect(amountParent).not.toBeNull();
+    expect(amountParent).toBe(billingParent);
+  });
+
+  it('status, start date, and end date inputs share the same immediate parent wrapper', () => {
+    renderForm();
+    const statusCombobox = getCombobox(/status/i);
+    const startDateInput = screen.getByLabelText(/start date/i);
+    const endDateInput = screen.getByLabelText(/end date/i);
+    const statusParent = statusCombobox.closest('[class*="statusDateRow"]');
+    const startParent = startDateInput.closest('[class*="statusDateRow"]');
+    const endParent = endDateInput.closest('[class*="statusDateRow"]');
+    expect(statusParent).not.toBeNull();
+    expect(statusParent).toBe(startParent);
+    expect(statusParent).toBe(endParent);
+  });
+
+  it('cancellation period section is contained within a half-width wrapper', () => {
+    renderForm();
+    const cancellationLabel = screen.getByText(/cancellation period/i);
+    const halfWrapper = cancellationLabel.closest('[class*="cancellationHalf"]');
+    expect(halfWrapper).not.toBeNull();
   });
 });
 

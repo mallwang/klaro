@@ -117,6 +117,19 @@ The row of controls above the table contains:
 
 Click **Add Contract** from the contract list. Fill in the form and click **Save**.
 
+### Form layout
+
+The form uses a compact multi-column layout to reduce scrolling:
+
+| Row | Fields |
+|-----|--------|
+| Row 1 | Name · Category |
+| Row 2 | Amount · Billing interval |
+| Row 3 | Status · Start date · End date |
+| Row 4 (left half) | Cancellation notice period |
+
+On narrow screens (phones) the layout collapses to a single column and all fields stack vertically.
+
 ### Minimal example — streaming subscription
 
 | Field | Value |

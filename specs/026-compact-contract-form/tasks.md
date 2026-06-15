@@ -21,12 +21,12 @@
 
 **⚠️ CRITICAL**: Do NOT start Phase 2 until these tests exist and are confirmed FAILING.
 
-- [ ] T001 Add `describe('ContractForm – layout grouping (DOM structure)')` block to `packages/frontend/tests/unit/ContractForm.test.tsx` with four tests:
+- [X] T001 Add `describe('ContractForm – layout grouping (DOM structure)')` block to `packages/frontend/tests/unit/ContractForm.test.tsx` with four tests:
   1. name and category inputs share the same immediate parent wrapper (assert `nameInput.closest('[class*="twoColumnRow"]') === categoryInput.closest('[class*="twoColumnRow"]')`)
   2. amount and billing interval inputs share the same immediate parent wrapper (same pattern with `twoColumnRow`)
   3. status, start date, and end date inputs share the same immediate parent wrapper (assert all three share a parent matching `statusDateRow`)
   4. the cancellation period label element is contained within a half-width wrapper (assert `cancellationLabel.closest('[class*="cancellationHalf"]')` is not null)
-- [ ] T002 Run `pnpm --filter frontend test --run` and confirm all four new tests FAIL (red) — proceed to Phase 2 only after this is confirmed
+- [X] T002 Run `pnpm --filter frontend test --run` and confirm all four new tests FAIL (red) — proceed to Phase 2 only after this is confirmed
 
 **Checkpoint**: Four failing tests documented. Phase 2 can now begin.
 
@@ -42,18 +42,18 @@
 
 ### Implementation
 
-- [ ] T003 [P] [US1] Add CSS classes to `packages/frontend/src/components/ContractForm.module.css`:
+- [X] T003 [P] [US1] Add CSS classes to `packages/frontend/src/components/ContractForm.module.css`:
   - Add `.twoColumnRow`: `display: grid; grid-template-columns: 1fr 1fr; gap: var(--mantine-spacing-md);`
   - Add `.statusDateRow`: `display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--mantine-spacing-md);`
   - Add `.cancellationHalf`: `max-width: 50%;`
   - Add responsive block `@media (max-width: 48em)` collapsing `.twoColumnRow` and `.statusDateRow` to `grid-template-columns: 1fr` and `.cancellationHalf` to `max-width: 100%`
   - Remove the existing `.dateGrid` rule
-- [ ] T004 [US1] In `packages/frontend/src/components/ContractForm.tsx`, wrap the name custom `<div>` and the category `<Select>` together in `<div className={classes.twoColumnRow}>` (replaces two sibling elements with a grouped wrapper)
-- [ ] T005 [US1] In `packages/frontend/src/components/ContractForm.tsx`, wrap `<NumberInput id="amount">` and `<Select id="billingInterval">` together in `<div className={classes.twoColumnRow}>`
-- [ ] T006 [US1] In `packages/frontend/src/components/ContractForm.tsx`, replace the standalone `<Select id="status">` and `<div className={classes.dateGrid}>` with a single `<div className={classes.statusDateRow}>` containing the status select, start date input, and end date input as direct children (remove `.dateGrid` reference)
-- [ ] T007 [US3] In `packages/frontend/src/components/ContractForm.tsx`, add `className={classes.cancellationHalf}` to the outer `<div>` that wraps the cancellation period label and the inner `.cancellationRow` div
-- [ ] T008 [US1] Update the JSDoc comment on the `ContractForm` function in `packages/frontend/src/components/ContractForm.tsx` to mention the compact multi-column row layout
-- [ ] T009 Run `pnpm --filter frontend test --run` — confirm ALL tests pass (including the four new DOM structure tests from Phase 1 now green, and all pre-existing tests still passing)
+- [X] T004 [US1] In `packages/frontend/src/components/ContractForm.tsx`, wrap the name custom `<div>` and the category `<Select>` together in `<div className={classes.twoColumnRow}>` (replaces two sibling elements with a grouped wrapper)
+- [X] T005 [US1] In `packages/frontend/src/components/ContractForm.tsx`, wrap `<NumberInput id="amount">` and `<Select id="billingInterval">` together in `<div className={classes.twoColumnRow}>`
+- [X] T006 [US1] In `packages/frontend/src/components/ContractForm.tsx`, replace the standalone `<Select id="status">` and `<div className={classes.dateGrid}>` with a single `<div className={classes.statusDateRow}>` containing the status select, start date input, and end date input as direct children (remove `.dateGrid` reference)
+- [X] T007 [US3] In `packages/frontend/src/components/ContractForm.tsx`, add `className={classes.cancellationHalf}` to the outer `<div>` that wraps the cancellation period label and the inner `.cancellationRow` div
+- [X] T008 [US1] Update the JSDoc comment on the `ContractForm` function in `packages/frontend/src/components/ContractForm.tsx` to mention the compact multi-column row layout
+- [X] T009 Run `pnpm --filter frontend test --run` — confirm ALL tests pass (including the four new DOM structure tests from Phase 1 now green, and all pre-existing tests still passing)
 
 **Checkpoint**: Form displays compact layout at 1280 px; all unit tests green. US1 and US3 independently verified.
 
@@ -67,14 +67,14 @@
 
 ### Tests
 
-- [ ] T010 [US2] Add test to `packages/frontend/tests/unit/ContractForm.test.tsx` inside a new `describe('ContractForm – edit mode layout grouping')` block:
+- [X] T010 [US2] Add test to `packages/frontend/tests/unit/ContractForm.test.tsx` inside a new `describe('ContractForm – edit mode layout grouping')` block:
   - Render with `defaultValues: { name: 'Netflix', category: 'SUBSCRIPTIONS', status: 'ACTIVE', startDate: '2025-01-01', endDate: '2025-12-31' }`
   - Assert name display value and category combobox share the same `.twoColumnRow` parent
   - Assert status combobox, start date input, and end date input share the same `.statusDateRow` parent
 
 ### Implementation
 
-- [ ] T011 [US2] Run `pnpm --filter frontend test --run` — confirm T010 test is green and no regressions introduced
+- [X] T011 [US2] Run `pnpm --filter frontend test --run` — confirm T010 test is green and no regressions introduced
 
 **Checkpoint**: Edit mode layout confirmed correct. All three user stories now independently verified.
 
@@ -84,10 +84,10 @@
 
 **Purpose**: Documentation updates required by the project constitution for every implemented feature.
 
-- [ ] T012 [P] Update `README.md` — add a sentence noting the compact multi-column form layout under the contract management section
-- [ ] T013 [P] Update `README.de.md` — German equivalent of T012 (consistent with English)
-- [ ] T014 [P] Update `docs/user-guide.md` — document the compact form layout from a user perspective: which fields share rows, how the layout collapses on mobile
-- [ ] T015 [P] Update `docs/user-guide.de.md` — German equivalent of T014 (consistent with English)
+- [X] T012 [P] Update `README.md` — add a sentence noting the compact multi-column form layout under the contract management section
+- [X] T013 [P] Update `README.de.md` — German equivalent of T012 (consistent with English)
+- [X] T014 [P] Update `docs/user-guide.md` — document the compact form layout from a user perspective: which fields share rows, how the layout collapses on mobile
+- [X] T015 [P] Update `docs/user-guide.de.md` — German equivalent of T014 (consistent with English)
 - [ ] T016 Run quickstart.md validation: start dev server (`pnpm --filter frontend dev`), open new-contract page at 1280 px and 375 px and verify all layout requirements from quickstart.md are met visually
 
 ---

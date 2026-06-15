@@ -19,8 +19,10 @@ import { ProviderLogo } from './ProviderLogo.js';
 import classes from './ContractForm.module.css';
 
 /**
- * Reusable contract creation/editing form with validation, field defaults, and a
- * cancellation period row. Used by both the new-contract and edit-contract pages.
+ * Reusable contract creation/editing form with validation, field defaults, and a compact
+ * multi-column layout. Name+category, amount+interval, and status+start+end each share a
+ * horizontal row; the cancellation period occupies the left half of the form width.
+ * Used by both the new-contract and edit-contract pages.
  */
 
 interface ContractFormValues {
@@ -167,67 +169,72 @@ export function ContractForm({
           </Alert>
         )}
 
-        <div>
-          <Group gap="xs" mb={4}>
-            <Text component="label" htmlFor="name" size="sm" fw={500}>
-              {t('contractForm.nameLabel')}
-            </Text>
-            {values.name && <ProviderLogo name={String(values.name)} size={20} />}
-          </Group>
-          <TextInput
-            id="name"
+        <div className={classes.twoColumnRow}>
+          <div>
+            <Group gap="xs" mb={4}>
+              <Text component="label" htmlFor="name" size="sm" fw={500}>
+                {t('contractForm.nameLabel')}
+              </Text>
+              {values.name && <ProviderLogo name={String(values.name)} size={20} />}
+            </Group>
+            <TextInput
+              id="name"
+              variant="filled"
+              value={String(values.name)}
+              onChange={(e) => setValues((v) => ({ ...v, name: e.target.value }))}
+              placeholder={t('contractForm.namePlaceholder')}
+            />
+          </div>
+
+          <Select
+            id="category"
+            label={t('contractForm.categoryLabel')}
             variant="filled"
-            value={String(values.name)}
-            onChange={(e) => setValues((v) => ({ ...v, name: e.target.value }))}
-            placeholder={t('contractForm.namePlaceholder')}
+            data={categoryOptions}
+            value={String(values.category)}
+            onChange={(val) =>
+              setValues((v) => ({ ...v, category: val ?? Category.SUBSCRIPTIONS }))
+            }
+            allowDeselect={false}
           />
         </div>
 
-        <Select
-          id="category"
-          label={t('contractForm.categoryLabel')}
-          variant="filled"
-          data={categoryOptions}
-          value={String(values.category)}
-          onChange={(val) => setValues((v) => ({ ...v, category: val ?? Category.SUBSCRIPTIONS }))}
-          allowDeselect={false}
-        />
+        <div className={classes.twoColumnRow}>
+          <NumberInput
+            id="amount"
+            label={t('contractForm.amountLabel')}
+            variant="filled"
+            prefix="€"
+            decimalScale={2}
+            min={0}
+            value={values.amount === '' ? '' : Number(values.amount)}
+            onChange={(val) => setValues((v) => ({ ...v, amount: val }))}
+            placeholder="0.00"
+          />
 
-        <NumberInput
-          id="amount"
-          label={t('contractForm.amountLabel')}
-          variant="filled"
-          prefix="€"
-          decimalScale={2}
-          min={0}
-          value={values.amount === '' ? '' : Number(values.amount)}
-          onChange={(val) => setValues((v) => ({ ...v, amount: val }))}
-          placeholder="0.00"
-        />
+          <Select
+            id="billingInterval"
+            label={t('contractForm.billingIntervalLabel')}
+            variant="filled"
+            data={billingIntervalOptions}
+            value={String(values.billingInterval)}
+            onChange={(val) =>
+              setValues((v) => ({ ...v, billingInterval: val ?? BillingInterval.MONTHLY }))
+            }
+            allowDeselect={false}
+          />
+        </div>
 
-        <Select
-          id="billingInterval"
-          label={t('contractForm.billingIntervalLabel')}
-          variant="filled"
-          data={billingIntervalOptions}
-          value={String(values.billingInterval)}
-          onChange={(val) =>
-            setValues((v) => ({ ...v, billingInterval: val ?? BillingInterval.MONTHLY }))
-          }
-          allowDeselect={false}
-        />
-
-        <Select
-          id="status"
-          label={t('contractForm.statusLabel')}
-          variant="filled"
-          data={statusOptions}
-          value={String(values.status)}
-          onChange={(val) => setValues((v) => ({ ...v, status: val ?? ContractStatus.ACTIVE }))}
-          allowDeselect={false}
-        />
-
-        <div className={classes.dateGrid}>
+        <div className={classes.statusDateRow}>
+          <Select
+            id="status"
+            label={t('contractForm.statusLabel')}
+            variant="filled"
+            data={statusOptions}
+            value={String(values.status)}
+            onChange={(val) => setValues((v) => ({ ...v, status: val ?? ContractStatus.ACTIVE }))}
+            allowDeselect={false}
+          />
           <TextInput
             id="startDate"
             label={t('contractForm.startDateLabel')}
@@ -275,7 +282,7 @@ export function ContractForm({
           {serviceUrlLink}
         </div>
 
-        <div>
+        <div className={classes.cancellationHalf}>
           <Text size="sm" fw={500} mb={4}>
             {t('contractForm.cancellationPeriodLabel')}
           </Text>

@@ -1,7 +1,28 @@
-.dateGrid {
+.twoColumnRow {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--mantine-spacing-md);
+}
+
+.statusDateRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: var(--mantine-spacing-md);
+}
+
+.cancellationHalf {
+  max-width: 50%;
+}
+
+@media (max-width: 48em) {
+  .twoColumnRow,
+  .statusDateRow {
+    grid-template-columns: 1fr;
+  }
+
+  .cancellationHalf {
+    max-width: 100%;
+  }
 }
 
 .cancellationRow {

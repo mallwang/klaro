@@ -117,6 +117,19 @@ Die Schaltflächenleiste über der Tabelle enthält:
 
 Klicke auf **Vertrag hinzufügen** in der Vertragsliste. Fülle das Formular aus und klicke auf **Speichern**.
 
+### Formularlayout
+
+Das Formular verwendet ein kompaktes mehrspaltiges Layout, um Scrollen zu reduzieren:
+
+| Zeile | Felder |
+|-------|--------|
+| Zeile 1 | Name · Kategorie |
+| Zeile 2 | Betrag · Abrechnungsintervall |
+| Zeile 3 | Status · Startdatum · Enddatum |
+| Zeile 4 (linke Hälfte) | Kündigungsfrist |
+
+Auf schmalen Bildschirmen (Smartphones) wechselt das Layout zu einer einspaltigen Ansicht und alle Felder werden untereinander angezeigt.
+
 ### Minimales Beispiel — Streaming-Abo
 
 | Feld | Wert |
