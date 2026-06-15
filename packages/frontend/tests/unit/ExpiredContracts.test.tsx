@@ -23,6 +23,8 @@ const sampleData: ExpiredContract[] = [
     endDate: '2026-03-01',
     daysOverdue: 96,
     anonymize: false,
+    logoName: null,
+    useGenericIcon: false,
   },
   {
     id: 'b2c3d4e5-f6a7-8901-bcde-f12345678901',
@@ -31,6 +33,8 @@ const sampleData: ExpiredContract[] = [
     endDate: '2026-04-15',
     daysOverdue: 51,
     anonymize: false,
+    logoName: null,
+    useGenericIcon: false,
   },
 ];
 

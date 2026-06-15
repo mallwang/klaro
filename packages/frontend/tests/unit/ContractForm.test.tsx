@@ -303,7 +303,7 @@ describe('ContractForm – logo name field', () => {
 });
 
 describe('ContractForm – edit mode layout grouping', () => {
-  it('pre-filled name and category values appear in the same twoColumnRow wrapper', () => {
+  it('pre-filled name and category values appear in the same nameRow wrapper', () => {
     renderForm({
       defaultValues: {
         name: 'Netflix',
@@ -315,9 +315,9 @@ describe('ContractForm – edit mode layout grouping', () => {
     });
     const nameInput = screen.getByDisplayValue('Netflix');
     const categoryCombobox = getCombobox(/category/i);
-    expect(nameInput.closest('[class*="twoColumnRow"]')).not.toBeNull();
-    expect(nameInput.closest('[class*="twoColumnRow"]')).toBe(
-      categoryCombobox.closest('[class*="twoColumnRow"]'),
+    expect(nameInput.closest('[class*="nameRow"]')).not.toBeNull();
+    expect(nameInput.closest('[class*="nameRow"]')).toBe(
+      categoryCombobox.closest('[class*="nameRow"]'),
     );
   });
 
@@ -351,12 +351,12 @@ describe('ContractForm – cancel', () => {
 });
 
 describe('ContractForm – layout grouping (DOM structure)', () => {
-  it('name and category inputs share the same immediate parent wrapper', () => {
+  it('name and category inputs share the same nameRow wrapper', () => {
     renderForm();
     const nameInput = screen.getByLabelText(/^name/i);
     const categoryCombobox = getCombobox(/category/i);
-    const nameParent = nameInput.closest('[class*="twoColumnRow"]');
-    const categoryParent = categoryCombobox.closest('[class*="twoColumnRow"]');
+    const nameParent = nameInput.closest('[class*="nameRow"]');
+    const categoryParent = categoryCombobox.closest('[class*="nameRow"]');
     expect(nameParent).not.toBeNull();
     expect(nameParent).toBe(categoryParent);
   });
@@ -384,13 +384,24 @@ describe('ContractForm – layout grouping (DOM structure)', () => {
     expect(statusParent).toBe(endParent);
   });
 
-  it('cancellation period and logo name field share the same cancellationLogoRow wrapper', () => {
+  it('cancellation period and anonymize checkbox share the same cancellationAnonymizeRow wrapper', () => {
     renderForm();
     const cancellationLabel = screen.getByText(/cancellation period/i);
-    const logoNameInput = screen.getByLabelText(/logo search name/i);
-    const cancellationParent = cancellationLabel.closest('[class*="cancellationLogoRow"]');
+    const anonymizeCheckbox = screen.getByLabelText(/anonymize/i);
+    const cancellationParent = cancellationLabel.closest('[class*="cancellationAnonymizeRow"]');
     expect(cancellationParent).not.toBeNull();
-    expect(cancellationParent).toBe(logoNameInput.closest('[class*="cancellationLogoRow"]'));
+    expect(cancellationParent).toBe(
+      anonymizeCheckbox.closest('[class*="cancellationAnonymizeRow"]'),
+    );
+  });
+
+  it('logo name field and use-generic-icon checkbox share the same twoColumnRow wrapper', () => {
+    renderForm();
+    const logoNameInput = screen.getByLabelText(/logo search name/i);
+    const genericIconCheckbox = screen.getByLabelText(/use category icon/i);
+    const logoNameParent = logoNameInput.closest('[class*="twoColumnRow"]');
+    expect(logoNameParent).not.toBeNull();
+    expect(logoNameParent).toBe(genericIconCheckbox.closest('[class*="twoColumnRow"]'));
   });
 });
 

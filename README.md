@@ -1,6 +1,10 @@
 **English** · [Deutsch](README.de.md)
 
-# Personal Contract Management
+# Klaro
+
+<p align="center">
+  <img src="klaro.png" alt="Klaro" width="120" />
+</p>
 
 A personal web app for tracking contracts — subscriptions, insurance, housing, utilities, and more. Get an instant overview of your monthly spending and stay ahead of upcoming renewals.
 

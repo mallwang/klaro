@@ -106,7 +106,9 @@
     "logoNameLabel": "Logo Search Name",
     "logoNamePlaceholder": "e.g. Maingau Energie",
     "logoNameDescription": "Overrides the name used to look up the provider logo. Leave blank to use the contract name.",
-    "logoNameSearchLink": "Find the right name at logo.dev"
+    "logoNameSearchLink": "Find the right name at logo.dev",
+    "useGenericIconLabel": "Use category icon",
+    "useGenericIconDescription": "Show a generic category icon instead of looking up a logo"
   },
   "contractNew": {
     "title": "Add Contract"

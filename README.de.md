@@ -1,6 +1,10 @@
 [English](README.md) · **Deutsch**
 
-# Personal Contract Management
+# Klaro
+
+<p align="center">
+  <img src="klaro.png" alt="Klaro" width="120" />
+</p>
 
 Eine persönliche Web-App zum Verwalten von Verträgen — Abonnements, Versicherungen, Wohnen, Nebenkosten und mehr. Behalte einen sofortigen Überblick über deine monatlichen Ausgaben und verpasse keine anstehenden Verlängerungen.
 

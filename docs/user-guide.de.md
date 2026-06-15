@@ -2,7 +2,11 @@
 
 # Benutzerhandbuch
 
-Personal Contract Management ist eine lokale Web-App, die alle deine Verträge — Streaming-Dienste, Versicherungspolicen, Handyverträge, Miete, Nebenkosten — an einem Ort zusammenführt. Sie zeigt dir, was du monatlich ausgibst, warnt dich vor automatischen Verlängerungen und informiert dich, wenn Verträge bereits abgelaufen sind.
+<p align="center">
+  <img src="../klaro.png" alt="Klaro" width="120" />
+</p>
+
+Klaro ist eine lokale Web-App, die alle deine Verträge — Streaming-Dienste, Versicherungspolicen, Handyverträge, Miete, Nebenkosten — an einem Ort zusammenführt. Sie zeigt dir, was du monatlich ausgibst, warnt dich vor automatischen Verlängerungen und informiert dich, wenn Verträge bereits abgelaufen sind.
 
 ## Inhaltsverzeichnis
 

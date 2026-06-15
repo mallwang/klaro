@@ -2,7 +2,11 @@
 
 # User Guide
 
-Personal Contract Management is a local web app that keeps all your contracts — streaming services, insurance policies, mobile plans, rent, utilities — in one place. It shows you what you spend each month, warns you before auto-renewals, and tells you when contracts have already expired.
+<p align="center">
+  <img src="../klaro.png" alt="Klaro" width="120" />
+</p>
+
+Klaro is a local web app that keeps all your contracts — streaming services, insurance policies, mobile plans, rent, utilities — in one place. It shows you what you spend each month, warns you before auto-renewals, and tells you when contracts have already expired.
 
 ## Table of contents
 

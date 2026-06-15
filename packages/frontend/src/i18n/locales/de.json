@@ -106,7 +106,9 @@
     "logoNameLabel": "Logo-Suchname",
     "logoNamePlaceholder": "z. B. Maingau Energie",
     "logoNameDescription": "Überschreibt den Namen, der zum Abrufen des Anbieter-Logos verwendet wird. Leer lassen, um den Vertragsnamen zu verwenden.",
-    "logoNameSearchLink": "Richtigen Namen auf logo.dev suchen"
+    "logoNameSearchLink": "Richtigen Namen auf logo.dev suchen",
+    "useGenericIconLabel": "Kategorie-Icon verwenden",
+    "useGenericIconDescription": "Ein generisches Kategorie-Icon anzeigen, anstatt ein Logo zu suchen"
   },
   "contractNew": {
     "title": "Vertrag hinzufügen"

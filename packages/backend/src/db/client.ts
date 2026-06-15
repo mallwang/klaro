@@ -215,6 +215,16 @@ export function runMigrations(instance: Database.Database): BootstrapResult | nu
     instance.exec(`ALTER TABLE contracts ADD COLUMN logo_name TEXT`);
   }
 
+  // Add use_generic_icon column introduced in feature 026
+  const hasUseGenericIcon = instance
+    .prepare<[], { name: string }>(`PRAGMA table_info(contracts)`)
+    .all()
+    .some((col) => col.name === 'use_generic_icon');
+
+  if (!hasUseGenericIcon) {
+    instance.exec(`ALTER TABLE contracts ADD COLUMN use_generic_icon INTEGER NOT NULL DEFAULT 0`);
+  }
+
   // Add summary email preference columns introduced in feature 023
   const hasSummaryEmail = instance
     .prepare<[], { name: string }>(`PRAGMA table_info(users)`)
@@ -362,6 +372,7 @@ export interface ContractRow {
   cancellation_period_unit: string | null;
   anonymize: number;
   logo_name: string | null;
+  use_generic_icon: number;
   created_at: string;
   updated_at: string;
   user_id: string | null;

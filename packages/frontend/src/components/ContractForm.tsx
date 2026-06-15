@@ -20,8 +20,9 @@ import classes from './ContractForm.module.css';
 
 /**
  * Reusable contract creation/editing form with validation, field defaults, and a compact
- * multi-column layout. Name+category, amount+interval, and status+start+end each share a
- * horizontal row; the cancellation period occupies the left half of the form width.
+ * multi-column layout. The first row shows a live provider logo alongside the name and
+ * category fields; amount+interval and status+start+end each share a row; the cancellation
+ * period and anonymize checkbox share a row; the logo search name occupies the left half.
  * Used by both the new-contract and edit-contract pages.
  */
 
@@ -39,6 +40,7 @@ interface ContractFormValues {
   cancellationPeriodUnit: string;
   anonymize: boolean;
   logoName: string;
+  useGenericIcon: boolean;
 }
 
 interface ContractFormProps {
@@ -80,6 +82,7 @@ export function ContractForm({
     cancellationPeriodUnit: defaultValues?.cancellationPeriodUnit ?? 'MONTHS',
     anonymize: defaultValues?.anonymize ?? false,
     logoName: defaultValues?.logoName ?? '',
+    useGenericIcon: defaultValues?.useGenericIcon ?? false,
   });
   const [validationError, setValidationError] = useState<string | null>(null);
 
@@ -120,6 +123,7 @@ export function ContractForm({
           : null,
       anonymize: values.anonymize,
       logoName: values.logoName || null,
+      useGenericIcon: values.useGenericIcon,
     });
   }
 
@@ -172,23 +176,20 @@ export function ContractForm({
           </Alert>
         )}
 
-        <div className={classes.twoColumnRow}>
-          <div>
-            <Group gap="xs" mb={4}>
-              <Text component="label" htmlFor="name" size="sm" fw={500}>
-                {t('contractForm.nameLabel')}
-              </Text>
-              {values.name && <ProviderLogo name={String(values.name)} size={20} />}
-            </Group>
-            <TextInput
-              id="name"
-              variant="filled"
-              value={String(values.name)}
-              onChange={(e) => setValues((v) => ({ ...v, name: e.target.value }))}
-              placeholder={t('contractForm.namePlaceholder')}
-            />
-          </div>
-
+        <div className={classes.nameRow}>
+          {values.useGenericIcon ? (
+            <ProviderLogo name="" isAnonymized size={40} />
+          ) : (
+            <ProviderLogo name={String(values.logoName || values.name)} size={40} />
+          )}
+          <TextInput
+            id="name"
+            label={t('contractForm.nameLabel')}
+            variant="filled"
+            value={String(values.name)}
+            onChange={(e) => setValues((v) => ({ ...v, name: e.target.value }))}
+            placeholder={t('contractForm.namePlaceholder')}
+          />
           <Select
             id="category"
             label={t('contractForm.categoryLabel')}
@@ -285,7 +286,7 @@ export function ContractForm({
           {serviceUrlLink}
         </div>
 
-        <div className={classes.cancellationLogoRow}>
+        <div className={classes.cancellationAnonymizeRow}>
           <div>
             <Text size="sm" fw={500} mb={4}>
               {t('contractForm.cancellationPeriodLabel')}
@@ -320,20 +321,28 @@ export function ContractForm({
             </div>
           </div>
 
+          <Checkbox
+            id="anonymize"
+            label={t('anonymization.anonymizeContract')}
+            description={t('anonymization.anonymizeContractHint')}
+            checked={values.anonymize}
+            onChange={(e) => setValues((v) => ({ ...v, anonymize: e.target.checked }))}
+            mt="lg"
+          />
+        </div>
+
+        <div className={classes.twoColumnRow}>
           <div>
-            <div className={classes.logoNameField}>
-              <TextInput
-                id="logoName"
-                label={t('contractForm.logoNameLabel')}
-                description={t('contractForm.logoNameDescription')}
-                variant="filled"
-                value={String(values.logoName)}
-                onChange={(e) => setValues((v) => ({ ...v, logoName: e.target.value }))}
-                placeholder={t('contractForm.logoNamePlaceholder')}
-                className={classes.logoNameInput}
-              />
-              {values.logoName && <ProviderLogo name={String(values.logoName)} size={24} />}
-            </div>
+            <TextInput
+              id="logoName"
+              label={t('contractForm.logoNameLabel')}
+              description={t('contractForm.logoNameDescription')}
+              variant="filled"
+              value={String(values.logoName)}
+              onChange={(e) => setValues((v) => ({ ...v, logoName: e.target.value }))}
+              placeholder={t('contractForm.logoNamePlaceholder')}
+              disabled={values.useGenericIcon}
+            />
             <Anchor
               href="https://www.logo.dev/search"
               target="_blank"
@@ -345,15 +354,15 @@ export function ContractForm({
               {t('contractForm.logoNameSearchLink')}
             </Anchor>
           </div>
+          <Checkbox
+            id="useGenericIcon"
+            label={t('contractForm.useGenericIconLabel')}
+            description={t('contractForm.useGenericIconDescription')}
+            checked={values.useGenericIcon}
+            onChange={(e) => setValues((v) => ({ ...v, useGenericIcon: e.target.checked }))}
+            mt="lg"
+          />
         </div>
-
-        <Checkbox
-          id="anonymize"
-          label={t('anonymization.anonymizeContract')}
-          description={t('anonymization.anonymizeContractHint')}
-          checked={values.anonymize}
-          onChange={(e) => setValues((v) => ({ ...v, anonymize: e.target.checked }))}
-        />
 
         <Group gap="sm" pt="xs">
           <Button type="submit" loading={isPending}>

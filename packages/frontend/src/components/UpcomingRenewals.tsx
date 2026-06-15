@@ -5,6 +5,7 @@ import { Paper, Group, Title, Text, Badge, Stack } from '@mantine/core';
 import { useLocaleFormat } from '../hooks/useLocaleFormat.js';
 import { useAnonymization } from '../hooks/useAnonymization.js';
 import { getFantasyName, FANTASY_NAMES } from '../data/fantasyNames.js';
+import { ProviderLogo } from './ProviderLogo.js';
 import classes from './UpcomingRenewals.module.css';
 
 /**
@@ -93,20 +94,29 @@ export function UpcomingRenewals({ upcomingRenewals }: UpcomingRenewalsProps) {
               data-overdue={renewal.daysUntilCancellationDeadline < 0 ? 'true' : 'false'}
               className={`${classes.item} upcoming-renewals__item`}
             >
-              <Stack gap={2}>
-                <Text size="sm" fw={500} className="upcoming-renewals__name">
-                  {resolveName(renewal)}
-                </Text>
-                <Text size="xs" c="dimmed" className="upcoming-renewals__category">
-                  {t(`category.${renewal.category}`)}
-                </Text>
-                <Text size="xs" c="dimmed" className="upcoming-renewals__cancel-by-label">
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <Group gap="xs" align="center">
+                  <ProviderLogo
+                    name={renewal.useGenericIcon ? '' : (renewal.logoName ?? renewal.name)}
+                    isAnonymized={renewal.useGenericIcon || isAnonymized || renewal.anonymize}
+                    size={20}
+                  />
+                  <div>
+                    <Text size="sm" fw={500} className="upcoming-renewals__name">
+                      {resolveName(renewal)}
+                    </Text>
+                    <Text size="xs" c="dimmed" className="upcoming-renewals__category">
+                      {t(`category.${renewal.category}`)}
+                    </Text>
+                  </div>
+                </Group>
+                <Text size="xs" c="dimmed" className="upcoming-renewals__cancel-by-label" mt={4}>
                   {t('dashboard.cancelBy')}: {formatDate(renewal.cancellationDeadline)}
                 </Text>
                 <Text size="xs" c="dimmed" className="upcoming-renewals__ends-on-label">
                   {t('dashboard.endsOn')}: {formatDate(renewal.endDate)}
                 </Text>
-              </Stack>
+              </div>
               <UrgencyBadge days={renewal.daysUntilCancellationDeadline} />
             </div>
           ))}

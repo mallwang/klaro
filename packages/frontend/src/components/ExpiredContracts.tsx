@@ -6,6 +6,7 @@ import { Paper, Group, Title, Text, Badge, Stack } from '@mantine/core';
 import { useAnonymization } from '../hooks/useAnonymization.js';
 import { useLocaleFormat } from '../hooks/useLocaleFormat.js';
 import { getFantasyName, FANTASY_NAMES } from '../data/fantasyNames.js';
+import { ProviderLogo } from './ProviderLogo.js';
 import classes from './ExpiredContracts.module.css';
 
 /**
@@ -67,14 +68,21 @@ export function ExpiredContracts({ expiredContracts }: ExpiredContractsProps) {
               to={`/contracts/${contract.id}/edit`}
               className={`${classes.item} expired-contracts__item`}
             >
-              <div>
-                <Text size="sm" fw={500} className="expired-contracts__name">
-                  {resolveName(contract)}
-                </Text>
-                <Text size="xs" c="dimmed" className="expired-contracts__category">
-                  {t(`category.${contract.category}`)}
-                </Text>
-              </div>
+              <Group gap="xs" align="center" style={{ flex: 1, minWidth: 0 }}>
+                <ProviderLogo
+                  name={contract.useGenericIcon ? '' : (contract.logoName ?? contract.name)}
+                  isAnonymized={contract.useGenericIcon || isAnonymized || contract.anonymize}
+                  size={20}
+                />
+                <div>
+                  <Text size="sm" fw={500} className="expired-contracts__name">
+                    {resolveName(contract)}
+                  </Text>
+                  <Text size="xs" c="dimmed" className="expired-contracts__category">
+                    {t(`category.${contract.category}`)}
+                  </Text>
+                </div>
+              </Group>
               <Stack gap={4} align="flex-end">
                 <Text size="xs" c="dimmed" className="expired-contracts__date">
                   {formatDate(contract.endDate)}
