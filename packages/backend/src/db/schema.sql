@@ -6,11 +6,13 @@ CREATE TABLE IF NOT EXISTS users (
   password_salt    TEXT NOT NULL,
   role             TEXT NOT NULL DEFAULT 'MEMBER' CHECK(role IN ('ADMIN','MEMBER')),
   status           TEXT NOT NULL DEFAULT 'ACTIVE' CHECK(status IN ('ACTIVE','ARCHIVED')),
-  archived_at      TEXT,
-  failed_attempts  INTEGER NOT NULL DEFAULT 0,
-  locked_until     TEXT,
-  created_at       TEXT NOT NULL,
-  updated_at       TEXT NOT NULL
+  archived_at               TEXT,
+  failed_attempts           INTEGER NOT NULL DEFAULT 0,
+  locked_until              TEXT,
+  summary_email_enabled     INTEGER NOT NULL DEFAULT 0,
+  summary_email_frequency   TEXT CHECK(summary_email_frequency IN ('WEEKLY','MONTHLY')),
+  created_at                TEXT NOT NULL,
+  updated_at                TEXT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS sessions (

@@ -195,6 +195,116 @@ describe('MailerService.sendInvitationEmail', () => {
   });
 });
 
+describe('MailerService.sendSummaryEmail', () => {
+  const from = 'noreply@example.test';
+
+  function makeSummaryData(
+    overrides: Partial<import('@pcm/shared').SummaryEmailData> = {},
+  ): import('@pcm/shared').SummaryEmailData {
+    return {
+      userEmail: 'user@example.test',
+      displayName: 'Test User',
+      frequency: 'WEEKLY',
+      totalMonthlySpending: 42.5,
+      contracts: [
+        {
+          name: 'Netflix',
+          billingInterval: 'MONTHLY',
+          monthlyCost: 12.99,
+          anonymize: false,
+        },
+      ],
+      upcomingRenewals: [],
+      ctaState: 'none',
+      dashboardUrl: 'http://localhost:5173',
+      ...overrides,
+    };
+  }
+
+  it('subject contains "weekly" for WEEKLY frequency', async () => {
+    const { transport, captured } = makeCapturingTransport();
+    const mailer = new MailerService({ transport, from });
+    await mailer.sendSummaryEmail(makeSummaryData({ frequency: 'WEEKLY' }));
+    const msg = captured[0] as { subject: string };
+    expect(msg.subject.toLowerCase()).toContain('weekly');
+  });
+
+  it('subject contains "monthly" for MONTHLY frequency', async () => {
+    const { transport, captured } = makeCapturingTransport();
+    const mailer = new MailerService({ transport, from });
+    await mailer.sendSummaryEmail(makeSummaryData({ frequency: 'MONTHLY' }));
+    const msg = captured[0] as { subject: string };
+    expect(msg.subject.toLowerCase()).toContain('monthly');
+  });
+
+  it('HTML contains the total spending value', async () => {
+    const { transport, captured } = makeCapturingTransport();
+    const mailer = new MailerService({ transport, from });
+    await mailer.sendSummaryEmail(makeSummaryData({ totalMonthlySpending: 42.5 }));
+    const msg = captured[0] as { html: string };
+    expect(msg.html).toContain('42.50');
+  });
+
+  it('HTML contains the dashboard URL', async () => {
+    const { transport, captured } = makeCapturingTransport();
+    const mailer = new MailerService({ transport, from });
+    await mailer.sendSummaryEmail(makeSummaryData({ dashboardUrl: 'http://localhost:5173' }));
+    const msg = captured[0] as { html: string };
+    expect(msg.html).toContain('http://localhost:5173');
+  });
+
+  it('HTML contains a no-contracts CTA when ctaState is no-contracts', async () => {
+    const { transport, captured } = makeCapturingTransport();
+    const mailer = new MailerService({ transport, from });
+    await mailer.sendSummaryEmail(
+      makeSummaryData({ ctaState: 'no-contracts', contracts: [], totalMonthlySpending: 0 }),
+    );
+    const msg = captured[0] as { html: string };
+    expect(msg.html.toLowerCase()).toMatch(/add.*contract|first contract|get started/i);
+  });
+
+  it('HTML contains a cancellation-due CTA when ctaState is cancellation-due', async () => {
+    const { transport, captured } = makeCapturingTransport();
+    const mailer = new MailerService({ transport, from });
+    await mailer.sendSummaryEmail(
+      makeSummaryData({
+        ctaState: 'cancellation-due',
+        upcomingRenewals: [
+          {
+            name: 'Gym',
+            endDate: '2026-06-30',
+            cancellationDeadline: '2026-06-20',
+            daysUntilDeadline: 5,
+            anonymize: false,
+          },
+        ],
+      }),
+    );
+    const msg = captured[0] as { html: string };
+    expect(msg.html.toLowerCase()).toMatch(/cancel|deadline|review/i);
+  });
+
+  it('HTML does not contain anonymized contract name', async () => {
+    const { transport, captured } = makeCapturingTransport();
+    const mailer = new MailerService({ transport, from });
+    await mailer.sendSummaryEmail(
+      makeSummaryData({
+        contracts: [
+          {
+            name: '––––',
+            billingInterval: 'MONTHLY',
+            monthlyCost: 9.99,
+            anonymize: true,
+          },
+        ],
+      }),
+    );
+    const msg = captured[0] as { html: string };
+    expect(msg.html).not.toContain('Secret');
+    expect(msg.html).toContain('––––');
+  });
+});
+
 describe('MailerService.sendPasswordResetEmail', () => {
   const from = 'noreply@example.test';
   const to = 'user@example.test';

@@ -2,7 +2,18 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
-import { Stack, Title, Text, Paper, PasswordInput, TextInput, Button, Alert } from '@mantine/core';
+import {
+  Stack,
+  Title,
+  Text,
+  Paper,
+  PasswordInput,
+  TextInput,
+  Button,
+  Alert,
+  Switch,
+  SegmentedControl,
+} from '@mantine/core';
 import type { Account } from '@pcm/shared';
 import { AuthError, changePassword } from '../services/auth.js';
 import {
@@ -13,14 +24,15 @@ import {
 import { fetchAccounts } from '../services/users.js';
 import { ACCOUNTS_QUERY_KEY } from '../hooks/useAccounts.js';
 import { useCurrentUser, CURRENT_USER_QUERY_KEY } from '../hooks/useAuth.js';
+import { useNotificationPreferences } from '../hooks/useNotificationPreferences.js';
 import { DeleteAccountModal } from '../components/DeleteAccountModal.js';
 import { useContracts } from '../services/contracts.js';
 import { showSuccess, showError } from '../lib/notifications.js';
 
 /**
- * Account settings page for managing display name, email changes, password updates, and
- * account deletion. Includes a sole-admin guard that prevents the last admin from deleting
- * their account.
+ * Account settings page for managing display name, email changes, password updates,
+ * summary email preferences, and account deletion. Includes a sole-admin guard that
+ * prevents the last admin from deleting their account.
  */
 
 export function AccountSettings() {
@@ -53,6 +65,33 @@ export function AccountSettings() {
   function handleDeleted() {
     queryClient.clear();
     void navigate('/sign-in');
+  }
+
+  // ── Summary Email Preferences ───────────────────────────────────────────────
+  const {
+    data: notifPrefs,
+    updatePreferences,
+    isPending: isUpdatingPrefs,
+  } = useNotificationPreferences();
+
+  const [summaryEnabled, setSummaryEnabled] = useState(notifPrefs?.summaryEmailEnabled ?? false);
+  const [summaryFrequency, setSummaryFrequency] = useState<'WEEKLY' | 'MONTHLY'>(
+    notifPrefs?.summaryEmailFrequency ?? 'WEEKLY',
+  );
+
+  /**
+   * Submits the summary email preference form and shows toast feedback on success.
+   */
+  function handleSummaryEmailSave() {
+    updatePreferences(
+      summaryEnabled
+        ? { summaryEmailEnabled: true, summaryEmailFrequency: summaryFrequency }
+        : { summaryEmailEnabled: false },
+      {
+        onSuccess: () => showSuccess(t('summaryEmail.saved')),
+        onError: () => showError(t('accountSettings.errorGeneric')),
+      },
+    );
   }
 
   // ── Display Name ────────────────────────────────────────────────────────────
@@ -166,6 +205,49 @@ export function AccountSettings() {
     <>
       <Stack gap="lg" maw={480} mx="auto">
         <Title order={2}>{t('accountSettings.title')}</Title>
+
+        {/* Summary Email */}
+        <Paper withBorder p="lg">
+          <Stack gap="md">
+            <Title order={4}>{t('summaryEmail.title')}</Title>
+            <Switch
+              label={t('summaryEmail.toggle')}
+              checked={summaryEnabled}
+              onChange={(e) => setSummaryEnabled(e.currentTarget.checked)}
+            />
+            {summaryEnabled && (
+              <>
+                <div>
+                  <Text size="sm" fw={500} mb={4}>
+                    {t('summaryEmail.frequency')}
+                  </Text>
+                  <SegmentedControl
+                    value={summaryFrequency}
+                    onChange={(v) => setSummaryFrequency(v as 'WEEKLY' | 'MONTHLY')}
+                    data={[
+                      { label: t('summaryEmail.weekly'), value: 'WEEKLY' },
+                      { label: t('summaryEmail.monthly'), value: 'MONTHLY' },
+                    ]}
+                  />
+                </div>
+                {notifPrefs?.nextSendAt && (
+                  <Text size="sm" c="dimmed">
+                    {t('summaryEmail.nextSend', {
+                      datetime: new Intl.DateTimeFormat(undefined, {
+                        dateStyle: 'medium',
+                        timeStyle: 'short',
+                        timeZone: 'UTC',
+                      }).format(new Date(notifPrefs.nextSendAt)),
+                    })}
+                  </Text>
+                )}
+              </>
+            )}
+            <Button onClick={handleSummaryEmailSave} loading={isUpdatingPrefs} fullWidth>
+              {t('summaryEmail.save')}
+            </Button>
+          </Stack>
+        </Paper>
 
         {/* Display Name */}
         <Paper withBorder p="lg">

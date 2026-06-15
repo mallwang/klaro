@@ -205,6 +205,20 @@ export function runMigrations(instance: Database.Database): BootstrapResult | nu
     bootstrapResult = { email: BOOTSTRAP_ADMIN_EMAIL, password: initialPassword };
   }
 
+  // Add summary email preference columns introduced in feature 023
+  const hasSummaryEmail = instance
+    .prepare<[], { name: string }>(`PRAGMA table_info(users)`)
+    .all()
+    .some((col) => col.name === 'summary_email_enabled');
+
+  if (!hasSummaryEmail) {
+    instance.exec(`
+      ALTER TABLE users ADD COLUMN summary_email_enabled INTEGER NOT NULL DEFAULT 0;
+      ALTER TABLE users ADD COLUMN summary_email_frequency TEXT
+        CHECK(summary_email_frequency IN ('WEEKLY','MONTHLY'));
+    `);
+  }
+
   const hasCancelledAt = instance
     .prepare<[], { name: string }>(`PRAGMA table_info(invitations)`)
     .all()

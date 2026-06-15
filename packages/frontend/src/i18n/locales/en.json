@@ -310,5 +310,15 @@
     "invalidToken": "Invalid or expired reset link.",
     "expiredToken": "This link has expired.",
     "errorGeneric": "Something went wrong. Please try again."
+  },
+  "summaryEmail": {
+    "title": "Summary Email",
+    "toggle": "Send me a periodic contract summary email",
+    "frequency": "Frequency",
+    "weekly": "Weekly",
+    "monthly": "Monthly",
+    "nextSend": "Next email: {{datetime}} UTC",
+    "saved": "Email preferences saved",
+    "save": "Save preferences"
   }
 }

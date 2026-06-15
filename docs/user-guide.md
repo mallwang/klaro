@@ -16,7 +16,8 @@ Personal Contract Management is a local web app that keeps all your contracts �
 8. [Anonymization](#8-anonymization)
 9. [Language](#9-language)
 10. [Accounts & sign-in](#10-accounts--sign-in)
-11. [Contract fields reference](#11-contract-fields-reference)
+11. [Summary Email](#11-summary-email)
+12. [Contract fields reference](#12-contract-fields-reference)
 
 ---
 
@@ -368,7 +369,46 @@ At the top of the **Accounts** page there is a **Send test email** panel. Enter 
 
 ---
 
-## 11. Contract fields reference
+## 11. Summary Email
+
+The **Summary Email** feature lets each user opt into a periodic contract digest delivered directly to their inbox.
+
+### Enabling summary emails
+
+1. Go to **My Account** (`/account`).
+2. Locate the **Summary Email** section.
+3. Toggle on **"Send me a periodic contract summary email"**.
+4. Select a frequency — **Weekly** (every Monday at 10:00 UTC) or **Monthly** (1st of each month at 10:00 UTC).
+5. Click **Save**. The settings page shows the next scheduled send datetime.
+
+### Disabling summary emails
+
+Toggle the switch off and click **Save**. The next send datetime disappears and no further emails are sent.
+
+### What the email contains
+
+- **Total monthly spending** — sum of all active contracts normalised to a monthly cost.
+- **Per-contract breakdown** — name, billing interval, and monthly-equivalent cost for each active contract.
+- **Upcoming renewals** — contracts whose end date falls within the next 30 days, sorted by date.
+- **Dashboard link** — a direct link back to the app.
+- **Call to action** — context-aware message:
+  - If you have no active contracts: a prompt to add your first contract.
+  - If one or more contracts are within their cancellation notice period: a reminder to review them before the deadline.
+  - Otherwise: no call to action.
+
+### Anonymization in emails
+
+Contract names marked as **anonymized** are hidden in the summary email (replaced with `––––`), consistent with the in-app anonymization behaviour.
+
+### Edge cases
+
+- **No contracts**: the email is still sent; it shows zero total spending and an empty breakdown.
+- **Frequency change**: the next email follows the new frequency from the next scheduled send — no duplicate or missed sends.
+- **SMTP not configured**: the scheduler is only started when SMTP credentials are provided. If SMTP is not set up, no summary emails are sent.
+
+---
+
+## 12. Contract fields reference
 
 | Field | Required | Constraints | Notes |
 |-------|----------|-------------|-------|

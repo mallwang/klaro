@@ -7,6 +7,8 @@ import {
 } from './db/client.js';
 import { buildServer } from './server.js';
 import { MailerService } from './services/mailer.service.js';
+import { NotificationService } from './services/notification.service.js';
+import { SchedulerService } from './services/scheduler.service.js';
 
 /**
  * Application bootstrap entry point: runs migrations, starts maintenance cleanup, wires up
@@ -35,3 +37,10 @@ try {
 
 const server = await buildServer(db, { mailer });
 await server.listen({ port: parseInt(process.env['PORT'] ?? '3000'), host: '0.0.0.0' });
+
+if (mailer) {
+  const appUrl = process.env['APP_URL'] ?? 'http://localhost:5173';
+  const notificationService = new NotificationService(db, mailer, appUrl);
+  const scheduler = new SchedulerService(notificationService);
+  scheduler.start();
+}

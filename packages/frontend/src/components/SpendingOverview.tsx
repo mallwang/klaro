@@ -33,6 +33,7 @@ export function SpendingOverview({
 
   const segments = contractsByCategory.map((cat, i) => ({
     ...cat,
+    label: t(`category.${cat.category}`, { defaultValue: cat.label }),
     color: SEGMENT_COLORS[i % SEGMENT_COLORS.length],
     pct: totalMonthlySpending > 0 ? (cat.monthlyTotal / totalMonthlySpending) * 100 : 0,
   }));

@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 /**
  * Zod schemas and inferred TypeScript types for user profile actions, including display name
- * updates, email change requests, and account deletion results.
+ * updates, email change requests, account deletion results, and notification preferences.
  */
 
 export const DeleteSelfResultSchema = z.union([z.literal('deleted'), z.literal('last-admin')]);
@@ -28,3 +28,22 @@ export type UpdateDisplayNameBody = z.infer<typeof UpdateDisplayNameBodySchema>;
 export type RequestEmailChangeBody = z.infer<typeof RequestEmailChangeBodySchema>;
 export type PendingEmailChange = z.infer<typeof PendingEmailChangeSchema>;
 export type SendTestEmailBody = z.infer<typeof SendTestEmailBodySchema>;
+
+export const UpdateNotificationPreferencesBodySchema = z
+  .object({
+    summaryEmailEnabled: z.boolean(),
+    summaryEmailFrequency: z.enum(['WEEKLY', 'MONTHLY']).optional(),
+  })
+  .superRefine((val, ctx) => {
+    if (val.summaryEmailEnabled && !val.summaryEmailFrequency) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'summaryEmailFrequency is required when summaryEmailEnabled is true',
+        path: ['summaryEmailFrequency'],
+      });
+    }
+  });
+
+export type UpdateNotificationPreferencesBody = z.infer<
+  typeof UpdateNotificationPreferencesBodySchema
+>;
