@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS users (
   locked_until              TEXT,
   summary_email_enabled     INTEGER NOT NULL DEFAULT 0,
   summary_email_frequency   TEXT CHECK(summary_email_frequency IN ('WEEKLY','MONTHLY')),
+  email_language            TEXT NOT NULL DEFAULT 'en' CHECK(email_language IN ('en','de')),
   created_at                TEXT NOT NULL,
   updated_at                TEXT NOT NULL
 );

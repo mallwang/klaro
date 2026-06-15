@@ -66,4 +66,37 @@ describe('UpdateNotificationPreferencesBodySchema', () => {
     });
     expect(result.success).toBe(false);
   });
+
+  it('accepts emailLanguage "en"', () => {
+    const result = UpdateNotificationPreferencesBodySchema.safeParse({
+      summaryEmailEnabled: false,
+      emailLanguage: 'en',
+    });
+    expect(result.success).toBe(true);
+    if (result.success) expect(result.data.emailLanguage).toBe('en');
+  });
+
+  it('accepts emailLanguage "de"', () => {
+    const result = UpdateNotificationPreferencesBodySchema.safeParse({
+      summaryEmailEnabled: false,
+      emailLanguage: 'de',
+    });
+    expect(result.success).toBe(true);
+    if (result.success) expect(result.data.emailLanguage).toBe('de');
+  });
+
+  it('rejects an unknown emailLanguage value', () => {
+    const result = UpdateNotificationPreferencesBodySchema.safeParse({
+      summaryEmailEnabled: false,
+      emailLanguage: 'it',
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it('accepts body without emailLanguage (field is optional)', () => {
+    const result = UpdateNotificationPreferencesBodySchema.safeParse({
+      summaryEmailEnabled: false,
+    });
+    expect(result.success).toBe(true);
+  });
 });

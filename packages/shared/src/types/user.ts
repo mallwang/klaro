@@ -3,6 +3,8 @@
  * domain object.
  */
 
+import type { BillingInterval } from './contract.js';
+
 export const Role = {
   ADMIN: 'ADMIN',
   MEMBER: 'MEMBER',
@@ -28,18 +30,22 @@ export interface User {
 
 export type EmailSummaryFrequency = 'WEEKLY' | 'MONTHLY';
 
+export const SUPPORTED_EMAIL_LANGUAGES = ['en', 'de'] as const;
+export type SupportedEmailLanguage = (typeof SUPPORTED_EMAIL_LANGUAGES)[number];
+
 export interface NotificationPreferences {
   summaryEmailEnabled: boolean;
   summaryEmailFrequency: EmailSummaryFrequency | null;
   /** ISO 8601 UTC datetime; null when summary email is disabled */
   nextSendAt: string | null;
+  emailLanguage: SupportedEmailLanguage;
 }
 
 export type CtaState = 'cancellation-due' | 'no-contracts' | 'none';
 
 export interface SummaryContractRow {
   name: string;
-  billingInterval: string;
+  billingInterval: BillingInterval;
   monthlyCost: number;
   anonymize: boolean;
 }

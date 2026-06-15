@@ -102,8 +102,15 @@ export async function authRoutes(fastify: FastifyInstance): Promise<void> {
 
     if (fastify.mailer) {
       const appUrl = process.env['APP_URL'] ?? 'http://localhost:5173';
+      const localeRow = fastify.db
+        .prepare<
+          [string],
+          { email_language: string }
+        >(`SELECT email_language FROM users WHERE id = ?`)
+        .get(userId);
+      const locale = localeRow?.email_language ?? 'en';
       fastify.mailer
-        .sendPasswordChangeEmail(request.user!.email, `${appUrl}/sign-in`)
+        .sendPasswordChangeEmail(request.user!.email, `${appUrl}/sign-in`, locale)
         .catch((err) => {
           fastify.log.error({ err }, 'Failed to send password change email');
         });
@@ -131,8 +138,15 @@ export async function authRoutes(fastify: FastifyInstance): Promise<void> {
     if (result.outcome === 'requested' && fastify.mailer) {
       const appUrl = process.env['APP_URL'] ?? 'http://localhost:5173';
       const link = `${appUrl}/reset-password/${result.token}`;
+      const localeRow = fastify.db
+        .prepare<
+          [string],
+          { email_language: string }
+        >(`SELECT email_language FROM users WHERE email = ? COLLATE NOCASE`)
+        .get(body.data.email);
+      const locale = localeRow?.email_language ?? 'en';
       fastify.mailer
-        .sendPasswordResetEmail(body.data.email, link, result.expiresAt)
+        .sendPasswordResetEmail(body.data.email, link, result.expiresAt, locale)
         .catch((err) => {
           fastify.log.error({ err }, 'Failed to send password reset email');
         });

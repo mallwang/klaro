@@ -87,7 +87,19 @@ export async function profileRoutes(fastify: FastifyInstance): Promise<void> {
       if (!fastify.mailer) throw new Error('SMTP not configured');
       const appUrl = process.env['APP_URL'] ?? 'http://localhost:5173';
       const link = `${appUrl}/email-change/confirm/${result.token}`;
-      await fastify.mailer.sendEmailVerificationEmail(body.data.email, link, result.expiresAt);
+      const localeRow = fastify.db
+        .prepare<
+          [string],
+          { email_language: string }
+        >(`SELECT email_language FROM users WHERE id = ?`)
+        .get(request.user!.id);
+      const locale = localeRow?.email_language ?? 'en';
+      await fastify.mailer.sendEmailVerificationEmail(
+        body.data.email,
+        link,
+        result.expiresAt,
+        locale,
+      );
     } catch (err) {
       fastify.log.error({ err }, 'Failed to send email verification email');
       fastify.db.prepare(`DELETE FROM email_verifications WHERE token = ?`).run(result.token);
@@ -112,8 +124,15 @@ export async function profileRoutes(fastify: FastifyInstance): Promise<void> {
     const row = fastify.db
       .prepare<
         [string],
-        { summary_email_enabled: number; summary_email_frequency: string | null }
-      >(`SELECT summary_email_enabled, summary_email_frequency FROM users WHERE id = ?`)
+        {
+          summary_email_enabled: number;
+          summary_email_frequency: string | null;
+          email_language: string;
+        }
+      >(
+        `SELECT summary_email_enabled, summary_email_frequency, email_language
+         FROM users WHERE id = ?`,
+      )
       .get(request.user!.id);
 
     const enabled = (row?.summary_email_enabled ?? 0) !== 0;
@@ -124,6 +143,7 @@ export async function profileRoutes(fastify: FastifyInstance): Promise<void> {
       summaryEmailFrequency: frequency,
       nextSendAt:
         enabled && frequency ? computeNextSendAt(frequency as 'WEEKLY' | 'MONTHLY') : null,
+      emailLanguage: row?.email_language ?? 'en',
     });
   });
 
@@ -138,7 +158,14 @@ export async function profileRoutes(fastify: FastifyInstance): Promise<void> {
       });
     }
 
-    const { summaryEmailEnabled, summaryEmailFrequency } = body.data;
+    const { summaryEmailEnabled, summaryEmailFrequency, emailLanguage } = body.data;
+
+    if (emailLanguage !== undefined) {
+      fastify.db
+        .prepare(`UPDATE users SET email_language = ? WHERE id = ?`)
+        .run(emailLanguage, request.user!.id);
+    }
+
     fastify.db
       .prepare(
         `UPDATE users
@@ -179,8 +206,15 @@ export async function profileRoutes(fastify: FastifyInstance): Promise<void> {
 
     const { newEmail } = result;
     if (fastify.mailer) {
+      const userRow = fastify.db
+        .prepare<
+          [string],
+          { email_language: string }
+        >(`SELECT email_language FROM users WHERE email = ?`)
+        .get(newEmail);
+      const locale = userRow?.email_language ?? 'en';
       fastify.mailer
-        .sendEmailChangeConfirmationEmail(newEmail, new Date().toISOString())
+        .sendEmailChangeConfirmationEmail(newEmail, new Date().toISOString(), locale)
         .catch((err) => {
           fastify.log.error({ err }, 'Failed to send email change confirmation email');
         });

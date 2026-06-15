@@ -46,8 +46,13 @@ vi.mock('../../src/components/DeleteAccountModal.js', () => ({
   DeleteAccountModal: vi.fn(() => null),
 }));
 
+vi.mock('../../src/hooks/useNotificationPreferences.js', () => ({
+  useNotificationPreferences: vi.fn(),
+}));
+
 import { useCurrentUser } from '../../src/hooks/useAuth.js';
 import * as profileService from '../../src/services/profile.js';
+import { useNotificationPreferences } from '../../src/hooks/useNotificationPreferences.js';
 import { AccountSettings } from '../../src/pages/AccountSettings.js';
 
 const testUser: SessionUser = {
@@ -56,6 +61,22 @@ const testUser: SessionUser = {
   email: 'jane@example.com',
   role: 'MEMBER',
 };
+
+function mockNotificationPrefs(emailLanguage = 'en') {
+  vi.mocked(useNotificationPreferences).mockReturnValue({
+    data: {
+      summaryEmailEnabled: false,
+      summaryEmailFrequency: null,
+      nextSendAt: null,
+      emailLanguage: emailLanguage as 'en' | 'de',
+    },
+    isLoading: false,
+    updatePreferences: vi.fn() as unknown as ReturnType<
+      typeof useNotificationPreferences
+    >['updatePreferences'],
+    isPending: false,
+  });
+}
 
 function renderAccountSettings(user: SessionUser | null = testUser) {
   vi.mocked(useCurrentUser).mockReturnValue({ data: user } as ReturnType<typeof useCurrentUser>);
@@ -82,6 +103,7 @@ describe('AccountSettings – Display Name section', () => {
     vi.clearAllMocks();
     notifications.clean();
     vi.mocked(profileService.getPendingEmailChange).mockResolvedValue({ pendingEmail: null });
+    mockNotificationPrefs();
   });
 
   it('renders the display name input pre-filled with the current user name', () => {
@@ -146,6 +168,7 @@ describe('AccountSettings – Email Address section', () => {
     vi.clearAllMocks();
     notifications.clean();
     vi.mocked(profileService.updateDisplayName).mockResolvedValue(undefined);
+    mockNotificationPrefs();
   });
 
   it('renders the current email as read-only text', () => {
@@ -200,6 +223,7 @@ describe('AccountSettings – Password section', () => {
     vi.clearAllMocks();
     notifications.clean();
     vi.mocked(profileService.getPendingEmailChange).mockResolvedValue({ pendingEmail: null });
+    mockNotificationPrefs();
   });
 
   it('shows a success toast after changing password', async () => {
@@ -232,6 +256,7 @@ describe('AccountSettings – Danger Zone section', () => {
     vi.clearAllMocks();
     notifications.clean();
     vi.mocked(profileService.getPendingEmailChange).mockResolvedValue({ pendingEmail: null });
+    mockNotificationPrefs();
   });
 
   it('renders the Danger Zone Paper section', () => {
@@ -242,5 +267,65 @@ describe('AccountSettings – Danger Zone section', () => {
   it('renders the "Delete Account" button', () => {
     renderAccountSettings();
     expect(screen.getByRole('button', { name: /delete account/i })).toBeInTheDocument();
+  });
+});
+
+// ─── Email Language section ───────────────────────────────────────────────────
+
+describe('AccountSettings – Email Language section', () => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let updatePreferences: ReturnType<typeof vi.fn<any>>;
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    notifications.clean();
+    vi.mocked(profileService.getPendingEmailChange).mockResolvedValue({ pendingEmail: null });
+    updatePreferences = vi.fn();
+    vi.mocked(useNotificationPreferences).mockReturnValue({
+      data: {
+        summaryEmailEnabled: false,
+        summaryEmailFrequency: null,
+        nextSendAt: null,
+        emailLanguage: 'en',
+      },
+      isLoading: false,
+      updatePreferences: updatePreferences as unknown as ReturnType<
+        typeof useNotificationPreferences
+      >['updatePreferences'],
+      isPending: false,
+    });
+  });
+
+  it('renders an Email Language section heading', () => {
+    renderAccountSettings();
+    expect(screen.getAllByText(/email language/i).length).toBeGreaterThan(0);
+  });
+
+  it('renders English and Deutsch options', () => {
+    renderAccountSettings();
+    expect(screen.getByText('English')).toBeInTheDocument();
+    expect(screen.getByText('Deutsch')).toBeInTheDocument();
+  });
+
+  it('calls updatePreferences with emailLanguage "de" when Deutsch is selected and saved', async () => {
+    const user = userEvent.setup();
+    renderAccountSettings();
+    await user.click(screen.getByText('Deutsch'));
+    await user.click(screen.getByRole('button', { name: /save email language/i }));
+    expect(updatePreferences).toHaveBeenCalledWith(
+      expect.objectContaining({ emailLanguage: 'de' }),
+      expect.anything(),
+    );
+  });
+
+  it('shows a success toast after saving email language', async () => {
+    updatePreferences.mockImplementation((...args: unknown[]) => {
+      const opts = args[1] as { onSuccess?: () => void } | undefined;
+      opts?.onSuccess?.();
+    });
+    const user = userEvent.setup();
+    renderAccountSettings();
+    await user.click(screen.getByRole('button', { name: /save email language/i }));
+    expect(await screen.findByText(/email language saved/i)).toBeInTheDocument();
   });
 });

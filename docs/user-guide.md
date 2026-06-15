@@ -17,7 +17,8 @@ Personal Contract Management is a local web app that keeps all your contracts �
 9. [Language](#9-language)
 10. [Accounts & sign-in](#10-accounts--sign-in)
 11. [Summary Email](#11-summary-email)
-12. [Contract fields reference](#12-contract-fields-reference)
+12. [Email Language](#12-email-language)
+13. [Contract fields reference](#13-contract-fields-reference)
 
 ---
 
@@ -307,13 +308,15 @@ If you're upgrading from an older version of the app, this same bootstrap admini
 
 ### My Account
 
-Open **My Account** from the sidebar to manage your own profile. It has three sections:
+Open **My Account** from the sidebar to manage your own profile. It has four sections:
 
 **Display name** — change the name shown in the sidebar and on the accounts admin page. Enter a new name and click **Save**.
 
 **Email address** — your current address is shown. To change it, enter the new address and click **Request change**. The app sends a verification link to the new address; click it to confirm. Until confirmed, your old address remains active and a notice is shown on this page. You can request a new link at any time by submitting again.
 
 **Password** — enter your current password and a new one (at least 8 characters), then click **Change password**.
+
+**Email Language** — choose the language for all outgoing emails. See [Email Language](#12-email-language) for details.
 
 ### Email notifications
 
@@ -408,7 +411,34 @@ Contract names marked as **anonymized** are hidden in the summary email (replace
 
 ---
 
-## 12. Contract fields reference
+## 12. Email Language
+
+The **Email Language** setting controls the language used in all emails the app sends to you — independently of the language you use in the browser.
+
+### Setting your email language
+
+1. Go to **My Account** (`/account`).
+2. Locate the **Email Language** section.
+3. Select **English** or **Deutsch**.
+4. Click **Save email language**.
+
+All subsequent emails — verification links, password resets, summary digests, and notifications — are delivered in the chosen language. Dates and currency amounts are also formatted according to the locale (for example, German uses DD.MM.YYYY dates and comma decimal separators).
+
+### Default
+
+New accounts default to **English**.
+
+### Scope
+
+The email language is **separate** from the UI/browser language. Changing the browser language does not affect email language, and vice versa.
+
+### Adding a new language
+
+Email templates must exist for every language the UI supports. When a new UI language is added to the application, corresponding email templates must be created at the same time — a Vitest CI test enforces this and blocks the build if any template is missing.
+
+---
+
+## 13. Contract fields reference
 
 | Field | Required | Constraints | Notes |
 |-------|----------|-------------|-------|

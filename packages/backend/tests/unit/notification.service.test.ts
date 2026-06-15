@@ -146,14 +146,17 @@ function insertContract(
 function makeCapturingMailer(): {
   mailer: MailerService;
   captured: SummaryEmailData[];
+  capturedLocales: string[];
 } {
   const captured: SummaryEmailData[] = [];
+  const capturedLocales: string[] = [];
   const mailer = {
-    sendSummaryEmail: async (data: SummaryEmailData) => {
+    sendSummaryEmail: async (data: SummaryEmailData, locale?: string) => {
       captured.push(data);
+      capturedLocales.push(locale ?? 'en');
     },
   } as unknown as MailerService;
-  return { mailer, captured };
+  return { mailer, captured, capturedLocales };
 }
 
 // ── NotificationService – sendSummaryEmailForUser ─────────────────────────────
@@ -212,6 +215,19 @@ describe('NotificationService.sendSummaryEmailForUser', () => {
     const names = captured[0]!.contracts.map((c) => c.name);
     expect(names).toContain('Secret Contract');
     expect(names).toContain('Visible Contract');
+    db.close();
+  });
+
+  it('forwards the user email_language as locale to sendSummaryEmail', async () => {
+    const db = makeDb();
+    const userId = insertUser(db, { enabled: true, frequency: 'WEEKLY' });
+    db.prepare(`UPDATE users SET email_language = 'de' WHERE id = ?`).run(userId);
+    const { mailer, capturedLocales } = makeCapturingMailer();
+    const service = new NotificationService(db, mailer, 'http://localhost:5173');
+
+    await service.sendSummaryEmailForUser(userId);
+
+    expect(capturedLocales[0]).toBe('de');
     db.close();
   });
 });

@@ -14,7 +14,7 @@ import {
   Switch,
   SegmentedControl,
 } from '@mantine/core';
-import type { Account } from '@pcm/shared';
+import { SUPPORTED_EMAIL_LANGUAGES, type Account, type SupportedEmailLanguage } from '@pcm/shared';
 import { AuthError, changePassword } from '../services/auth.js';
 import {
   updateDisplayName,
@@ -64,40 +64,71 @@ export function AccountSettings() {
    */
   function handleDeleted() {
     queryClient.clear();
-    void navigate('/sign-in');
+    navigate('/sign-in');
   }
 
   // ── Summary Email Preferences ───────────────────────────────────────────────
-  const {
-    data: notifPrefs,
-    updatePreferences,
-    isPending: isUpdatingPrefs,
-  } = useNotificationPreferences();
+  const { data: notifPrefs, updatePreferences } = useNotificationPreferences();
 
   const [summaryEnabled, setSummaryEnabled] = useState(notifPrefs?.summaryEmailEnabled ?? false);
   const [summaryFrequency, setSummaryFrequency] = useState<'WEEKLY' | 'MONTHLY'>(
     notifPrefs?.summaryEmailFrequency ?? 'WEEKLY',
   );
+  const [emailLanguage, setEmailLanguage] = useState<SupportedEmailLanguage>(
+    notifPrefs?.emailLanguage ?? 'en',
+  );
+  const [isSavingSummary, setIsSavingSummary] = useState(false);
+  const [isSavingLanguage, setIsSavingLanguage] = useState(false);
 
   useEffect(() => {
     if (notifPrefs) {
       setSummaryEnabled(notifPrefs.summaryEmailEnabled);
       setSummaryFrequency(notifPrefs.summaryEmailFrequency ?? 'WEEKLY');
+      setEmailLanguage(notifPrefs.emailLanguage ?? 'en');
     }
   }, [notifPrefs]);
-
 
   /**
    * Submits the summary email preference form and shows toast feedback on success.
    */
   function handleSummaryEmailSave() {
+    setIsSavingSummary(true);
     updatePreferences(
       summaryEnabled
         ? { summaryEmailEnabled: true, summaryEmailFrequency: summaryFrequency }
         : { summaryEmailEnabled: false },
       {
-        onSuccess: () => showSuccess(t('summaryEmail.saved')),
-        onError: () => showError(t('accountSettings.errorGeneric')),
+        onSuccess: () => {
+          setIsSavingSummary(false);
+          showSuccess(t('summaryEmail.saved'));
+        },
+        onError: () => {
+          setIsSavingSummary(false);
+          showError(t('accountSettings.errorGeneric'));
+        },
+      },
+    );
+  }
+
+  /**
+   * Persists the user's selected email language preference and shows toast feedback.
+   * Always includes the full notification preferences payload to satisfy schema validation.
+   */
+  function handleEmailLanguageSave() {
+    setIsSavingLanguage(true);
+    updatePreferences(
+      summaryEnabled
+        ? { summaryEmailEnabled: true, summaryEmailFrequency: summaryFrequency, emailLanguage }
+        : { summaryEmailEnabled: false, emailLanguage },
+      {
+        onSuccess: () => {
+          setIsSavingLanguage(false);
+          showSuccess(t('emailLanguage.saved'));
+        },
+        onError: () => {
+          setIsSavingLanguage(false);
+          showError(t('emailLanguage.error'));
+        },
       },
     );
   }
@@ -108,7 +139,7 @@ export function AccountSettings() {
   const displayNameMutation = useMutation({
     mutationFn: (name: string) => updateDisplayName(name),
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: CURRENT_USER_QUERY_KEY });
+      queryClient.invalidateQueries({ queryKey: CURRENT_USER_QUERY_KEY }).catch(() => {});
       showSuccess(t('accountSettings.displayNameSuccess'));
     },
     onError: () => {
@@ -254,8 +285,31 @@ export function AccountSettings() {
                 )}
               </>
             )}
-            <Button onClick={handleSummaryEmailSave} loading={isUpdatingPrefs} fullWidth>
+            <Button onClick={handleSummaryEmailSave} loading={isSavingSummary} fullWidth>
               {t('summaryEmail.save')}
+            </Button>
+          </Stack>
+        </Paper>
+
+        {/* Email Language */}
+        <Paper withBorder p="lg">
+          <Stack gap="md">
+            <Title order={4}>{t('emailLanguage.title')}</Title>
+            <div>
+              <Text size="sm" fw={500} mb={4}>
+                {t('emailLanguage.label')}
+              </Text>
+              <SegmentedControl
+                value={emailLanguage}
+                onChange={(v) => setEmailLanguage(v as SupportedEmailLanguage)}
+                data={SUPPORTED_EMAIL_LANGUAGES.map((lang) => ({
+                  label: t(`emailLanguage.${lang}`),
+                  value: lang,
+                }))}
+              />
+            </div>
+            <Button onClick={handleEmailLanguageSave} loading={isSavingLanguage} fullWidth>
+              {t('emailLanguage.save')}
             </Button>
           </Stack>
         </Paper>

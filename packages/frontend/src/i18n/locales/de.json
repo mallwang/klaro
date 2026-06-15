@@ -320,5 +320,14 @@
     "nextSend": "Nächste E-Mail: {{local}} ({{utc}} UTC)",
     "saved": "E-Mail-Einstellungen gespeichert",
     "save": "Einstellungen speichern"
+  },
+  "emailLanguage": {
+    "title": "E-Mail-Sprache",
+    "label": "Sprache für E-Mails",
+    "en": "Englisch",
+    "de": "Deutsch",
+    "save": "E-Mail-Sprache speichern",
+    "saved": "E-Mail-Sprache gespeichert",
+    "error": "E-Mail-Sprache konnte nicht gespeichert werden. Bitte erneut versuchen."
   }
 }

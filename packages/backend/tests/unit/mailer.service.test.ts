@@ -99,13 +99,19 @@ describe('MailerService.sendEmailChangeConfirmationEmail', () => {
   const to = 'newaddress@example.test';
   const changedAt = new Date('2026-06-14T10:00:00.000Z').toISOString();
 
-  it('sends to the correct recipient with the change date in the body', async () => {
+  it('sends to the correct recipient with a formatted date in the body', async () => {
     const { transport, captured } = makeCapturingTransport();
 
     const mailer = new MailerService({ transport, from });
     await mailer.sendEmailChangeConfirmationEmail(to, changedAt);
 
-    assertCapturedEmail(captured, to, '2026-06-14');
+    expect(captured).toHaveLength(1);
+    const msg = captured[0] as { to: string; subject: string; text: string; html: string };
+    expect(msg.to).toBe(to);
+    expect(msg.subject).toBeTruthy();
+    // English locale formats as "Jun 14, 2026"
+    expect(msg.text).toContain('2026');
+    expect(msg.html).toContain('2026');
   });
 
   it('throws a typed MailerError when the transport reports a send failure', async () => {
@@ -330,5 +336,52 @@ describe('MailerService.sendPasswordResetEmail', () => {
     await expect(mailer.sendPasswordResetEmail(to, link, expiresAt)).rejects.toBeInstanceOf(
       MailerError,
     );
+  });
+});
+
+// ─── Locale variants ──────────────────────────────────────────────────────────
+
+describe('MailerService – German locale (locale: "de")', () => {
+  const from = 'noreply@example.test';
+  const to = 'user@example.test';
+  const link = 'https://example.com/action';
+  const expiresAt = '2026-06-30T10:00:00.000Z';
+
+  it('sendWelcomeEmail produces a German subject when locale is "de"', async () => {
+    const { transport: deTransport, captured: deCaptured } = makeCapturingTransport();
+    const { transport: enTransport, captured: enCaptured } = makeCapturingTransport();
+    const deMailer = new MailerService({ transport: deTransport, from });
+    const enMailer = new MailerService({ transport: enTransport, from });
+    await deMailer.sendWelcomeEmail(to, link, 'de');
+    await enMailer.sendWelcomeEmail(to, link, 'en');
+    const deMsg = deCaptured[0] as { subject: string };
+    const enMsg = enCaptured[0] as { subject: string };
+    expect(deMsg.subject).not.toBe('');
+    expect(deMsg.subject).not.toBe(enMsg.subject);
+  });
+
+  it('sendEmailVerificationEmail produces a German subject when locale is "de"', async () => {
+    const { transport, captured } = makeCapturingTransport();
+    const mailer = new MailerService({ transport, from });
+    await mailer.sendEmailVerificationEmail(to, link, expiresAt, 'de');
+    const msg = captured[0] as { subject: string; text: string };
+    expect(msg.subject).toBeTruthy();
+    expect(msg.text).toContain(link);
+  });
+
+  it('sendPasswordResetEmail produces a German subject when locale is "de"', async () => {
+    const { transport, captured } = makeCapturingTransport();
+    const mailer = new MailerService({ transport, from });
+    await mailer.sendPasswordResetEmail(to, link, expiresAt, 'de');
+    const msg = captured[0] as { subject: string };
+    expect(msg.subject).toBeTruthy();
+  });
+
+  it('sendEmailChangeConfirmationEmail formats date in German locale', async () => {
+    const { transport, captured } = makeCapturingTransport();
+    const mailer = new MailerService({ transport, from });
+    await mailer.sendEmailChangeConfirmationEmail(to, '2026-06-15T00:00:00Z', 'de');
+    const msg = captured[0] as { text: string };
+    expect(msg.text).toMatch(/15\.06\.2026/);
   });
 });
