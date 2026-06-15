@@ -24,7 +24,7 @@ point; that failure proves the headings do not yet exist and gives us a clear re
 **⚠️ CRITICAL**: Constitution Principle I requires this test to exist and FAIL before Phase 2
 begins.
 
-- [ ] T001 Add a `describe('AccountSettings – Section headings')` block to `packages/frontend/tests/unit/AccountSettings.test.tsx` with two `it` assertions: one that `screen.getByRole('heading', { name: /email settings/i })` is in the document, and one that `screen.getByRole('heading', { name: /^account$/i })` is in the document — run `pnpm --filter frontend test run` and confirm the two new assertions FAIL
+- [x] T001 Add a `describe('AccountSettings – Section headings')` block to `packages/frontend/tests/unit/AccountSettings.test.tsx` with two `it` assertions: one that `screen.getByRole('heading', { name: /email settings/i })` is in the document, and one that `screen.getByRole('heading', { name: /^account$/i })` is in the document — run `pnpm --filter frontend test run` and confirm the two new assertions FAIL
 
 **Checkpoint**: Two new test assertions are failing. All previously passing tests still pass.
 
@@ -43,12 +43,12 @@ added in T001 must now pass, and all pre-existing tests must continue to pass.
 
 ### i18n Keys
 
-- [ ] T002 [P] [US1] Add key `accountSettings.emailSettingsSectionTitle` → `"Email Settings"` and `accountSettings.accountSectionTitle` → `"Account"` to `packages/frontend/src/i18n/locales/en.json` (inside the existing `accountSettings` object)
-- [ ] T003 [P] [US1] Add key `accountSettings.emailSettingsSectionTitle` → `"E-Mail-Einstellungen"` and `accountSettings.accountSectionTitle` → `"Konto"` to `packages/frontend/src/i18n/locales/de.json` (inside the existing `accountSettings` object)
+- [x] T002 [P] [US1] Add key `accountSettings.emailSettingsSectionTitle` → `"Email Settings"` and `accountSettings.accountSectionTitle` → `"Account"` to `packages/frontend/src/i18n/locales/en.json` (inside the existing `accountSettings` object)
+- [x] T003 [P] [US1] Add key `accountSettings.emailSettingsSectionTitle` → `"E-Mail-Einstellungen"` and `accountSettings.accountSectionTitle` → `"Konto"` to `packages/frontend/src/i18n/locales/de.json` (inside the existing `accountSettings` object)
 
 ### JSX Restructure
 
-- [ ] T004 [US1] [US2] Restructure `packages/frontend/src/pages/AccountSettings.tsx`: replace the flat outer `<Stack gap="lg">` children with two sub-sections separated by a `<Divider my="md" />` — first sub-section renders a `<Title order={3}>{t('accountSettings.emailSettingsSectionTitle')}</Title>` followed by the Summary Email `<Paper>` and Email Language `<Paper>`; second sub-section renders a `<Title order={3}>{t('accountSettings.accountSectionTitle')}</Title>` followed by the Display Name `<Paper>`, Email Address `<Paper>`, Change Password `<Paper>`, and Danger Zone `<Paper>` — no handlers, state, or logic may be changed
+- [x] T004 [US1] [US2] Restructure `packages/frontend/src/pages/AccountSettings.tsx`: replace the flat outer `<Stack gap="lg">` children with two sub-sections separated by a `<Divider my="md" />` — first sub-section renders a `<Title order={3}>{t('accountSettings.emailSettingsSectionTitle')}</Title>` followed by the Summary Email `<Paper>` and Email Language `<Paper>`; second sub-section renders a `<Title order={3}>{t('accountSettings.accountSectionTitle')}</Title>` followed by the Display Name `<Paper>`, Email Address `<Paper>`, Change Password `<Paper>`, and Danger Zone `<Paper>` — no handlers, state, or logic may be changed
 
 **Checkpoint**: Run `pnpm --filter frontend test run` — all tests (including the two new ones)
 pass. Both section headings are visible in the browser at `/account-settings`.
@@ -63,9 +63,9 @@ notice, delete confirmation modal.
 
 **Independent Test**: Full unit test suite passes; quickstart.md Scenarios 3–5 pass manually.
 
-- [ ] T005 [US3] Run `pnpm --filter frontend test run` and confirm 100 % of pre-existing tests pass without modification — document the before/after pass counts in a comment in this file
-- [ ] T006 [US3] Run `pnpm --filter frontend tsc --noEmit` and confirm zero TypeScript errors (the two new i18n keys under `accountSettings` are picked up automatically via `typeof en` in `packages/frontend/src/i18n/types.d.ts`)
-- [ ] T007 [P] [US3] Manually validate quickstart.md Scenario 3 (all controls function correctly) and Scenario 4 (German translations display) in the running dev server
+- [x] T005 [US3] Run `pnpm --filter frontend test run` and confirm 100 % of pre-existing tests pass without modification — document the before/after pass counts in a comment in this file
+- [x] T006 [US3] Run `pnpm --filter frontend tsc --noEmit` and confirm zero TypeScript errors (the two new i18n keys under `accountSettings` are picked up automatically via `typeof en` in `packages/frontend/src/i18n/types.d.ts`)
+- [x] T007 [P] [US3] Manually validate quickstart.md Scenario 3 (all controls function correctly) and Scenario 4 (German translations display) in the running dev server
 
 **Checkpoint**: No regressions. Both sections render correctly in English and German.
 
@@ -76,10 +76,10 @@ notice, delete confirmation modal.
 **Purpose**: Documentation updates required by CLAUDE.md and project constitution after every
 feature implementation.
 
-- [ ] T008 [P] Update `README.md` to reflect the restructured Account Settings layout (mention the two sections: Email Settings and Account)
-- [ ] T009 [P] Update `README.de.md` with the same restructure description in German
-- [ ] T010 [P] Update `docs/user-guide.md` to document the new section structure under Account Settings — where to find email preferences vs. account management controls
-- [ ] T011 [P] Update `docs/user-guide.de.md` with the same user-guide content in German
+- [x] T008 [P] Update `README.md` to reflect the restructured Account Settings layout (mention the two sections: Email Settings and Account)
+- [x] T009 [P] Update `README.de.md` with the same restructure description in German
+- [x] T010 [P] Update `docs/user-guide.md` to document the new section structure under Account Settings — where to find email preferences vs. account management controls
+- [x] T011 [P] Update `docs/user-guide.de.md` with the same user-guide content in German
 
 **Checkpoint**: README and user-guide files are consistent across both languages.
 

@@ -308,7 +308,15 @@ Falls du von einer älteren Version der App aktualisierst, wird genau dieses Adm
 
 ### Mein Konto
 
-Öffne **Mein Konto** über die Seitenleiste, um dein eigenes Profil zu verwalten. Die Seite hat drei Bereiche:
+Öffne **Mein Konto** über die Seitenleiste, um dein eigenes Profil zu verwalten. Die Seite ist in zwei Bereiche unterteilt:
+
+#### E-Mail-Einstellungen
+
+**Zusammenfassungs-E-Mail** — abonniere eine regelmäßige Vertragszusammenfassung per E-Mail. Weitere Details unter [Zusammenfassungs-E-Mail](#11-zusammenfassungs-e-mail).
+
+**E-Mail-Sprache** — wähle die Sprache für alle ausgehenden E-Mails. Weitere Details unter [E-Mail-Sprache](#12-e-mail-sprache).
+
+#### Konto
 
 **Anzeigename** — ändere den Namen, der in der Seitenleiste und auf der Kontoverwaltungsseite angezeigt wird. Gib einen neuen Namen ein und klicke auf **Speichern**.
 

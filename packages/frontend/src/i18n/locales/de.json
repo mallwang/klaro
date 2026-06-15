@@ -258,7 +258,9 @@
     "emailChangeSubmitLabel": "E-Mail-Änderung anfordern",
     "emailChangeSent": "Bitte prüfen Sie Ihren Posteingang — eine Bestätigungs-E-Mail wurde an Ihre neue Adresse gesendet.",
     "emailChangeConflict": "Diese E-Mail-Adresse wird bereits von einem anderen Konto verwendet.",
-    "emailChangeError": "E-Mail-Änderung konnte nicht angefordert werden. Bitte erneut versuchen."
+    "emailChangeError": "E-Mail-Änderung konnte nicht angefordert werden. Bitte erneut versuchen.",
+    "emailSettingsSectionTitle": "E-Mail-Einstellungen",
+    "accountSectionTitle": "Konto"
   },
   "emailVerify": {
     "loading": "E-Mail-Adresse wird verifiziert…",

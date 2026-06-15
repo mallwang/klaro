@@ -308,15 +308,21 @@ If you're upgrading from an older version of the app, this same bootstrap admini
 
 ### My Account
 
-Open **My Account** from the sidebar to manage your own profile. It has four sections:
+Open **My Account** from the sidebar to manage your own profile. The page is divided into two sections:
+
+#### Email Settings
+
+**Summary Email** — opt into a periodic contract digest email. See [Summary Email](#11-summary-email) for details.
+
+**Email Language** — choose the language for all outgoing emails. See [Email Language](#12-email-language) for details.
+
+#### Account
 
 **Display name** — change the name shown in the sidebar and on the accounts admin page. Enter a new name and click **Save**.
 
 **Email address** — your current address is shown. To change it, enter the new address and click **Request change**. The app sends a verification link to the new address; click it to confirm. Until confirmed, your old address remains active and a notice is shown on this page. You can request a new link at any time by submitting again.
 
 **Password** — enter your current password and a new one (at least 8 characters), then click **Change password**.
-
-**Email Language** — choose the language for all outgoing emails. See [Email Language](#12-email-language) for details.
 
 ### Email notifications
 

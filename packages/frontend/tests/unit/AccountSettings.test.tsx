@@ -329,3 +329,24 @@ describe('AccountSettings – Email Language section', () => {
     expect(await screen.findByText(/email language saved/i)).toBeInTheDocument();
   });
 });
+
+// ─── Section headings ─────────────────────────────────────────────────────────
+
+describe('AccountSettings – Section headings', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    notifications.clean();
+    vi.mocked(profileService.getPendingEmailChange).mockResolvedValue({ pendingEmail: null });
+    mockNotificationPrefs();
+  });
+
+  it('renders an "Email Settings" section heading', () => {
+    renderAccountSettings();
+    expect(screen.getByRole('heading', { name: /email settings/i })).toBeInTheDocument();
+  });
+
+  it('renders an "Account" section heading', () => {
+    renderAccountSettings();
+    expect(screen.getByRole('heading', { name: /^account$/i })).toBeInTheDocument();
+  });
+});

@@ -4,9 +4,11 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import {
   Stack,
+  SimpleGrid,
   Title,
   Text,
   Paper,
+  Divider,
   PasswordInput,
   TextInput,
   Button,
@@ -242,180 +244,192 @@ export function AccountSettings() {
 
   return (
     <>
-      <Stack gap="lg" maw={480} mx="auto">
+      <Stack gap="lg" maw={900} mx="auto">
         <Title order={2}>{t('accountSettings.title')}</Title>
 
-        {/* Summary Email */}
-        <Paper withBorder p="lg">
-          <Stack gap="md">
-            <Title order={4}>{t('summaryEmail.title')}</Title>
-            <Switch
-              label={t('summaryEmail.toggle')}
-              checked={summaryEnabled}
-              onChange={(e) => setSummaryEnabled(e.currentTarget.checked)}
-            />
-            {summaryEnabled && (
-              <>
-                <div>
-                  <Text size="sm" fw={500} mb={4}>
-                    {t('summaryEmail.frequency')}
-                  </Text>
-                  <SegmentedControl
-                    value={summaryFrequency}
-                    onChange={(v) => setSummaryFrequency(v as 'WEEKLY' | 'MONTHLY')}
-                    data={[
-                      { label: t('summaryEmail.weekly'), value: 'WEEKLY' },
-                      { label: t('summaryEmail.monthly'), value: 'MONTHLY' },
-                    ]}
-                  />
-                </div>
-                {notifPrefs?.nextSendAt && (
-                  <Text size="sm" c="dimmed">
-                    {t('summaryEmail.nextSend', {
-                      local: new Intl.DateTimeFormat(undefined, {
-                        dateStyle: 'medium',
-                        timeStyle: 'short',
-                      }).format(new Date(notifPrefs.nextSendAt)),
-                      utc: new Intl.DateTimeFormat(undefined, {
-                        timeStyle: 'short',
-                        timeZone: 'UTC',
-                      }).format(new Date(notifPrefs.nextSendAt)),
-                    })}
-                  </Text>
-                )}
-              </>
-            )}
-            <Button onClick={handleSummaryEmailSave} loading={isSavingSummary} fullWidth>
-              {t('summaryEmail.save')}
-            </Button>
-          </Stack>
-        </Paper>
+        {/* Email Settings section */}
+        <Title order={3}>{t('accountSettings.emailSettingsSectionTitle')}</Title>
 
-        {/* Email Language */}
-        <Paper withBorder p="lg">
-          <Stack gap="md">
-            <Title order={4}>{t('emailLanguage.title')}</Title>
-            <div>
-              <Text size="sm" fw={500} mb={4}>
-                {t('emailLanguage.label')}
-              </Text>
-              <SegmentedControl
-                value={emailLanguage}
-                onChange={(v) => setEmailLanguage(v as SupportedEmailLanguage)}
-                data={SUPPORTED_EMAIL_LANGUAGES.map((lang) => ({
-                  label: t(`emailLanguage.${lang}`),
-                  value: lang,
-                }))}
-              />
-            </div>
-            <Button onClick={handleEmailLanguageSave} loading={isSavingLanguage} fullWidth>
-              {t('emailLanguage.save')}
-            </Button>
-          </Stack>
-        </Paper>
-
-        {/* Display Name */}
-        <Paper withBorder p="lg">
-          <form onSubmit={handleDisplayNameSubmit}>
+        <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="lg">
+          {/* Summary Email */}
+          <Paper withBorder p="lg">
             <Stack gap="md">
-              <TextInput
-                id="display-name"
-                label={t('accountSettings.displayNameLabel')}
-                value={displayName}
-                onChange={(e) => setDisplayName(e.target.value)}
+              <Title order={4}>{t('summaryEmail.title')}</Title>
+              <Switch
+                label={t('summaryEmail.toggle')}
+                checked={summaryEnabled}
+                onChange={(e) => setSummaryEnabled(e.currentTarget.checked)}
               />
-              <Button type="submit" loading={displayNameMutation.isPending} fullWidth>
-                {t('accountSettings.displayNameSaveLabel')}
+              {summaryEnabled && (
+                <>
+                  <div>
+                    <Text size="sm" fw={500} mb={4}>
+                      {t('summaryEmail.frequency')}
+                    </Text>
+                    <SegmentedControl
+                      value={summaryFrequency}
+                      onChange={(v) => setSummaryFrequency(v as 'WEEKLY' | 'MONTHLY')}
+                      data={[
+                        { label: t('summaryEmail.weekly'), value: 'WEEKLY' },
+                        { label: t('summaryEmail.monthly'), value: 'MONTHLY' },
+                      ]}
+                    />
+                  </div>
+                  {notifPrefs?.nextSendAt && (
+                    <Text size="sm" c="dimmed">
+                      {t('summaryEmail.nextSend', {
+                        local: new Intl.DateTimeFormat(undefined, {
+                          dateStyle: 'medium',
+                          timeStyle: 'short',
+                        }).format(new Date(notifPrefs.nextSendAt)),
+                        utc: new Intl.DateTimeFormat(undefined, {
+                          timeStyle: 'short',
+                          timeZone: 'UTC',
+                        }).format(new Date(notifPrefs.nextSendAt)),
+                      })}
+                    </Text>
+                  )}
+                </>
+              )}
+              <Button onClick={handleSummaryEmailSave} loading={isSavingSummary} fullWidth>
+                {t('summaryEmail.save')}
               </Button>
             </Stack>
-          </form>
-        </Paper>
+          </Paper>
 
-        {/* Email Address */}
-        <Paper withBorder p="lg">
-          <Stack gap="md">
-            <div>
-              <Text size="sm" fw={500}>
-                {t('accountSettings.emailSectionTitle')}
-              </Text>
-              <Text size="sm" c="dimmed">
-                {user?.email}
-              </Text>
-            </div>
+          {/* Email Language */}
+          <Paper withBorder p="lg">
+            <Stack gap="md">
+              <Title order={4}>{t('emailLanguage.title')}</Title>
+              <div>
+                <Text size="sm" fw={500} mb={4}>
+                  {t('emailLanguage.label')}
+                </Text>
+                <SegmentedControl
+                  value={emailLanguage}
+                  onChange={(v) => setEmailLanguage(v as SupportedEmailLanguage)}
+                  data={SUPPORTED_EMAIL_LANGUAGES.map((lang) => ({
+                    label: t(`emailLanguage.${lang}`),
+                    value: lang,
+                  }))}
+                />
+              </div>
+              <Button onClick={handleEmailLanguageSave} loading={isSavingLanguage} fullWidth>
+                {t('emailLanguage.save')}
+              </Button>
+            </Stack>
+          </Paper>
+        </SimpleGrid>
 
-            {pendingData?.pendingEmail && (
-              <Alert color="blue">
-                {t('accountSettings.pendingEmailNotice', { email: pendingData.pendingEmail })}
-              </Alert>
-            )}
+        <Divider my="md" />
 
-            <form onSubmit={handleEmailChangeSubmit}>
+        {/* Account section */}
+        <Title order={3}>{t('accountSettings.accountSectionTitle')}</Title>
+
+        <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="lg">
+          {/* Display Name */}
+          <Paper withBorder p="lg">
+            <form onSubmit={handleDisplayNameSubmit}>
               <Stack gap="md">
                 <TextInput
-                  id="new-email"
-                  type="email"
-                  label={t('accountSettings.newEmailLabel')}
-                  value={newEmail}
-                  onChange={(e) => setNewEmail(e.target.value)}
+                  id="display-name"
+                  label={t('accountSettings.displayNameLabel')}
+                  value={displayName}
+                  onChange={(e) => setDisplayName(e.target.value)}
                 />
-                <Button type="submit" loading={emailChangeMutation.isPending} fullWidth>
-                  {t('accountSettings.emailChangeSubmitLabel')}
+                <Button type="submit" loading={displayNameMutation.isPending} fullWidth>
+                  {t('accountSettings.displayNameSaveLabel')}
                 </Button>
               </Stack>
             </form>
-          </Stack>
-        </Paper>
+          </Paper>
 
-        {/* Change Password */}
-        <Paper withBorder p="lg">
-          <form onSubmit={handlePasswordSubmit}>
+          {/* Email Address */}
+          <Paper withBorder p="lg">
             <Stack gap="md">
-              <Text size="sm" c="dimmed">
-                {t('accountSettings.subtitle')}
+              <div>
+                <Text size="sm" fw={500}>
+                  {t('accountSettings.emailSectionTitle')}
+                </Text>
+                <Text size="sm" c="dimmed">
+                  {user?.email}
+                </Text>
+              </div>
+
+              {pendingData?.pendingEmail && (
+                <Alert color="blue">
+                  {t('accountSettings.pendingEmailNotice', { email: pendingData.pendingEmail })}
+                </Alert>
+              )}
+
+              <form onSubmit={handleEmailChangeSubmit}>
+                <Stack gap="md">
+                  <TextInput
+                    id="new-email"
+                    type="email"
+                    label={t('accountSettings.newEmailLabel')}
+                    value={newEmail}
+                    onChange={(e) => setNewEmail(e.target.value)}
+                  />
+                  <Button type="submit" loading={emailChangeMutation.isPending} fullWidth>
+                    {t('accountSettings.emailChangeSubmitLabel')}
+                  </Button>
+                </Stack>
+              </form>
+            </Stack>
+          </Paper>
+
+          {/* Change Password */}
+          <Paper withBorder p="lg">
+            <form onSubmit={handlePasswordSubmit}>
+              <Stack gap="md">
+                <Text size="sm" c="dimmed">
+                  {t('accountSettings.subtitle')}
+                </Text>
+
+                <PasswordInput
+                  id="current-password"
+                  label={t('accountSettings.currentPasswordLabel')}
+                  autoComplete="current-password"
+                  required
+                  value={currentPassword}
+                  onChange={(e) => setCurrentPassword(e.target.value)}
+                />
+
+                <PasswordInput
+                  id="new-password"
+                  label={t('accountSettings.newPasswordLabel')}
+                  autoComplete="new-password"
+                  required
+                  minLength={8}
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                />
+
+                <Button type="submit" loading={isChangingPassword} fullWidth>
+                  {isChangingPassword
+                    ? t('accountSettings.submitting')
+                    : t('accountSettings.submitLabel')}
+                </Button>
+              </Stack>
+            </form>
+          </Paper>
+
+          {/* Danger Zone */}
+          <Paper withBorder p="lg" style={{ borderColor: 'var(--mantine-color-red-6)' }}>
+            <Stack gap="md">
+              <Text fw={600} c="red">
+                {t('dangerZone.title')}
               </Text>
-
-              <PasswordInput
-                id="current-password"
-                label={t('accountSettings.currentPasswordLabel')}
-                autoComplete="current-password"
-                required
-                value={currentPassword}
-                onChange={(e) => setCurrentPassword(e.target.value)}
-              />
-
-              <PasswordInput
-                id="new-password"
-                label={t('accountSettings.newPasswordLabel')}
-                autoComplete="new-password"
-                required
-                minLength={8}
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-              />
-
-              <Button type="submit" loading={isChangingPassword} fullWidth>
-                {isChangingPassword
-                  ? t('accountSettings.submitting')
-                  : t('accountSettings.submitLabel')}
+              <Text size="sm" c="dimmed">
+                {t('dangerZone.description')}
+              </Text>
+              <Button color="red" variant="outline" onClick={() => setDeleteModalOpen(true)}>
+                {t('dangerZone.deleteButton')}
               </Button>
             </Stack>
-          </form>
-        </Paper>
-
-        {/* Danger Zone */}
-        <Paper withBorder p="lg" style={{ borderColor: 'var(--mantine-color-red-6)' }}>
-          <Stack gap="md">
-            <Text fw={600} c="red">
-              {t('dangerZone.title')}
-            </Text>
-            <Text size="sm" c="dimmed">
-              {t('dangerZone.description')}
-            </Text>
-            <Button color="red" variant="outline" onClick={() => setDeleteModalOpen(true)}>
-              {t('dangerZone.deleteButton')}
-            </Button>
-          </Stack>
-        </Paper>
+          </Paper>
+        </SimpleGrid>
       </Stack>
 
       <DeleteAccountModal
