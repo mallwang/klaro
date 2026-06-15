@@ -13,6 +13,8 @@ const sampleData: UpcomingRenewal[] = [
     cancellationDeadline: '2026-06-12',
     daysUntilCancellationDeadline: 6,
     anonymize: false,
+    logoName: null,
+    useGenericIcon: false,
   },
   {
     id: 'b2c3d4e5-f6a7-8901-bcde-f12345678901',
@@ -22,6 +24,8 @@ const sampleData: UpcomingRenewal[] = [
     cancellationDeadline: '2026-06-25',
     daysUntilCancellationDeadline: 19,
     anonymize: false,
+    logoName: null,
+    useGenericIcon: false,
   },
 ];
 
@@ -34,6 +38,8 @@ const overdueData: UpcomingRenewal[] = [
     cancellationDeadline: '2026-05-01',
     daysUntilCancellationDeadline: -36,
     anonymize: false,
+    logoName: null,
+    useGenericIcon: false,
   },
 ];
 
@@ -127,6 +133,8 @@ describe('UpcomingRenewals', () => {
         cancellationDeadline: '2026-06-12',
         daysUntilCancellationDeadline: 6,
         anonymize: true,
+        logoName: null,
+        useGenericIcon: false,
       },
     ];
     render(

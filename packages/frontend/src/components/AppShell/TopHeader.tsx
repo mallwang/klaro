@@ -1,8 +1,8 @@
-import { Burger, Text, ActionIcon, Group, ThemeIcon } from '@mantine/core';
-import { useMantineColorScheme } from '@mantine/core';
+import { Burger, ActionIcon, Group, useMantineColorScheme } from '@mantine/core';
 import { useTranslation } from 'react-i18next';
-import { IconFileDescription, IconSun, IconMoon } from '@tabler/icons-react';
+import { IconSun, IconMoon } from '@tabler/icons-react';
 import { LanguagePicker } from './LanguagePicker.js';
+import { KlaroIcon } from '../KlaroIcon.js';
 import classes from './TopHeader.module.css';
 
 /**
@@ -11,8 +11,8 @@ import classes from './TopHeader.module.css';
  */
 
 interface TopHeaderProps {
-  mobileOpened?: boolean;
-  toggleMobile?: () => void;
+  readonly mobileOpened?: boolean;
+  readonly toggleMobile?: () => void;
 }
 
 /**
@@ -38,12 +38,7 @@ export function TopHeader({ mobileOpened, toggleMobile }: TopHeaderProps) {
             aria-label="Toggle navigation"
           />
         )}
-        <ThemeIcon variant="light" size="md">
-          <IconFileDescription size={16} />
-        </ThemeIcon>
-        <Text fw={600} size="sm">
-          Personal Contract Management
-        </Text>
+        <KlaroIcon size={28} />
       </Group>
 
       <Group className={classes.right}>

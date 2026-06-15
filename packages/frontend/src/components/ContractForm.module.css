@@ -1,7 +1,36 @@
-.dateGrid {
+.nameRow {
+  display: grid;
+  grid-template-columns: auto 1fr 1fr;
+  gap: var(--mantine-spacing-md);
+  align-items: flex-end;
+}
+
+.twoColumnRow {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--mantine-spacing-md);
+}
+
+.statusDateRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: var(--mantine-spacing-md);
+}
+
+.cancellationAnonymizeRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--mantine-spacing-md);
+  align-items: flex-start;
+}
+
+@media (max-width: 48em) {
+  .nameRow,
+  .twoColumnRow,
+  .statusDateRow,
+  .cancellationAnonymizeRow {
+    grid-template-columns: 1fr;
+  }
 }
 
 .cancellationRow {

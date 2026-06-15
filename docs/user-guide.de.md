@@ -2,7 +2,11 @@
 
 # Benutzerhandbuch
 
-Personal Contract Management ist eine lokale Web-App, die alle deine Verträge — Streaming-Dienste, Versicherungspolicen, Handyverträge, Miete, Nebenkosten — an einem Ort zusammenführt. Sie zeigt dir, was du monatlich ausgibst, warnt dich vor automatischen Verlängerungen und informiert dich, wenn Verträge bereits abgelaufen sind.
+<p align="center">
+  <img src="../klaro.png" alt="Klaro" width="120" />
+</p>
+
+Klaro ist eine lokale Web-App, die alle deine Verträge — Streaming-Dienste, Versicherungspolicen, Handyverträge, Miete, Nebenkosten — an einem Ort zusammenführt. Sie zeigt dir, was du monatlich ausgibst, warnt dich vor automatischen Verlängerungen und informiert dich, wenn Verträge bereits abgelaufen sind.
 
 ## Inhaltsverzeichnis
 
@@ -116,6 +120,19 @@ Die Schaltflächenleiste über der Tabelle enthält:
 ## 4. Vertrag hinzufügen
 
 Klicke auf **Vertrag hinzufügen** in der Vertragsliste. Fülle das Formular aus und klicke auf **Speichern**.
+
+### Formularlayout
+
+Das Formular verwendet ein kompaktes mehrspaltiges Layout, um Scrollen zu reduzieren:
+
+| Zeile | Felder |
+|-------|--------|
+| Zeile 1 | Name · Kategorie |
+| Zeile 2 | Betrag · Abrechnungsintervall |
+| Zeile 3 | Status · Startdatum · Enddatum |
+| Zeile 4 (linke Hälfte) | Kündigungsfrist |
+
+Auf schmalen Bildschirmen (Smartphones) wechselt das Layout zu einer einspaltigen Ansicht und alle Felder werden untereinander angezeigt.
 
 ### Minimales Beispiel — Streaming-Abo
 

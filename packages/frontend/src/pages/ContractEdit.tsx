@@ -73,6 +73,8 @@ export function ContractEdit() {
               : '',
             cancellationPeriodUnit: contract.cancellationPeriod?.unit ?? 'MONTHS',
             anonymize: contract.anonymize,
+            logoName: contract.logoName ?? '',
+            useGenericIcon: contract.useGenericIcon,
           }}
           onSubmit={(data) =>
             updateContract(

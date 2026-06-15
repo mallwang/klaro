@@ -59,6 +59,8 @@ export const ContractSchema = z.object({
   serviceUrl: z.string().url().nullable(),
   cancellationPeriod: CancellationPeriodSchema.nullable(),
   anonymize: z.boolean().default(false),
+  logoName: z.string().max(200).nullable(),
+  useGenericIcon: z.boolean().default(false),
   createdAt: z.string(),
   updatedAt: z.string(),
 });
@@ -85,6 +87,8 @@ export const CreateContractBodySchema = z.object({
   serviceUrl: z.string().url().nullable().optional(),
   cancellationPeriod: CancellationPeriodSchema.nullable().optional(),
   anonymize: z.boolean().optional(),
+  logoName: z.string().max(200).nullable().optional(),
+  useGenericIcon: z.boolean().optional(),
 });
 
 export const UpdateContractBodySchema = CreateContractBodySchema.partial();

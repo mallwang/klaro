@@ -29,6 +29,8 @@ export const UpcomingRenewalSchema = z.object({
   cancellationDeadline: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   daysUntilCancellationDeadline: z.number().int(),
   anonymize: z.boolean(),
+  logoName: z.string().nullable(),
+  useGenericIcon: z.boolean(),
 });
 
 export const ExpiredContractSchema = z.object({
@@ -38,6 +40,8 @@ export const ExpiredContractSchema = z.object({
   endDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   daysOverdue: z.number().int().positive(),
   anonymize: z.boolean(),
+  logoName: z.string().nullable(),
+  useGenericIcon: z.boolean(),
 });
 
 export const DashboardResponseSchema = z.object({

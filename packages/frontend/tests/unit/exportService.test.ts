@@ -21,6 +21,8 @@ const base: ContractData = {
   serviceUrl: 'https://netflix.com',
   cancellationPeriod: { value: 1, unit: 'MONTHS' },
   anonymize: false,
+  logoName: null,
+  useGenericIcon: false,
   createdAt: '2023-01-01T00:00:00.000Z',
   updatedAt: '2023-06-01T00:00:00.000Z',
 };
@@ -38,6 +40,8 @@ const minimal: ContractData = {
   serviceUrl: null,
   cancellationPeriod: null,
   anonymize: true,
+  logoName: null,
+  useGenericIcon: false,
   createdAt: '2025-01-01T00:00:00.000Z',
   updatedAt: '2025-01-01T00:00:00.000Z',
 };

@@ -19,8 +19,11 @@ import { ProviderLogo } from './ProviderLogo.js';
 import classes from './ContractForm.module.css';
 
 /**
- * Reusable contract creation/editing form with validation, field defaults, and a
- * cancellation period row. Used by both the new-contract and edit-contract pages.
+ * Reusable contract creation/editing form with validation, field defaults, and a compact
+ * multi-column layout. The first row shows a live provider logo alongside the name and
+ * category fields; amount+interval and status+start+end each share a row; the cancellation
+ * period and anonymize checkbox share a row; the logo search name occupies the left half.
+ * Used by both the new-contract and edit-contract pages.
  */
 
 interface ContractFormValues {
@@ -36,6 +39,8 @@ interface ContractFormValues {
   cancellationPeriodValue: string | number;
   cancellationPeriodUnit: string;
   anonymize: boolean;
+  logoName: string;
+  useGenericIcon: boolean;
 }
 
 interface ContractFormProps {
@@ -76,6 +81,8 @@ export function ContractForm({
     cancellationPeriodValue: defaultValues?.cancellationPeriodValue ?? '',
     cancellationPeriodUnit: defaultValues?.cancellationPeriodUnit ?? 'MONTHS',
     anonymize: defaultValues?.anonymize ?? false,
+    logoName: defaultValues?.logoName ?? '',
+    useGenericIcon: defaultValues?.useGenericIcon ?? false,
   });
   const [validationError, setValidationError] = useState<string | null>(null);
 
@@ -115,6 +122,8 @@ export function ContractForm({
             }
           : null,
       anonymize: values.anonymize,
+      logoName: values.logoName || null,
+      useGenericIcon: values.useGenericIcon,
     });
   }
 
@@ -167,67 +176,69 @@ export function ContractForm({
           </Alert>
         )}
 
-        <div>
-          <Group gap="xs" mb={4}>
-            <Text component="label" htmlFor="name" size="sm" fw={500}>
-              {t('contractForm.nameLabel')}
-            </Text>
-            {values.name && <ProviderLogo name={String(values.name)} size={20} />}
-          </Group>
+        <div className={classes.nameRow}>
+          {values.useGenericIcon ? (
+            <ProviderLogo name="" isAnonymized size={40} />
+          ) : (
+            <ProviderLogo name={String(values.logoName || values.name)} size={40} />
+          )}
           <TextInput
             id="name"
+            label={t('contractForm.nameLabel')}
             variant="filled"
             value={String(values.name)}
             onChange={(e) => setValues((v) => ({ ...v, name: e.target.value }))}
             placeholder={t('contractForm.namePlaceholder')}
           />
+          <Select
+            id="category"
+            label={t('contractForm.categoryLabel')}
+            variant="filled"
+            data={categoryOptions}
+            value={String(values.category)}
+            onChange={(val) =>
+              setValues((v) => ({ ...v, category: val ?? Category.SUBSCRIPTIONS }))
+            }
+            allowDeselect={false}
+          />
         </div>
 
-        <Select
-          id="category"
-          label={t('contractForm.categoryLabel')}
-          variant="filled"
-          data={categoryOptions}
-          value={String(values.category)}
-          onChange={(val) => setValues((v) => ({ ...v, category: val ?? Category.SUBSCRIPTIONS }))}
-          allowDeselect={false}
-        />
+        <div className={classes.twoColumnRow}>
+          <NumberInput
+            id="amount"
+            label={t('contractForm.amountLabel')}
+            variant="filled"
+            prefix="€"
+            decimalScale={2}
+            min={0}
+            value={values.amount === '' ? '' : Number(values.amount)}
+            onChange={(val) => setValues((v) => ({ ...v, amount: val }))}
+            placeholder="0.00"
+          />
 
-        <NumberInput
-          id="amount"
-          label={t('contractForm.amountLabel')}
-          variant="filled"
-          prefix="€"
-          decimalScale={2}
-          min={0}
-          value={values.amount === '' ? '' : Number(values.amount)}
-          onChange={(val) => setValues((v) => ({ ...v, amount: val }))}
-          placeholder="0.00"
-        />
+          <Select
+            id="billingInterval"
+            label={t('contractForm.billingIntervalLabel')}
+            variant="filled"
+            data={billingIntervalOptions}
+            value={String(values.billingInterval)}
+            onChange={(val) =>
+              setValues((v) => ({ ...v, billingInterval: val ?? BillingInterval.MONTHLY }))
+            }
+            allowDeselect={false}
+          />
+        </div>
 
-        <Select
-          id="billingInterval"
-          label={t('contractForm.billingIntervalLabel')}
-          variant="filled"
-          data={billingIntervalOptions}
-          value={String(values.billingInterval)}
-          onChange={(val) =>
-            setValues((v) => ({ ...v, billingInterval: val ?? BillingInterval.MONTHLY }))
-          }
-          allowDeselect={false}
-        />
-
-        <Select
-          id="status"
-          label={t('contractForm.statusLabel')}
-          variant="filled"
-          data={statusOptions}
-          value={String(values.status)}
-          onChange={(val) => setValues((v) => ({ ...v, status: val ?? ContractStatus.ACTIVE }))}
-          allowDeselect={false}
-        />
-
-        <div className={classes.dateGrid}>
+        <div className={classes.statusDateRow}>
+          <Select
+            id="status"
+            label={t('contractForm.statusLabel')}
+            variant="filled"
+            data={statusOptions}
+            value={String(values.status)}
+            onChange={(val) => setValues((v) => ({ ...v, status: val ?? ContractStatus.ACTIVE }))}
+            allowDeselect={false}
+          />
           <TextInput
             id="startDate"
             label={t('contractForm.startDateLabel')}
@@ -275,45 +286,83 @@ export function ContractForm({
           {serviceUrlLink}
         </div>
 
-        <div>
-          <Text size="sm" fw={500} mb={4}>
-            {t('contractForm.cancellationPeriodLabel')}
-          </Text>
-          <div className={classes.cancellationRow}>
-            <NumberInput
-              id="cancellationPeriodValue"
-              aria-label={t('contractForm.cancellationPeriodLabel')}
-              variant="filled"
-              min={1}
-              value={
-                values.cancellationPeriodValue === '' ? '' : Number(values.cancellationPeriodValue)
-              }
-              onChange={(val) => setValues((v) => ({ ...v, cancellationPeriodValue: val }))}
-              placeholder="e.g. 30"
-              className={classes.cancellationNumber}
-            />
-            <Select
-              id="cancellationPeriodUnit"
-              aria-label={t('contractForm.cancellationUnitAriaLabel')}
-              variant="filled"
-              data={cancellationUnitOptions}
-              value={String(values.cancellationPeriodUnit)}
-              onChange={(val) =>
-                setValues((v) => ({ ...v, cancellationPeriodUnit: val ?? 'MONTHS' }))
-              }
-              allowDeselect={false}
-              className={classes.cancellationUnit}
-            />
+        <div className={classes.cancellationAnonymizeRow}>
+          <div>
+            <Text size="sm" fw={500} mb={4}>
+              {t('contractForm.cancellationPeriodLabel')}
+            </Text>
+            <div className={classes.cancellationRow}>
+              <NumberInput
+                id="cancellationPeriodValue"
+                aria-label={t('contractForm.cancellationPeriodLabel')}
+                variant="filled"
+                min={1}
+                value={
+                  values.cancellationPeriodValue === ''
+                    ? ''
+                    : Number(values.cancellationPeriodValue)
+                }
+                onChange={(val) => setValues((v) => ({ ...v, cancellationPeriodValue: val }))}
+                placeholder="e.g. 30"
+                className={classes.cancellationNumber}
+              />
+              <Select
+                id="cancellationPeriodUnit"
+                aria-label={t('contractForm.cancellationUnitAriaLabel')}
+                variant="filled"
+                data={cancellationUnitOptions}
+                value={String(values.cancellationPeriodUnit)}
+                onChange={(val) =>
+                  setValues((v) => ({ ...v, cancellationPeriodUnit: val ?? 'MONTHS' }))
+                }
+                allowDeselect={false}
+                className={classes.cancellationUnit}
+              />
+            </div>
           </div>
+
+          <Checkbox
+            id="anonymize"
+            label={t('anonymization.anonymizeContract')}
+            description={t('anonymization.anonymizeContractHint')}
+            checked={values.anonymize}
+            onChange={(e) => setValues((v) => ({ ...v, anonymize: e.target.checked }))}
+            mt="lg"
+          />
         </div>
 
-        <Checkbox
-          id="anonymize"
-          label={t('anonymization.anonymizeContract')}
-          description={t('anonymization.anonymizeContractHint')}
-          checked={values.anonymize}
-          onChange={(e) => setValues((v) => ({ ...v, anonymize: e.target.checked }))}
-        />
+        <div className={classes.twoColumnRow}>
+          <div>
+            <TextInput
+              id="logoName"
+              label={t('contractForm.logoNameLabel')}
+              description={t('contractForm.logoNameDescription')}
+              variant="filled"
+              value={String(values.logoName)}
+              onChange={(e) => setValues((v) => ({ ...v, logoName: e.target.value }))}
+              placeholder={t('contractForm.logoNamePlaceholder')}
+              disabled={values.useGenericIcon}
+            />
+            <Anchor
+              href="https://www.logo.dev/search"
+              target="_blank"
+              rel="noopener noreferrer"
+              size="xs"
+              mt={4}
+              display="inline-block"
+            >
+              {t('contractForm.logoNameSearchLink')}
+            </Anchor>
+          </div>
+          <Checkbox
+            id="useGenericIcon"
+            label={t('contractForm.useGenericIconLabel')}
+            description={t('contractForm.useGenericIconDescription')}
+            checked={values.useGenericIcon}
+            onChange={(e) => setValues((v) => ({ ...v, useGenericIcon: e.target.checked }))}
+            mt="lg"
+          />
+        </div>
 
         <Group gap="sm" pt="xs">
           <Button type="submit" loading={isPending}>

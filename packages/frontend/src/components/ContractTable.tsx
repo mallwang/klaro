@@ -177,11 +177,15 @@ export function ContractTable({
             <Table.Tr key={contract.id}>
               <Table.Td>
                 <div className={`${classes.nameCell}${isFlipping ? ' animate-name-flip' : ''}`}>
-                  <ProviderLogo
-                    name={contract.name}
-                    isAnonymized={displayAnonymized || contract.anonymize}
-                    size={20}
-                  />
+                  {contract.useGenericIcon ? (
+                    <ProviderLogo name="" isAnonymized size={20} />
+                  ) : (
+                    <ProviderLogo
+                      name={contract.logoName ?? contract.name}
+                      isAnonymized={displayAnonymized || contract.anonymize}
+                      size={20}
+                    />
+                  )}
                   {resolveName(contract)}
                 </div>
               </Table.Td>

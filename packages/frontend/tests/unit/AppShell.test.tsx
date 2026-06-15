@@ -139,7 +139,7 @@ describe('AppShell', () => {
   it('renders app name in the header', () => {
     renderAppShell();
     const header = screen.getByRole('banner');
-    expect(within(header).getByText('Personal Contract Management')).toBeInTheDocument();
+    expect(within(header).getByText('Klaro')).toBeInTheDocument();
   });
 
   it('renders language picker in the header', () => {

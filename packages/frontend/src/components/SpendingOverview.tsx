@@ -3,6 +3,7 @@ import { Box, Group, Paper, Progress, SimpleGrid, Text } from '@mantine/core';
 import { IconChartPie } from '@tabler/icons-react';
 import type { CategorySummary } from '@pcm/shared';
 import { useLocaleFormat } from '../hooks/useLocaleFormat.js';
+import { CategoryIcon } from './CategoryIcon.js';
 import classes from './SpendingOverview.module.css';
 
 /**
@@ -50,9 +51,12 @@ export function SpendingOverview({
       className={classes.stat}
       style={{ borderBottomColor: `var(--mantine-color-${seg.color}-6)` }}
     >
-      <Text tt="uppercase" fz="xs" c="dimmed" fw={700}>
-        {seg.label}
-      </Text>
+      <Group gap={6} align="center">
+        <CategoryIcon category={seg.category} size={14} />
+        <Text tt="uppercase" fz="xs" c="dimmed" fw={700}>
+          {seg.label}
+        </Text>
+      </Group>
       <Group justify="space-between" align="flex-end" gap={0}>
         <Text fw={700}>{formatCurrency(seg.monthlyTotal)}</Text>
         <Text c={seg.color} fw={700} size="sm" className={classes.statCount}>

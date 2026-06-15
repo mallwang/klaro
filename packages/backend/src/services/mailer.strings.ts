@@ -48,13 +48,13 @@ export const testEmailStrings: Record<
 > = {
   en: () => ({
     subject: 'Test email — SMTP configuration check',
-    text: 'This is a test email sent from your Personal Contract Management app.\n\nIf you received this, your SMTP configuration is working correctly.',
-    html: '<p>This is a test email sent from your Personal Contract Management app.</p><p>If you received this, your SMTP configuration is working correctly.</p>',
+    text: 'This is a test email sent from your Klaro app.\n\nIf you received this, your SMTP configuration is working correctly.',
+    html: '<p>This is a test email sent from your Klaro app.</p><p>If you received this, your SMTP configuration is working correctly.</p>',
   }),
   de: () => ({
     subject: 'Test-E-Mail — SMTP-Konfigurationsprüfung',
-    text: 'Dies ist eine Test-E-Mail aus Ihrer Personal Contract Management App.\n\nWenn Sie diese E-Mail erhalten haben, ist Ihre SMTP-Konfiguration korrekt.',
-    html: '<p>Dies ist eine Test-E-Mail aus Ihrer Personal Contract Management App.</p><p>Wenn Sie diese E-Mail erhalten haben, ist Ihre SMTP-Konfiguration korrekt.</p>',
+    text: 'Dies ist eine Test-E-Mail aus Ihrer Klaro App.\n\nWenn Sie diese E-Mail erhalten haben, ist Ihre SMTP-Konfiguration korrekt.',
+    html: '<p>Dies ist eine Test-E-Mail aus Ihrer Klaro App.</p><p>Wenn Sie diese E-Mail erhalten haben, ist Ihre SMTP-Konfiguration korrekt.</p>',
   }),
 };
 

@@ -149,10 +149,13 @@ export class DashboardService {
           cancellation_period_value: number | null;
           cancellation_period_unit: string | null;
           anonymize: number;
+          logo_name: string | null;
+          use_generic_icon: number;
         }
       >(
         `SELECT id, name, category, end_date,
-                cancellation_period_value, cancellation_period_unit, anonymize
+                cancellation_period_value, cancellation_period_unit, anonymize,
+                logo_name, use_generic_icon
          FROM contracts
          WHERE end_date IS NOT NULL
            AND billing_interval != 'LIFETIME'
@@ -197,6 +200,8 @@ export class DashboardService {
         cancellationDeadline: toDateString(cancellationDeadline),
         daysUntilCancellationDeadline,
         anonymize: row.anonymize !== 0,
+        logoName: row.logo_name ?? null,
+        useGenericIcon: row.use_generic_icon !== 0,
       });
     }
 
@@ -220,9 +225,17 @@ export class DashboardService {
     const rows = this.db
       .prepare<
         [string],
-        { id: string; name: string; category: string; end_date: string; anonymize: number }
+        {
+          id: string;
+          name: string;
+          category: string;
+          end_date: string;
+          anonymize: number;
+          logo_name: string | null;
+          use_generic_icon: number;
+        }
       >(
-        `SELECT id, name, category, end_date, anonymize
+        `SELECT id, name, category, end_date, anonymize, logo_name, use_generic_icon
          FROM contracts
          WHERE end_date IS NOT NULL
            AND billing_interval != 'LIFETIME'
@@ -246,6 +259,8 @@ export class DashboardService {
         endDate: row.end_date,
         daysOverdue,
         anonymize: row.anonymize !== 0,
+        logoName: row.logo_name ?? null,
+        useGenericIcon: row.use_generic_icon !== 0,
       };
     });
   }
