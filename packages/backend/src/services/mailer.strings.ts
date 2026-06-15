@@ -14,8 +14,8 @@ function fmtDate(iso: string, locale: string): string {
 
 function fmtCurrency(amount: number, locale: string): string {
   return new Intl.NumberFormat(locale, {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
+    style: 'currency',
+    currency: 'EUR',
   }).format(amount);
 }
 
@@ -304,7 +304,7 @@ function buildSummaryHtml(data: SummaryEmailArgs): { subject: string; text: stri
 
   const expiredSection =
     data.expiredContracts.length > 0
-      ? `<h3>${s.expiredTitle}</h3><ul>${data.expiredContracts
+      ? `<h3 style="margin-top:1.5em">${s.expiredTitle}</h3><ul>${data.expiredContracts
           .map(
             (e) => `<li>${s.expiredItem(e.name, fmtDate(e.endDate, locale), e.daysOverdue)}</li>`,
           )
