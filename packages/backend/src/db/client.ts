@@ -205,6 +205,16 @@ export function runMigrations(instance: Database.Database): BootstrapResult | nu
     bootstrapResult = { email: BOOTSTRAP_ADMIN_EMAIL, password: initialPassword };
   }
 
+  // Add logo_name column introduced in feature 026
+  const hasLogoName = instance
+    .prepare<[], { name: string }>(`PRAGMA table_info(contracts)`)
+    .all()
+    .some((col) => col.name === 'logo_name');
+
+  if (!hasLogoName) {
+    instance.exec(`ALTER TABLE contracts ADD COLUMN logo_name TEXT`);
+  }
+
   // Add summary email preference columns introduced in feature 023
   const hasSummaryEmail = instance
     .prepare<[], { name: string }>(`PRAGMA table_info(users)`)
@@ -351,6 +361,7 @@ export interface ContractRow {
   cancellation_period_value: number | null;
   cancellation_period_unit: string | null;
   anonymize: number;
+  logo_name: string | null;
   created_at: string;
   updated_at: string;
   user_id: string | null;

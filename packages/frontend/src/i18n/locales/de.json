@@ -102,7 +102,11 @@
     "cancellationPeriodLabel": "Kündigungsfrist",
     "cancellationUnitAriaLabel": "Kündigungseinheit",
     "nameRequired": "Name ist erforderlich.",
-    "amountInvalid": "Betrag muss eine nicht-negative Zahl sein."
+    "amountInvalid": "Betrag muss eine nicht-negative Zahl sein.",
+    "logoNameLabel": "Logo-Suchname",
+    "logoNamePlaceholder": "z. B. Maingau Energie",
+    "logoNameDescription": "Überschreibt den Namen, der zum Abrufen des Anbieter-Logos verwendet wird. Leer lassen, um den Vertragsnamen zu verwenden.",
+    "logoNameSearchLink": "Richtigen Namen auf logo.dev suchen"
   },
   "contractNew": {
     "title": "Vertrag hinzufügen"

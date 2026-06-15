@@ -76,6 +76,7 @@ export interface Contract {
   serviceUrl: string | null;
   cancellationPeriod: { value: number; unit: CancellationPeriodUnit } | null;
   anonymize: boolean;
+  logoName: string | null;
   createdAt: string;
   updatedAt: string;
 }

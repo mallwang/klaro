@@ -10,18 +10,27 @@
   gap: var(--mantine-spacing-md);
 }
 
-.cancellationHalf {
-  max-width: 50%;
+.cancellationLogoRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--mantine-spacing-md);
+}
+
+.logoNameField {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--mantine-spacing-xs);
+}
+
+.logoNameInput {
+  flex: 1;
 }
 
 @media (max-width: 48em) {
   .twoColumnRow,
-  .statusDateRow {
+  .statusDateRow,
+  .cancellationLogoRow {
     grid-template-columns: 1fr;
-  }
-
-  .cancellationHalf {
-    max-width: 100%;
   }
 }
 

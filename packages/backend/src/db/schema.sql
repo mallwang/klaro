@@ -60,6 +60,7 @@ CREATE TABLE IF NOT EXISTS contracts (
     OR cancellation_period_unit IN ('DAYS','WEEKS','MONTHS')
   ),
   anonymize        INTEGER NOT NULL DEFAULT 0,
+  logo_name        TEXT,
   created_at       TEXT NOT NULL,
   updated_at       TEXT NOT NULL
 );

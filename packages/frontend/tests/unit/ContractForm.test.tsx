@@ -43,7 +43,7 @@ describe('ContractForm – Mantine input style', () => {
 
   it('name input is wrapped in a Mantine filled variant container', () => {
     renderForm();
-    const nameInput = screen.getByLabelText(/name/i);
+    const nameInput = screen.getByLabelText(/^name/i);
     expect(nameInput.closest('[data-variant="filled"]')).not.toBeNull();
   });
 });
@@ -51,7 +51,7 @@ describe('ContractForm – Mantine input style', () => {
 describe('ContractForm – field rendering', () => {
   it('renders the name input', () => {
     renderForm();
-    expect(screen.getByLabelText(/name/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/^name/i)).toBeInTheDocument();
   });
 
   it('renders the amount input', () => {
@@ -117,7 +117,7 @@ describe('ContractForm – validation', () => {
     const onSubmit = vi.fn();
     const user = userEvent.setup();
     renderForm({ onSubmit });
-    await user.type(screen.getByLabelText(/name/i), 'Netflix');
+    await user.type(screen.getByLabelText(/^name/i), 'Netflix');
     await user.clear(screen.getByLabelText(/^amount/i));
     await user.type(screen.getByLabelText(/^amount/i), '15.99');
     await selectOption(user, /billing interval/i, /yearly/i);
@@ -132,7 +132,7 @@ describe('ContractForm – validation', () => {
     const onSubmit = vi.fn();
     const user = userEvent.setup();
     renderForm({ onSubmit });
-    await user.type(screen.getByLabelText(/name/i), 'Test');
+    await user.type(screen.getByLabelText(/^name/i), 'Test');
     await user.type(screen.getByLabelText(/^amount/i), '10');
     await user.click(screen.getByRole('button', { name: /save/i }));
     expect(onSubmit).toHaveBeenCalledOnce();
@@ -177,9 +177,14 @@ describe('ContractForm – new fields rendering', () => {
     expect(link).toHaveAttribute('target', '_blank');
   });
 
-  it('does not render an anchor link when serviceUrl is empty', () => {
+  it('does not render a service URL anchor link when serviceUrl is empty', () => {
     renderForm();
-    expect(screen.queryByRole('link')).not.toBeInTheDocument();
+    // The logo.dev search link is always present; only it should exist when serviceUrl is blank
+    const links = screen.getAllByRole('link');
+    const serviceLinks = links.filter(
+      (l) => l.getAttribute('href') !== 'https://www.logo.dev/search',
+    );
+    expect(serviceLinks).toHaveLength(0);
   });
 
   it('renders the cancellation period number input', () => {
@@ -204,7 +209,7 @@ describe('ContractForm – new fields submission', () => {
     const onSubmit = vi.fn();
     const user = userEvent.setup();
     renderForm({ onSubmit });
-    await user.type(screen.getByLabelText(/name/i), 'Gym');
+    await user.type(screen.getByLabelText(/^name/i), 'Gym');
     await user.type(screen.getByLabelText(/^amount/i), '40');
     await user.type(screen.getByLabelText(/cancellation period/i), '30');
     await selectOption(user, /cancellation unit/i, /days/i);
@@ -218,7 +223,7 @@ describe('ContractForm – new fields submission', () => {
     const onSubmit = vi.fn();
     const user = userEvent.setup();
     renderForm({ onSubmit });
-    await user.type(screen.getByLabelText(/name/i), 'Test');
+    await user.type(screen.getByLabelText(/^name/i), 'Test');
     await user.type(screen.getByLabelText(/^amount/i), '10');
     await user.click(screen.getByRole('button', { name: /save/i }));
     expect(onSubmit).toHaveBeenCalledOnce();
@@ -230,7 +235,7 @@ describe('ContractForm – new fields submission', () => {
     const onSubmit = vi.fn();
     const user = userEvent.setup();
     renderForm({ onSubmit });
-    await user.type(screen.getByLabelText(/name/i), 'Test');
+    await user.type(screen.getByLabelText(/^name/i), 'Test');
     await user.type(screen.getByLabelText(/^amount/i), '10');
     await user.click(screen.getByRole('button', { name: /save/i }));
     const payload = onSubmit.mock.calls[0]?.[0] as Record<string, unknown>;
@@ -241,12 +246,59 @@ describe('ContractForm – new fields submission', () => {
     const onSubmit = vi.fn();
     const user = userEvent.setup();
     renderForm({ onSubmit });
-    await user.type(screen.getByLabelText(/name/i), 'Test');
+    await user.type(screen.getByLabelText(/^name/i), 'Test');
     await user.type(screen.getByLabelText(/^amount/i), '10');
     await user.type(screen.getByLabelText(/service url/i), 'https://example.com');
     await user.click(screen.getByRole('button', { name: /save/i }));
     const payload = onSubmit.mock.calls[0]?.[0] as Record<string, unknown>;
     expect(payload.serviceUrl).toBe('https://example.com');
+  });
+});
+
+describe('ContractForm – logo name field', () => {
+  it('renders the logo search name input', () => {
+    renderForm();
+    expect(screen.getByLabelText(/logo search name/i)).toBeInTheDocument();
+  });
+
+  it('logo search name input is empty by default', () => {
+    renderForm();
+    expect(screen.getByLabelText(/logo search name/i)).toHaveValue('');
+  });
+
+  it('pre-fills logo search name from defaultValues', () => {
+    renderForm({ defaultValues: { logoName: 'Maingau Energie' } });
+    expect(screen.getByLabelText(/logo search name/i)).toHaveValue('Maingau Energie');
+  });
+
+  it('renders the logo.dev search link', () => {
+    renderForm();
+    const link = screen.getByRole('link', { name: /logo\.dev/i });
+    expect(link).toBeInTheDocument();
+    expect(link).toHaveAttribute('href', 'https://www.logo.dev/search');
+  });
+
+  it('includes logoName in the submitted payload when set', async () => {
+    const onSubmit = vi.fn();
+    const user = userEvent.setup();
+    renderForm({ onSubmit });
+    await user.type(screen.getByLabelText(/^name/i), 'Maingau');
+    await user.type(screen.getByLabelText(/^amount/i), '30');
+    await user.type(screen.getByLabelText(/logo search name/i), 'Maingau Energie');
+    await user.click(screen.getByRole('button', { name: /save/i }));
+    const payload = onSubmit.mock.calls[0]?.[0] as Record<string, unknown>;
+    expect(payload.logoName).toBe('Maingau Energie');
+  });
+
+  it('sends logoName: null when logo search name is blank', async () => {
+    const onSubmit = vi.fn();
+    const user = userEvent.setup();
+    renderForm({ onSubmit });
+    await user.type(screen.getByLabelText(/^name/i), 'Test');
+    await user.type(screen.getByLabelText(/^amount/i), '10');
+    await user.click(screen.getByRole('button', { name: /save/i }));
+    const payload = onSubmit.mock.calls[0]?.[0] as Record<string, unknown>;
+    expect(payload.logoName).toBeNull();
   });
 });
 
@@ -301,7 +353,7 @@ describe('ContractForm – cancel', () => {
 describe('ContractForm – layout grouping (DOM structure)', () => {
   it('name and category inputs share the same immediate parent wrapper', () => {
     renderForm();
-    const nameInput = screen.getByLabelText(/name/i);
+    const nameInput = screen.getByLabelText(/^name/i);
     const categoryCombobox = getCombobox(/category/i);
     const nameParent = nameInput.closest('[class*="twoColumnRow"]');
     const categoryParent = categoryCombobox.closest('[class*="twoColumnRow"]');
@@ -332,11 +384,13 @@ describe('ContractForm – layout grouping (DOM structure)', () => {
     expect(statusParent).toBe(endParent);
   });
 
-  it('cancellation period section is contained within a half-width wrapper', () => {
+  it('cancellation period and logo name field share the same cancellationLogoRow wrapper', () => {
     renderForm();
     const cancellationLabel = screen.getByText(/cancellation period/i);
-    const halfWrapper = cancellationLabel.closest('[class*="cancellationHalf"]');
-    expect(halfWrapper).not.toBeNull();
+    const logoNameInput = screen.getByLabelText(/logo search name/i);
+    const cancellationParent = cancellationLabel.closest('[class*="cancellationLogoRow"]');
+    expect(cancellationParent).not.toBeNull();
+    expect(cancellationParent).toBe(logoNameInput.closest('[class*="cancellationLogoRow"]'));
   });
 });
 
@@ -362,7 +416,7 @@ describe('ContractForm – anonymize field', () => {
     const onSubmit = vi.fn();
     const user = userEvent.setup();
     renderForm({ onSubmit });
-    await user.type(screen.getByLabelText(/name/i), 'Test');
+    await user.type(screen.getByLabelText(/^name/i), 'Test');
     await user.type(screen.getByLabelText(/^amount/i), '10');
     await user.click(screen.getByRole('button', { name: /save/i }));
     const payload = onSubmit.mock.calls[0]?.[0] as Record<string, unknown>;
@@ -373,7 +427,7 @@ describe('ContractForm – anonymize field', () => {
     const onSubmit = vi.fn();
     const user = userEvent.setup();
     renderForm({ onSubmit });
-    await user.type(screen.getByLabelText(/name/i), 'Test');
+    await user.type(screen.getByLabelText(/^name/i), 'Test');
     await user.type(screen.getByLabelText(/^amount/i), '10');
     await user.click(screen.getByLabelText(/anonymize/i));
     await user.click(screen.getByRole('button', { name: /save/i }));

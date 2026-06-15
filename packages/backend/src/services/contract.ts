@@ -40,6 +40,7 @@ function rowToContract(row: ContractRow): ContractData {
     serviceUrl: row.service_url,
     cancellationPeriod,
     anonymize: row.anonymize !== 0,
+    logoName: row.logo_name ?? null,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
@@ -76,11 +77,11 @@ export class ContractService {
         `INSERT INTO contracts (id, user_id, name, category, amount, billing_interval, status, end_date,
                                 start_date, details, service_url,
                                 cancellation_period_value, cancellation_period_unit,
-                                anonymize, created_at, updated_at)
+                                anonymize, logo_name, created_at, updated_at)
          VALUES (@id, @user_id, @name, @category, @amount, @billing_interval, @status, @end_date,
                  @start_date, @details, @service_url,
                  @cancellation_period_value, @cancellation_period_unit,
-                 @anonymize, @created_at, @updated_at)`,
+                 @anonymize, @logo_name, @created_at, @updated_at)`,
       )
       .run({
         id,
@@ -97,6 +98,7 @@ export class ContractService {
         cancellation_period_value: body.cancellationPeriod?.value ?? null,
         cancellation_period_unit: body.cancellationPeriod?.unit ?? null,
         anonymize: body.anonymize ? 1 : 0,
+        logo_name: body.logoName ?? null,
         created_at: now,
         updated_at: now,
       });
@@ -144,6 +146,7 @@ export class ContractService {
           ? (body.cancellationPeriod?.unit ?? null)
           : existing.cancellation_period_unit,
       anonymize: body.anonymize !== undefined ? (body.anonymize ? 1 : 0) : existing.anonymize,
+      logo_name: body.logoName === undefined ? existing.logo_name : (body.logoName ?? null),
       updated_at: now,
     };
     this.db
@@ -155,7 +158,7 @@ export class ContractService {
              start_date = @start_date, details = @details, service_url = @service_url,
              cancellation_period_value = @cancellation_period_value,
              cancellation_period_unit = @cancellation_period_unit,
-             anonymize = @anonymize,
+             anonymize = @anonymize, logo_name = @logo_name,
              updated_at = @updated_at
          WHERE id = @id`,
       )

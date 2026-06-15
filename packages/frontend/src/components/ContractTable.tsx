@@ -178,7 +178,7 @@ export function ContractTable({
               <Table.Td>
                 <div className={`${classes.nameCell}${isFlipping ? ' animate-name-flip' : ''}`}>
                   <ProviderLogo
-                    name={contract.name}
+                    name={contract.logoName ?? contract.name}
                     isAnonymized={displayAnonymized || contract.anonymize}
                     size={20}
                   />

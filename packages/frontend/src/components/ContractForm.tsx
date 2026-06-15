@@ -38,6 +38,7 @@ interface ContractFormValues {
   cancellationPeriodValue: string | number;
   cancellationPeriodUnit: string;
   anonymize: boolean;
+  logoName: string;
 }
 
 interface ContractFormProps {
@@ -78,6 +79,7 @@ export function ContractForm({
     cancellationPeriodValue: defaultValues?.cancellationPeriodValue ?? '',
     cancellationPeriodUnit: defaultValues?.cancellationPeriodUnit ?? 'MONTHS',
     anonymize: defaultValues?.anonymize ?? false,
+    logoName: defaultValues?.logoName ?? '',
   });
   const [validationError, setValidationError] = useState<string | null>(null);
 
@@ -117,6 +119,7 @@ export function ContractForm({
             }
           : null,
       anonymize: values.anonymize,
+      logoName: values.logoName || null,
     });
   }
 
@@ -282,35 +285,65 @@ export function ContractForm({
           {serviceUrlLink}
         </div>
 
-        <div className={classes.cancellationHalf}>
-          <Text size="sm" fw={500} mb={4}>
-            {t('contractForm.cancellationPeriodLabel')}
-          </Text>
-          <div className={classes.cancellationRow}>
-            <NumberInput
-              id="cancellationPeriodValue"
-              aria-label={t('contractForm.cancellationPeriodLabel')}
-              variant="filled"
-              min={1}
-              value={
-                values.cancellationPeriodValue === '' ? '' : Number(values.cancellationPeriodValue)
-              }
-              onChange={(val) => setValues((v) => ({ ...v, cancellationPeriodValue: val }))}
-              placeholder="e.g. 30"
-              className={classes.cancellationNumber}
-            />
-            <Select
-              id="cancellationPeriodUnit"
-              aria-label={t('contractForm.cancellationUnitAriaLabel')}
-              variant="filled"
-              data={cancellationUnitOptions}
-              value={String(values.cancellationPeriodUnit)}
-              onChange={(val) =>
-                setValues((v) => ({ ...v, cancellationPeriodUnit: val ?? 'MONTHS' }))
-              }
-              allowDeselect={false}
-              className={classes.cancellationUnit}
-            />
+        <div className={classes.cancellationLogoRow}>
+          <div>
+            <Text size="sm" fw={500} mb={4}>
+              {t('contractForm.cancellationPeriodLabel')}
+            </Text>
+            <div className={classes.cancellationRow}>
+              <NumberInput
+                id="cancellationPeriodValue"
+                aria-label={t('contractForm.cancellationPeriodLabel')}
+                variant="filled"
+                min={1}
+                value={
+                  values.cancellationPeriodValue === ''
+                    ? ''
+                    : Number(values.cancellationPeriodValue)
+                }
+                onChange={(val) => setValues((v) => ({ ...v, cancellationPeriodValue: val }))}
+                placeholder="e.g. 30"
+                className={classes.cancellationNumber}
+              />
+              <Select
+                id="cancellationPeriodUnit"
+                aria-label={t('contractForm.cancellationUnitAriaLabel')}
+                variant="filled"
+                data={cancellationUnitOptions}
+                value={String(values.cancellationPeriodUnit)}
+                onChange={(val) =>
+                  setValues((v) => ({ ...v, cancellationPeriodUnit: val ?? 'MONTHS' }))
+                }
+                allowDeselect={false}
+                className={classes.cancellationUnit}
+              />
+            </div>
+          </div>
+
+          <div>
+            <div className={classes.logoNameField}>
+              <TextInput
+                id="logoName"
+                label={t('contractForm.logoNameLabel')}
+                description={t('contractForm.logoNameDescription')}
+                variant="filled"
+                value={String(values.logoName)}
+                onChange={(e) => setValues((v) => ({ ...v, logoName: e.target.value }))}
+                placeholder={t('contractForm.logoNamePlaceholder')}
+                className={classes.logoNameInput}
+              />
+              {values.logoName && <ProviderLogo name={String(values.logoName)} size={24} />}
+            </div>
+            <Anchor
+              href="https://www.logo.dev/search"
+              target="_blank"
+              rel="noopener noreferrer"
+              size="xs"
+              mt={4}
+              display="inline-block"
+            >
+              {t('contractForm.logoNameSearchLink')}
+            </Anchor>
           </div>
         </div>
 

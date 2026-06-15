@@ -102,7 +102,11 @@
     "cancellationPeriodLabel": "Cancellation Period",
     "cancellationUnitAriaLabel": "Cancellation Unit",
     "nameRequired": "Name is required.",
-    "amountInvalid": "Amount must be a non-negative number."
+    "amountInvalid": "Amount must be a non-negative number.",
+    "logoNameLabel": "Logo Search Name",
+    "logoNamePlaceholder": "e.g. Maingau Energie",
+    "logoNameDescription": "Overrides the name used to look up the provider logo. Leave blank to use the contract name.",
+    "logoNameSearchLink": "Find the right name at logo.dev"
   },
   "contractNew": {
     "title": "Add Contract"
