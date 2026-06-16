@@ -31,7 +31,7 @@ interface ContractTableProps {
   getDisplayName?: (contract: ContractData) => string;
 }
 
-function SortIcon({ col, sortState }: { col: SortColumn; sortState: SortState }) {
+function SortIcon({ col, sortState }: Readonly<{ col: SortColumn; sortState: SortState }>) {
   if (sortState.column === col) {
     return sortState.direction === 'asc' ? (
       <IconChevronUp
@@ -67,13 +67,13 @@ export function ContractTable({
   onDelete,
   isAnonymized = false,
   getDisplayName,
-}: ContractTableProps) {
+}: Readonly<ContractTableProps>) {
   const { t } = useTranslation();
   const { formatCurrency, formatDate } = useLocaleFormat();
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const [sortState, setSortState] = useState<SortState>({ column: null, direction: null });
   const [currentPage, setCurrentPage] = useState(1);
-  const PAGE_SIZE = 15;
+  const PAGE_SIZE = 12;
 
   const sortedContracts = (() => {
     const col = sortState.column ?? 'name';
