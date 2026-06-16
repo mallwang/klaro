@@ -28,7 +28,7 @@ export function ContractList() {
   }, [isError, t]);
 
   return (
-    <Stack gap="lg">
+    <Stack gap="lg" maw={900} mx="auto">
       <Group justify="space-between" align="flex-end">
         <Title order={2}>{t('contractList.title')}</Title>
         <Group gap="xs">
