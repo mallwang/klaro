@@ -476,7 +476,44 @@ Email templates must exist for every language the UI supports. When a new UI lan
 
 ---
 
-## 13. Contract fields reference
+## 13. Updating a self-hosted instance
+
+Klaro is distributed as a Docker image on Docker Hub (`walefish/klaro`). Updating to the latest version requires no source checkout.
+
+### How to update
+
+1. Open a terminal in the directory that contains your `docker-compose.yml` file.
+2. Pull the new image and restart the container:
+
+   ```bash
+   docker compose pull
+   docker compose up -d
+   ```
+
+Docker replaces the running container with the new image. Your database (stored in `./data/contracts.db` by default) is mounted as a volume and is never touched during an update.
+
+### Version tags
+
+Each release publishes two Docker tags:
+
+| Tag | Meaning |
+|-----|---------|
+| `walefish/klaro:latest` | Always points to the most recent stable release |
+| `walefish/klaro:vX.Y.Z` | A pinned version (e.g., `v1.2.0`), immutable once pushed |
+
+`docker-compose.yml` uses `latest` by default. To pin to a specific release, edit the `image:` line:
+
+```yaml
+image: walefish/klaro:v1.2.0
+```
+
+### Checking the running version
+
+After updating, open the browser developer tools → Network → any API request → Response Headers. The `x-klaro-version` header shows the running version. Alternatively, check the Docker Hub tags page (`hub.docker.com/r/walefish/klaro/tags`) to compare digests.
+
+---
+
+## 14. Contract fields reference
 
 | Field | Required | Constraints | Notes |
 |-------|----------|-------------|-------|

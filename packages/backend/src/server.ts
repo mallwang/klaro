@@ -4,6 +4,7 @@ import cookie from '@fastify/cookie';
 import fastifyStatic from '@fastify/static';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
+import { readFileSync } from 'node:fs';
 import type Database from 'better-sqlite3';
 import type { SessionUser } from '@pcm/shared';
 import { dashboardRoutes } from './routes/dashboard.js';
@@ -20,6 +21,11 @@ import type { MailerService } from './services/mailer.service.js';
  * Fastify application factory and shared type augmentations for per-request session data,
  * service decorators, and session cookie constants.
  */
+
+const rootPkg = JSON.parse(
+  readFileSync(join(dirname(fileURLToPath(import.meta.url)), '../../../package.json'), 'utf-8'),
+) as { version?: string };
+const APP_VERSION = rootPkg.version ?? 'unknown';
 
 export { SESSION_COOKIE_NAME, toSessionUser };
 
@@ -57,7 +63,8 @@ function isPublicRoute(method: string, url: string): boolean {
 
 /**
  * Constructs and configures the Fastify application instance with all plugins, routes, and
- * the session authentication hook.
+ * the session authentication hook. Every response carries an `x-klaro-version` header set
+ * to the version from the workspace root `package.json`.
  *
  * @param db - The open SQLite database connection to expose as a Fastify decorator
  * @param options - Optional server configuration
@@ -106,6 +113,10 @@ export async function buildServer(
       error: error.name,
       message: error.message,
     });
+  });
+
+  fastify.addHook('onSend', async (_request, reply) => {
+    reply.header('x-klaro-version', APP_VERSION);
   });
 
   await fastify.register(authRoutes);

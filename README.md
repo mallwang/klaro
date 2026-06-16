@@ -93,15 +93,13 @@ packages/
 
 ## Deployment
 
-The app can be packaged as a single Docker image and self-hosted, e.g. on a homeserver.
+The app is published to Docker Hub as [`walefish/klaro`](https://hub.docker.com/r/walefish/klaro). You can self-host it on any machine with Docker — no source checkout required.
 
 **Prerequisites**: [Docker](https://docs.docker.com/get-docker/) and Docker Compose (bundled with Docker Desktop / `docker compose`).
 
 ```bash
-# Build the image
-docker build -t pcm .
-
-# Start the app (also creates ./data on first run)
+# Pull the latest image and start the app
+docker compose pull
 docker compose up -d
 ```
 
@@ -112,6 +110,25 @@ On first start with a fresh database, the bootstrap administrator account's emai
 **Changing the host port**: edit the `ports:` line in `docker-compose.yml` — only the left-hand side (host port) needs to change, e.g. `"9090:3000"` exposes the app on port 9090.
 
 **Changing the database location**: edit the `volumes:` line in `docker-compose.yml` to point at any host directory, e.g. `/mnt/storage/pcm-data:/data`.
+
+**Updating to a newer version**: run `docker compose pull && docker compose up -d` — Docker pulls the new `latest` image and restarts the container. Your data is untouched.
+
+## Releases
+
+Releases follow [Conventional Commits](https://www.conventionalcommits.org/) and [Semantic Versioning](https://semver.org/). Each release produces:
+
+- A version bump in `package.json`
+- A new entry in `CHANGELOG.md`
+- A git tag `vX.Y.Z`
+- A Docker image pushed to `walefish/klaro` with both `latest` and `vX.Y.Z` tags
+
+**For maintainers** — to cut a release, run the `/release` Claude skill in Claude Code:
+
+```
+/release
+```
+
+The skill guides you through a dry-run preview, asks for confirmation, runs `pnpm run release`, verifies the result, and generates formatted GitHub Release notes. After approval, run `git push --follow-tags` to publish the tag and trigger the Docker CI workflow automatically.
 
 ## Database scripts
 

@@ -43,6 +43,32 @@ section and **before** the first class, function, or exported symbol:
 
 One or two sentences maximum. Describes the module's role, not its contents.
 
+## GitHub CLI (`gh`)
+
+Use the `gh` CLI for GitHub-specific interactions (PRs, CI runs, issues, releases).
+Use plain `git` for all standard repository workflow operations (commit, pull, push,
+branch, merge, rebase, log, diff, etc.). Never use raw `curl` against the GitHub API
+when `gh` can do the same job.
+
+**Typical read operations** (run freely, no confirmation needed):
+- View PR status, checks, and reviews: `gh pr view`, `gh pr checks`
+- List and inspect failed CI runs: `gh run list`, `gh run view`, `gh run view --log-failed`
+- List issues and PRs: `gh issue list`, `gh pr list`
+- View PR comments: `gh api repos/{owner}/{repo}/pulls/{number}/comments`
+
+**Write / delete operations** (ALWAYS ask for explicit confirmation before running):
+- Creating a PR: `gh pr create`
+- Merging a PR: `gh pr merge`
+- Closing or reopening issues or PRs: `gh issue close`, `gh pr close`
+- Pushing or force-pushing: `gh` commands that trigger a push
+- Deleting branches, releases, or tags: `gh branch delete`, `gh release delete`
+- Posting comments or reviews: `gh pr comment`, `gh pr review`
+- Any `gh api` call using `--method POST/PATCH/PUT/DELETE`
+
+**Rule**: before running any write or delete command, state the exact command you intend
+to run and wait for the user to type an explicit "yes" or "go ahead". Never infer consent
+from earlier in the conversation.
+
 ## SonarCloud Code Quality
 
 A SonarQube MCP server is configured for this project. Use it to check code quality after
@@ -69,5 +95,5 @@ CI scan has run on a branch or PR.
 <!-- SPECKIT START -->
 For additional context about technologies to be used, project structure,
 shell commands, and other important information, read the current plan
-at specs/029-compact-contracts-table/plan.md
+at specs/030-release-versioning/plan.md
 <!-- SPECKIT END -->
