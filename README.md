@@ -41,8 +41,8 @@ For a full walkthrough of the UI, see [docs/user-guide.md](docs/user-guide.md).
 
 ## Prerequisites
 
-- Node.js 22+
-- pnpm 9+
+- Node.js 24+
+- pnpm 10+
 
 ## Getting started
 

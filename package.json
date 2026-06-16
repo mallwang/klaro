@@ -7,7 +7,7 @@
     "url": "https://github.com/mallwang/klaro"
   },
   "engines": {
-    "node": ">=22",
+    "node": ">=24",
     "pnpm": ">=10"
   },
   "type": "module",

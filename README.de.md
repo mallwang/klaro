@@ -41,8 +41,8 @@ Eine vollständige Anleitung zur Benutzeroberfläche findest du unter [docs/user
 
 ## Voraussetzungen
 
-- Node.js 22+
-- pnpm 9+
+- Node.js 24+
+- pnpm 10+
 
 ## Erste Schritte
 
