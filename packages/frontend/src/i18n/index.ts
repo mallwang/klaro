@@ -3,7 +3,9 @@ import { initReactI18next } from 'react-i18next';
 /**
  * Internationalization setup for the frontend application. Initializes i18next with
  * English and German translations and persists the user's language preference to localStorage.
+ * Importing dayjs locale here makes it available globally for DatesProvider.
  */
+import 'dayjs/locale/de';
 import en from './locales/en.json';
 import de from './locales/de.json';
 

@@ -32,7 +32,7 @@ packages/frontend/tests/unit/
 
 **Purpose**: Add the new `@mantine/dates` and `dayjs` packages required by both user stories.
 
-- [ ] T001 Add `@mantine/dates@^7` and `dayjs` to `packages/frontend/package.json` by running `pnpm add @mantine/dates dayjs` from `packages/frontend/`
+- [X] T001 Add `@mantine/dates@^7` and `dayjs` to `packages/frontend/package.json` by running `pnpm add @mantine/dates dayjs` from `packages/frontend/`
 
 **Checkpoint**: `packages/frontend/package.json` lists both new packages; `pnpm install` is clean.
 
@@ -62,14 +62,14 @@ is saved correctly.
 
 > **Write these tests FIRST, confirm they FAIL, then implement.**
 
-- [ ] T002 [US1] Update the existing test `'amount field has a visible EUR currency prefix when a value is set'` in `packages/frontend/tests/unit/ContractForm.test.tsx` — change assertion from `toHaveDisplayValue(/€/)` to check that an element with text `EUR` is visible alongside the amount input (e.g. `screen.getByText('EUR')`)
-- [ ] T003 [P] [US1] Add new test `'amount EUR badge is always visible regardless of input value'` in `packages/frontend/tests/unit/ContractForm.test.tsx` — render with no defaultValues, assert `screen.getByText('EUR')` is present
-- [ ] T004 [P] [US1] Add new test `'amount field does not show a € symbol in the input value'` in `packages/frontend/tests/unit/ContractForm.test.tsx` — render with `defaultValues: { amount: '100' }`, assert the amount input display value does NOT contain `€`
+- [X] T002 [US1] Update the existing test `'amount field has a visible EUR currency prefix when a value is set'` in `packages/frontend/tests/unit/ContractForm.test.tsx` — change assertion from `toHaveDisplayValue(/€/)` to check that an element with text `EUR` is visible alongside the amount input (e.g. `screen.getByText('EUR')`)
+- [X] T003 [P] [US1] Add new test `'amount EUR badge is always visible regardless of input value'` in `packages/frontend/tests/unit/ContractForm.test.tsx` — render with no defaultValues, assert `screen.getByText('EUR')` is present
+- [X] T004 [P] [US1] Add new test `'amount field does not show a € symbol in the input value'` in `packages/frontend/tests/unit/ContractForm.test.tsx` — render with `defaultValues: { amount: '100' }`, assert the amount input display value does NOT contain `€`
 
 ### Implementation for User Story 1
 
-- [ ] T005 [US1] In `packages/frontend/src/components/ContractForm.tsx`: replace the `NumberInput` for `amount` (the one with `prefix="€"`) — remove `prefix="€"`, add `rightSection={<Text size="sm" fw={500} c="dimmed" pr="xs">EUR</Text>}` and `rightSectionWidth={52}`. Confirm `Text` is already imported from `@mantine/core`.
-- [ ] T006 [US1] Update the file-level JSDoc block in `packages/frontend/src/components/ContractForm.tsx` and the `ContractForm` function JSDoc to reflect the currency badge change
+- [X] T005 [US1] In `packages/frontend/src/components/ContractForm.tsx`: replace the `NumberInput` for `amount` (the one with `prefix="€"`) — remove `prefix="€"`, add `rightSection={<Text size="sm" fw={500} c="dimmed" pr="xs">EUR</Text>}` and `rightSectionWidth={52}`. Confirm `Text` is already imported from `@mantine/core`.
+- [X] T006 [US1] Update the file-level JSDoc block in `packages/frontend/src/components/ContractForm.tsx` and the `ContractForm` function JSDoc to reflect the currency badge change
 
 **Checkpoint**: Run `pnpm --filter @pcm/frontend test` — all US1 tests pass and no regressions.
 
@@ -90,19 +90,19 @@ is empty. Submit without a date and verify `startDate: null` is sent.
 
 > **Write these tests FIRST, confirm they FAIL, then implement.**
 
-- [ ] T007 [US2] Update test `'pre-filled status, start date, and end date appear in the same statusDateRow wrapper'` in `packages/frontend/tests/unit/ContractForm.test.tsx` — replace `screen.getByDisplayValue('2025-01-01')` with `screen.getByLabelText(/start date/i)` and `screen.getByDisplayValue('2025-12-31')` with `screen.getByLabelText(/end date/i)`
-- [ ] T008 [P] [US2] Add new test `'start date DatePickerInput is pre-populated from defaultValues'` in `packages/frontend/tests/unit/ContractForm.test.tsx` — render with `defaultValues: { startDate: '2026-03-15' }`, assert `screen.getByLabelText(/start date/i)` has display value `'2026-03-15'`
-- [ ] T009 [P] [US2] Add new test `'end date DatePickerInput is pre-populated from defaultValues'` in `packages/frontend/tests/unit/ContractForm.test.tsx` — render with `defaultValues: { endDate: '2026-12-31' }`, assert `screen.getByLabelText(/end date/i)` has display value `'2026-12-31'`
-- [ ] T010 [P] [US2] Add new test `'start date submits as ISO string when pre-populated'` in `packages/frontend/tests/unit/ContractForm.test.tsx` — render with `defaultValues: { startDate: '2026-06-01', name: 'Test', amount: '10' }`, submit, assert `payload.startDate === '2026-06-01'`
-- [ ] T011 [P] [US2] Add new test `'end date submits as null when field is empty'` in `packages/frontend/tests/unit/ContractForm.test.tsx` — render with no defaultValues, fill name + amount, submit, assert `payload.endDate === null`
+- [X] T007 [US2] Update test `'pre-filled status, start date, and end date appear in the same statusDateRow wrapper'` in `packages/frontend/tests/unit/ContractForm.test.tsx` — replace `screen.getByDisplayValue('2025-01-01')` with `screen.getByLabelText(/start date/i)` and `screen.getByDisplayValue('2025-12-31')` with `screen.getByLabelText(/end date/i)`
+- [X] T008 [P] [US2] Add new test `'start date DatePickerInput is pre-populated from defaultValues'` in `packages/frontend/tests/unit/ContractForm.test.tsx` — render with `defaultValues: { startDate: '2026-03-15' }`, assert `screen.getByLabelText(/start date/i)` has display value `'2026-03-15'`
+- [X] T009 [P] [US2] Add new test `'end date DatePickerInput is pre-populated from defaultValues'` in `packages/frontend/tests/unit/ContractForm.test.tsx` — render with `defaultValues: { endDate: '2026-12-31' }`, assert `screen.getByLabelText(/end date/i)` has display value `'2026-12-31'`
+- [X] T010 [P] [US2] Add new test `'start date submits as ISO string when pre-populated'` in `packages/frontend/tests/unit/ContractForm.test.tsx` — render with `defaultValues: { startDate: '2026-06-01', name: 'Test', amount: '10' }`, submit, assert `payload.startDate === '2026-06-01'`
+- [X] T011 [P] [US2] Add new test `'end date submits as null when field is empty'` in `packages/frontend/tests/unit/ContractForm.test.tsx` — render with no defaultValues, fill name + amount, submit, assert `payload.endDate === null`
 
 ### Implementation for User Story 2
 
-- [ ] T012 [US2] In `packages/frontend/src/components/ContractForm.tsx`: update `ContractFormValues` interface — change `startDate: string` to `startDate: Date | null` and `endDate: string` to `endDate: Date | null`
-- [ ] T013 [US2] In `packages/frontend/src/components/ContractForm.tsx`: update `useState` initial values for `startDate` and `endDate` — convert incoming ISO strings to `Date | null`: `startDate: defaultValues?.startDate ? new Date(defaultValues.startDate) : null`; same pattern for `endDate`
-- [ ] T014 [US2] In `packages/frontend/src/components/ContractForm.tsx`: update the `handleSubmit` function — convert `values.startDate` (`Date | null`) to ISO string: `startDate: values.startDate ? values.startDate.toISOString().slice(0, 10) : null`; same for `endDate`
-- [ ] T015 [US2] In `packages/frontend/src/components/ContractForm.tsx`: add import `import { DatePickerInput } from '@mantine/dates';` and `import '@mantine/dates/styles.css';` after the existing `@mantine/core` import
-- [ ] T016 [US2] In `packages/frontend/src/components/ContractForm.tsx`: replace the two `TextInput type="date"` elements in the `statusDateRow` div — replace start date `TextInput` with `<DatePickerInput id="startDate" label={t('contractForm.startDateLabel')} variant="filled" value={values.startDate} onChange={(val) => setValues((v) => ({ ...v, startDate: val }))} valueFormat="YYYY-MM-DD" clearable />` and end date `TextInput` with the equivalent for `endDate`
+- [X] T012 [US2] In `packages/frontend/src/components/ContractForm.tsx`: update `ContractFormValues` interface — change `startDate: string` to `startDate: Date | null` and `endDate: string` to `endDate: Date | null`
+- [X] T013 [US2] In `packages/frontend/src/components/ContractForm.tsx`: update `useState` initial values for `startDate` and `endDate` — convert incoming ISO strings to `Date | null`: `startDate: defaultValues?.startDate ? new Date(defaultValues.startDate) : null`; same pattern for `endDate`
+- [X] T014 [US2] In `packages/frontend/src/components/ContractForm.tsx`: update the `handleSubmit` function — convert `values.startDate` (`Date | null`) to ISO string: `startDate: values.startDate ? values.startDate.toISOString().slice(0, 10) : null`; same for `endDate`
+- [X] T015 [US2] In `packages/frontend/src/components/ContractForm.tsx`: add import `import { DatePickerInput } from '@mantine/dates';` and `import '@mantine/dates/styles.css';` after the existing `@mantine/core` import
+- [X] T016 [US2] In `packages/frontend/src/components/ContractForm.tsx`: replace the two `TextInput type="date"` elements in the `statusDateRow` div — replace start date `TextInput` with `<DatePickerInput id="startDate" label={t('contractForm.startDateLabel')} variant="filled" value={values.startDate} onChange={(val) => setValues((v) => ({ ...v, startDate: val }))} valueFormat="YYYY-MM-DD" clearable />` and end date `TextInput` with the equivalent for `endDate`
 
 **Checkpoint**: Run `pnpm --filter @pcm/frontend test` — all US2 tests pass and all US1 tests still pass.
 
@@ -112,11 +112,11 @@ is empty. Submit without a date and verify `startDate: null` is sent.
 
 **Purpose**: Type safety, documentation, and final validation.
 
-- [ ] T017 [P] Run `pnpm tsc --noEmit` (or `pnpm --filter @pcm/frontend build`) from repo root — zero TypeScript errors required
-- [ ] T018 [P] Run `pnpm --filter @pcm/frontend test` — all tests green; note count in commit message
-- [ ] T019 Update `README.md` and `README.de.md` at repo root — add a note that the contract form now uses a Mantine currency input and date pickers
-- [ ] T020 [P] Update `docs/user-guide.md` and `docs/user-guide.de.md` — document the new amount field (EUR badge) and date picker (calendar popup with clear button) from a user perspective
-- [ ] T021 Start dev server (`pnpm --filter @pcm/frontend dev`) and run through the quickstart.md visual checks in `specs/027-mantine-form-inputs/quickstart.md` — verify currency badge, date picker popover, pre-population in edit mode, and clear/deselect behaviour
+- [X] T017 [P] Run `pnpm tsc --noEmit` (or `pnpm --filter @pcm/frontend build`) from repo root — zero TypeScript errors required
+- [X] T018 [P] Run `pnpm --filter @pcm/frontend test` — all tests green; note count in commit message
+- [X] T019 Update `README.md` and `README.de.md` at repo root — add a note that the contract form now uses a Mantine currency input and date pickers
+- [X] T020 [P] Update `docs/user-guide.md` and `docs/user-guide.de.md` — document the new amount field (EUR badge) and date picker (calendar popup with clear button) from a user perspective
+- [X] T021 Start dev server (`pnpm --filter @pcm/frontend dev`) and run through the quickstart.md visual checks in `specs/027-mantine-form-inputs/quickstart.md` — verify currency badge, date picker popover, pre-population in edit mode, and clear/deselect behaviour
 
 ---
 

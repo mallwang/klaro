@@ -17,6 +17,8 @@ import {
   ColorSchemeScript,
 } from '@mantine/core';
 import { Notifications } from '@mantine/notifications';
+import { DatesProvider } from '@mantine/dates';
+import { useTranslation } from 'react-i18next';
 import { Dashboard } from './pages/Dashboard.js';
 import { ContractList } from './pages/ContractList.js';
 import { ContractNew } from './pages/ContractNew.js';
@@ -32,6 +34,15 @@ import { AccountsAdmin } from './pages/admin/AccountsAdmin.js';
 import { AppShell } from './components/AppShell/AppShell.js';
 import { RequireAuth } from './components/RequireAuth.js';
 import { RequireAdmin } from './components/RequireAdmin.js';
+
+/**
+ * Passes the active i18next language to Mantine's DatesProvider so the calendar
+ * popover shows localised month and weekday names.
+ */
+function LocalizedDatesProvider({ children }: { readonly children: React.ReactNode }) {
+  const { i18n } = useTranslation();
+  return <DatesProvider settings={{ locale: i18n.language }}>{children}</DatesProvider>;
+}
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -57,42 +68,44 @@ createRoot(root).render(
       defaultColorScheme="auto"
     >
       <Notifications position="top-right" />
-      <QueryClientProvider client={queryClient}>
-        <BrowserRouter>
-          <Routes>
-            <Route path="/sign-in" element={<SignIn />} />
-            <Route path="/invitations/:token" element={<AcceptInvitation />} />
-            <Route path="/email-change/confirm/:token" element={<EmailVerifyConfirm />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route path="/reset-password/:token" element={<ResetPassword />} />
-            <Route
-              path="*"
-              element={
-                <RequireAuth>
-                  <AppShell>
-                    <Routes>
-                      <Route path="/" element={<Dashboard />} />
-                      <Route path="/contracts" element={<ContractList />} />
-                      <Route path="/contracts/new" element={<ContractNew />} />
-                      <Route path="/contracts/import" element={<ContractImport />} />
-                      <Route path="/contracts/:id/edit" element={<ContractEdit />} />
-                      <Route path="/account" element={<AccountSettings />} />
-                      <Route
-                        path="/admin/accounts"
-                        element={
-                          <RequireAdmin>
-                            <AccountsAdmin />
-                          </RequireAdmin>
-                        }
-                      />
-                    </Routes>
-                  </AppShell>
-                </RequireAuth>
-              }
-            />
-          </Routes>
-        </BrowserRouter>
-      </QueryClientProvider>
+      <LocalizedDatesProvider>
+        <QueryClientProvider client={queryClient}>
+          <BrowserRouter>
+            <Routes>
+              <Route path="/sign-in" element={<SignIn />} />
+              <Route path="/invitations/:token" element={<AcceptInvitation />} />
+              <Route path="/email-change/confirm/:token" element={<EmailVerifyConfirm />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/reset-password/:token" element={<ResetPassword />} />
+              <Route
+                path="*"
+                element={
+                  <RequireAuth>
+                    <AppShell>
+                      <Routes>
+                        <Route path="/" element={<Dashboard />} />
+                        <Route path="/contracts" element={<ContractList />} />
+                        <Route path="/contracts/new" element={<ContractNew />} />
+                        <Route path="/contracts/import" element={<ContractImport />} />
+                        <Route path="/contracts/:id/edit" element={<ContractEdit />} />
+                        <Route path="/account" element={<AccountSettings />} />
+                        <Route
+                          path="/admin/accounts"
+                          element={
+                            <RequireAdmin>
+                              <AccountsAdmin />
+                            </RequireAdmin>
+                          }
+                        />
+                      </Routes>
+                    </AppShell>
+                  </RequireAuth>
+                }
+              />
+            </Routes>
+          </BrowserRouter>
+        </QueryClientProvider>
+      </LocalizedDatesProvider>
     </MantineProvider>
   </StrictMode>,
 );
