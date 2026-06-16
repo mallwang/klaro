@@ -248,7 +248,12 @@ export function AccountSettings() {
         <Title order={2}>{t('accountSettings.title')}</Title>
 
         {/* Email Settings section */}
-        <Title order={3}>{t('accountSettings.emailSettingsSectionTitle')}</Title>
+        <Stack gap={4}>
+          <Title order={3}>{t('accountSettings.emailSettingsSectionTitle')}</Title>
+          <Text size="sm" c="dimmed">
+            {t('accountSettings.emailSettingsSectionDescription')}
+          </Text>
+        </Stack>
 
         <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="lg">
           {/* Summary Email */}
@@ -324,7 +329,12 @@ export function AccountSettings() {
         <Divider my="md" />
 
         {/* Account section */}
-        <Title order={3}>{t('accountSettings.accountSectionTitle')}</Title>
+        <Stack gap={4}>
+          <Title order={3}>{t('accountSettings.accountSectionTitle')}</Title>
+          <Text size="sm" c="dimmed">
+            {t('accountSettings.accountSectionDescription')}
+          </Text>
+        </Stack>
 
         <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="lg">
           {/* Display Name */}

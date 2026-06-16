@@ -301,16 +301,16 @@ describe('AccountSettings – Email Language section', () => {
     expect(screen.getAllByText(/email language/i).length).toBeGreaterThan(0);
   });
 
-  it('renders English and Deutsch options', () => {
+  it('renders English and German options', () => {
     renderAccountSettings();
     expect(screen.getByText('English')).toBeInTheDocument();
-    expect(screen.getByText('Deutsch')).toBeInTheDocument();
+    expect(screen.getByText('German')).toBeInTheDocument();
   });
 
-  it('calls updatePreferences with emailLanguage "de" when Deutsch is selected and saved', async () => {
+  it('calls updatePreferences with emailLanguage "de" when German is selected and saved', async () => {
     const user = userEvent.setup();
     renderAccountSettings();
-    await user.click(screen.getByText('Deutsch'));
+    await user.click(screen.getByText('German'));
     await user.click(screen.getByRole('button', { name: /save email language/i }));
     expect(updatePreferences).toHaveBeenCalledWith(
       expect.objectContaining({ emailLanguage: 'de' }),

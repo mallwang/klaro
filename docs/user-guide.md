@@ -369,6 +369,8 @@ To add someone to the household, go to **Accounts** in the admin sidebar section
 
 The invitations table shows all past invitations and their status:
 
+> **Automatic cleanup**: Accepted, withdrawn, and superseded invitation records are automatically removed after 30 days. Pending invitations that have already expired are removed on the next server restart.
+
 | Status | Meaning |
 |--------|---------|
 | Pending | Sent, not yet accepted |

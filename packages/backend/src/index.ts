@@ -38,9 +38,8 @@ try {
 const server = await buildServer(db, { mailer });
 await server.listen({ port: parseInt(process.env['PORT'] ?? '3000'), host: '0.0.0.0' });
 
-if (mailer) {
-  const appUrl = process.env['APP_URL'] ?? 'http://localhost:5173';
-  const notificationService = new NotificationService(db, mailer, appUrl);
-  const scheduler = new SchedulerService(notificationService);
-  scheduler.start();
-}
+const notification = mailer
+  ? new NotificationService(db, mailer, process.env['APP_URL'] ?? 'http://localhost:5173')
+  : undefined;
+const scheduler = new SchedulerService(() => purgeStaleInvitations(db), notification);
+scheduler.start();

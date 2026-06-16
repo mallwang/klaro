@@ -14,6 +14,7 @@ import {
   Center,
   Modal,
   Divider,
+  Box,
 } from '@mantine/core';
 import type { Account, Invitation } from '@pcm/shared';
 import { AuthError } from '../../services/auth.js';
@@ -60,10 +61,15 @@ function localeDate(iso: string): string {
  * @param invitation - the invitation whose status to display
  * @returns a coloured Badge element
  */
-function InvitationStatusBadge({ invitation }: { invitation: Invitation }) {
+function InvitationStatusBadge({ invitation }: Readonly<{ invitation: Invitation }>) {
   const { t } = useTranslation();
   const isExpired = invitation.status === 'PENDING' && new Date(invitation.expiresAt) < new Date();
-  if (isExpired) return <Badge color="gray">{t('accountsAdmin.statusExpired')}</Badge>;
+  if (isExpired)
+    return (
+      <Badge color="gray" variant="light">
+        {t('accountsAdmin.statusExpired')}
+      </Badge>
+    );
   const config: Record<string, { color: string; label: string }> = {
     PENDING: { color: 'yellow', label: t('accountsAdmin.statusPending') },
     ACCEPTED: { color: 'green', label: t('accountsAdmin.statusAccepted') },
@@ -72,7 +78,11 @@ function InvitationStatusBadge({ invitation }: { invitation: Invitation }) {
   };
   const c = config[invitation.status];
   if (!c) return <span>{invitation.status}</span>;
-  return <Badge color={c.color}>{c.label}</Badge>;
+  return (
+    <Badge color={c.color} variant="light">
+      {c.label}
+    </Badge>
+  );
 }
 
 /**
@@ -143,6 +153,20 @@ function TestEmailForm() {
 function InvitationsTable() {
   const { t } = useTranslation();
   const { data: invitations, isLoading } = useInvitations();
+
+  /**
+   * Returns a localised date label describing the invitation's last relevant action or expiry.
+   *
+   * @param inv - the invitation to describe
+   * @returns a formatted date string with a contextual prefix
+   */
+  function invitationDateLabel(inv: Invitation): string {
+    if (inv.status === 'ACCEPTED' && inv.acceptedAt)
+      return `${t('accountsAdmin.acceptedOn')} ${localeDate(inv.acceptedAt)}`;
+    if (inv.status === 'CANCELLED' && inv.cancelledAt)
+      return `${t('accountsAdmin.withdrawnOn')} ${localeDate(inv.cancelledAt)}`;
+    return `${t('accountsAdmin.expiresOn')} ${localeDate(inv.expiresAt)}`;
+  }
   const { mutate: cancelInvitation } = useCancelInvitation();
   const { mutate: resendInvitation } = useResendInvitation();
 
@@ -185,13 +209,7 @@ function InvitationsTable() {
                     <InvitationStatusBadge invitation={inv} />
                   </Table.Td>
                   <Table.Td>{localeDate(inv.createdAt)}</Table.Td>
-                  <Table.Td>
-                    {inv.status === 'ACCEPTED' && inv.acceptedAt
-                      ? `${t('accountsAdmin.acceptedOn')} ${localeDate(inv.acceptedAt)}`
-                      : inv.status === 'CANCELLED' && inv.cancelledAt
-                        ? `${t('accountsAdmin.withdrawnOn')} ${localeDate(inv.cancelledAt)}`
-                        : `${t('accountsAdmin.expiresOn')} ${localeDate(inv.expiresAt)}`}
-                  </Table.Td>
+                  <Table.Td>{invitationDateLabel(inv)}</Table.Td>
                   <Table.Td>
                     <Group gap="xs">
                       {(canAct || isExpired) && (
@@ -223,6 +241,31 @@ function InvitationsTable() {
       </Table.ScrollContainer>
     </Paper>
   );
+}
+
+/**
+ * Returns true when the given email has been reassigned to an archived-account placeholder address.
+ *
+ * @param email - the account email to check
+ * @returns true if the email ends with the archived-account domain
+ */
+function isEmailReassigned(email: string): boolean {
+  return email.endsWith('@archived.invalid');
+}
+
+/**
+ * Derives up-to-two uppercase initials from a display name.
+ *
+ * @param name - the user's display name
+ * @returns initials string (1–2 characters, uppercase)
+ */
+function userInitials(name: string): string {
+  return name
+    .split(' ')
+    .map((n) => n[0] ?? '')
+    .join('')
+    .toUpperCase()
+    .slice(0, 2);
 }
 
 /**
@@ -299,16 +342,6 @@ export function AccountsAdmin() {
   }, [isError, t]);
 
   /**
-   * Returns true when the given email has been reassigned to an archived-account placeholder address.
-   *
-   * @param email - the account email to check
-   * @returns true if the email ends with the archived-account domain
-   */
-  function isEmailReassigned(email: string): boolean {
-    return email.endsWith('@archived.invalid');
-  }
-
-  /**
    * Returns true when at least one other active admin account exists besides the given account.
    *
    * @param account - the account to check against
@@ -317,21 +350,6 @@ export function AccountsAdmin() {
   function otherActiveAdminExists(account: Account): boolean {
     if (!accounts) return false;
     return accounts.some((a) => a.id !== account.id && a.role === 'ADMIN' && a.status === 'ACTIVE');
-  }
-
-  /**
-   * Derives up-to-two uppercase initials from a display name.
-   *
-   * @param name - the user's display name
-   * @returns initials string (1–2 characters, uppercase)
-   */
-  function userInitials(name: string): string {
-    return name
-      .split(' ')
-      .map((n) => n[0] ?? '')
-      .join('')
-      .toUpperCase()
-      .slice(0, 2);
   }
 
   return (
@@ -387,7 +405,7 @@ export function AccountsAdmin() {
                         </Text>
                       </Table.Td>
                       <Table.Td>
-                        <Badge color={account.role === 'ADMIN' ? 'blue' : 'gray'} variant="light">
+                        <Badge color={account.role === 'ADMIN' ? 'red' : 'blue'} variant="light">
                           {account.role === 'ADMIN'
                             ? t('accountsAdmin.roleAdmin')
                             : t('accountsAdmin.roleMember')}
@@ -487,7 +505,12 @@ export function AccountsAdmin() {
       <Divider my="md" />
 
       {/* Invitations section — inline invite form above the invitations table */}
-      <Title order={3}>{t('accountsAdmin.pendingInvitationsTitle')}</Title>
+      <Stack gap={4}>
+        <Title order={3}>{t('accountsAdmin.pendingInvitationsTitle')}</Title>
+        <Text size="sm" c="dimmed">
+          {t('accountsAdmin.pendingInvitationsDescription')}
+        </Text>
+      </Stack>
 
       <form onSubmit={handleInviteSubmit}>
         <Group align="flex-end" gap="sm">
@@ -511,11 +534,15 @@ export function AccountsAdmin() {
       <Divider my="md" />
 
       {/* Test email — diagnostic utility, shown last */}
-      <Title order={3}>{t('accountsAdmin.testEmailTitle')}</Title>
-      <Text size="sm" c="dimmed">
-        {t('accountsAdmin.testEmailDescription')}
-      </Text>
-      <TestEmailForm />
+      <Stack gap={4}>
+        <Title order={3}>{t('accountsAdmin.testEmailTitle')}</Title>
+        <Text size="sm" c="dimmed">
+          {t('accountsAdmin.testEmailDescription')}
+        </Text>
+      </Stack>
+      <Box maw="50%">
+        <TestEmailForm />
+      </Box>
 
       <Modal
         opened={confirmDeleteId !== null}

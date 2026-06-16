@@ -369,6 +369,8 @@ Um jemanden zum Haushalt hinzuzufügen, öffne **Konten** im Admin-Bereich der S
 
 Die Einladungstabelle zeigt alle bisherigen Einladungen und ihren Status:
 
+> **Automatische Bereinigung**: Angenommene, zurückgezogene und ersetzte Einladungseinträge werden nach 30 Tagen automatisch entfernt. Ausstehende Einladungen, die bereits abgelaufen sind, werden beim nächsten Neustart des Servers entfernt.
+
 | Status | Bedeutung |
 |--------|----------|
 | Ausstehend | Gesendet, noch nicht angenommen |
