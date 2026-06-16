@@ -13,6 +13,8 @@ services:
       # SMTP_PASSWORD: your-smtp-password
       # SMTP_FROM: noreply@example.com
       # APP_URL: https://your-app-domain.com
+      # Logo.dev token for provider logo images (get yours at https://logo.dev)
+      # LOGO_DEV_TOKEN: pk_your_token_here
     volumes:
       - ./data:/data
     restart: unless-stopped

@@ -14,6 +14,7 @@ import { userRoutes } from './routes/users.js';
 import { invitationRoutes } from './routes/invitations.js';
 import { profileRoutes } from './routes/profile.js';
 import { adminRoutes } from './routes/admin.js';
+import { logosRoutes } from './routes/logos.js';
 import { AuthService, SESSION_COOKIE_NAME, toSessionUser } from './services/auth.service.js';
 import type { MailerService } from './services/mailer.service.js';
 
@@ -46,6 +47,7 @@ const PUBLIC_ROUTES: Array<(method: string, path: string) => boolean> = [
   (m, p) => m === 'POST' && /^\/api\/auth\/reset-password\/[^/]+$/.test(p),
   (m, p) => m === 'POST' && /^\/api\/invitations\/[^/]+\/accept$/.test(p),
   (m, p) => m === 'POST' && /^\/api\/profile\/email-change\/[^/]+\/confirm$/.test(p),
+  (m, p) => m === 'GET' && p === '/api/logos',
 ];
 
 /**
@@ -126,6 +128,7 @@ export async function buildServer(
   await fastify.register(invitationRoutes);
   await fastify.register(profileRoutes);
   await fastify.register(adminRoutes);
+  await fastify.register(logosRoutes);
 
   const staticDir =
     options.staticDir ??

@@ -1,3 +1,12 @@
+# Changelog
+
+# [1.1.0](https://github.com/mallwang/klaro/compare/v1.0.0...v1.1.0) (2026-06-16)
+
+
+### Features
+
+* **logo:** proxy provider logos through backend with SQLite cache ([#35](https://github.com/mallwang/klaro/issues/35)) ([e32651d](https://github.com/mallwang/klaro/commit/e32651d73743616b8c42eff616383ea0c3faa050))
+
 # 1.0.0 (2026-06-16)
 
 

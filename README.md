@@ -111,6 +111,15 @@ On first start with a fresh database, the bootstrap administrator account's emai
 
 **Changing the database location**: edit the `volumes:` line in `docker-compose.yml` to point at any host directory, e.g. `/mnt/storage/pcm-data:/data`.
 
+**Enabling provider logos**: the app proxies logo images through its own backend so your token stays server-side. Uncomment and set `LOGO_DEV_TOKEN` in `docker-compose.yml` with a token from [logo.dev](https://logo.dev):
+
+```yaml
+environment:
+  LOGO_DEV_TOKEN: pk_your_token_here
+```
+
+Without this token the app works normally — a generic icon is shown in place of provider logos.
+
 **Updating to a newer version**: run `docker compose pull && docker compose up -d` — Docker pulls the new `latest` image and restarts the container. Your data is untouched.
 
 ## Releases

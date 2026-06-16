@@ -290,6 +290,23 @@ export function runMigrations(instance: Database.Database): BootstrapResult | nu
     );
   }
 
+  // Add logo_cache table introduced in feature 031 (logo proxy with SQLite cache)
+  const hasLogoCache = instance
+    .prepare<
+      [],
+      { name: string }
+    >(`SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'logo_cache'`)
+    .get();
+
+  if (!hasLogoCache) {
+    instance.exec(`CREATE TABLE logo_cache (
+      name         TEXT PRIMARY KEY,
+      data         BLOB NOT NULL,
+      content_type TEXT NOT NULL,
+      cached_at    INTEGER NOT NULL
+    )`);
+  }
+
   return bootstrapResult;
 }
 
