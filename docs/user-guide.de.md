@@ -408,6 +408,20 @@ Die App stellt sicher, dass stets mindestens ein aktiver Administrator vorhanden
 
 Am unteren Rand der **Konten**-Seite befindet sich der Abschnitt **Test-E-Mail senden**. Gib eine beliebige E-Mail-Adresse ein und klicke auf **Senden**, um zu prüfen, ob der ausgehende E-Mail-Versand korrekt konfiguriert ist. Nutze dies nach einer Änderung der SMTP-Einstellungen, um den Versand zu testen, bevor du Benutzer einlädst.
 
+### Anbieter-Logo-Cache (nur Administratoren)
+
+Die App ruft Anbieter-Logos über das eigene Backend ab und speichert sie in einem lokalen Cache, damit sie bei erneuten Aufrufen sofort geladen werden. Wenn ein Anbieter sein Logo aktualisiert hat und die alte Version noch angezeigt wird, kann ein Administrator den Cache leeren:
+
+1. `DELETE /api/admin/logos/cache` mit einer aktiven Administrator-Sitzung aufrufen – zum Beispiel mit `curl`:
+   ```bash
+   curl -X DELETE http://localhost:3001/api/admin/logos/cache \
+     -H "Cookie: session=<deine-session-cookie>"
+   ```
+2. Die Antwort gibt an, wie viele Cache-Einträge entfernt wurden: `{ "deleted": N }`.
+3. Beim nächsten Aufruf eines Logos ruft das Backend es erneut vom Logo-Dienst ab und füllt den Cache wieder auf.
+
+> **Hinweis**: Für den Logo-Abruf muss `LOGO_DEV_TOKEN` in der Server-Umgebung gesetzt sein. Ohne diesen Token wird für alle Anbieter ein generisches Symbol angezeigt.
+
 ---
 
 ## 11. Zusammenfassungs-E-Mail

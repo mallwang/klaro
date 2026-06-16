@@ -95,6 +95,15 @@ describe('POST /api/admin/email/test', () => {
     expect(res.statusCode).toBe(401);
   });
 
+  it('returns 401 when unauthenticated (alias check)', async () => {
+    const res = await app.inject({
+      method: 'POST',
+      url: '/api/admin/email/test',
+      payload: { email: 'recipient@example.test' },
+    });
+    expect(res.statusCode).toBe(401);
+  });
+
   it('returns 502 when the mailer fails', async () => {
     const {
       db: failDb,
@@ -113,5 +122,80 @@ describe('POST /api/admin/email/test', () => {
       await failApp.close();
       failDb.close();
     }
+  });
+});
+
+describe('DELETE /api/admin/logos/cache', () => {
+  let db: Database.Database;
+  let app: FastifyInstance;
+  let adminCookie: string;
+  let memberCookie: string;
+
+  beforeEach(async () => {
+    ({ db, app, adminCookie, memberCookie } = await setup());
+  });
+
+  afterEach(async () => {
+    await app.close();
+    db.close();
+  });
+
+  function seedCache(count: number) {
+    const insert = db.prepare(
+      `INSERT INTO logo_cache (name, data, content_type, cached_at) VALUES (?, ?, ?, ?)`,
+    );
+    for (let i = 0; i < count; i++) {
+      insert.run(`provider-${i}`, Buffer.from([0x00]), 'image/png', Date.now());
+    }
+  }
+
+  it('returns { deleted: N } and clears the cache for an admin', async () => {
+    seedCache(3);
+
+    const res = await app.inject({
+      method: 'DELETE',
+      url: '/api/admin/logos/cache',
+      cookies: { [SESSION_COOKIE_NAME]: adminCookie },
+    });
+
+    expect(res.statusCode).toBe(200);
+    expect(res.json<{ deleted: number }>().deleted).toBe(3);
+
+    const remaining = db.prepare(`SELECT COUNT(*) AS n FROM logo_cache`).get() as { n: number };
+    expect(remaining.n).toBe(0);
+  });
+
+  it('returns { deleted: 0 } when the cache is already empty', async () => {
+    const res = await app.inject({
+      method: 'DELETE',
+      url: '/api/admin/logos/cache',
+      cookies: { [SESSION_COOKIE_NAME]: adminCookie },
+    });
+
+    expect(res.statusCode).toBe(200);
+    expect(res.json<{ deleted: number }>().deleted).toBe(0);
+  });
+
+  it('returns 403 for a non-admin user', async () => {
+    seedCache(1);
+
+    const res = await app.inject({
+      method: 'DELETE',
+      url: '/api/admin/logos/cache',
+      cookies: { [SESSION_COOKIE_NAME]: memberCookie },
+    });
+
+    expect(res.statusCode).toBe(403);
+    const remaining = db.prepare(`SELECT COUNT(*) AS n FROM logo_cache`).get() as { n: number };
+    expect(remaining.n).toBe(1);
+  });
+
+  it('returns 401 when unauthenticated', async () => {
+    const res = await app.inject({
+      method: 'DELETE',
+      url: '/api/admin/logos/cache',
+    });
+
+    expect(res.statusCode).toBe(401);
   });
 });

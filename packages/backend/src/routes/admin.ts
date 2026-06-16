@@ -3,7 +3,8 @@ import { SendTestEmailBodySchema } from '@pcm/shared';
 import { MailerError } from '../services/mailer.service.js';
 
 /**
- * Fastify route plugin for admin-only operations, currently SMTP test email dispatch.
+ * Fastify route plugin for admin-only operations: SMTP test email dispatch and logo cache
+ * management.
  */
 
 /**
@@ -55,5 +56,28 @@ export async function adminRoutes(fastify: FastifyInstance): Promise<void> {
     }
 
     return reply.send({ message: 'Test email sent' });
+  });
+
+  /**
+   * Returns the current logo cache contents: total entry count and all cached provider names.
+   *
+   * @returns `{ count: number, keys: string[] }` — cache size and sorted list of cached names
+   */
+  fastify.get('/api/admin/logos/cache', async (_request, reply) => {
+    const rows = fastify.db
+      .prepare<[], { name: string }>(`SELECT name FROM logo_cache ORDER BY name`)
+      .all();
+    return reply.send({ count: rows.length, keys: rows.map((r) => r.name) });
+  });
+
+  /**
+   * Removes all entries from the logo_cache table and returns the number of deleted rows.
+   * Subsequent logo requests will re-fetch from logo.dev and repopulate the cache.
+   *
+   * @returns `{ deleted: number }` — the count of rows removed
+   */
+  fastify.delete('/api/admin/logos/cache', async (_request, reply) => {
+    const result = fastify.db.prepare(`DELETE FROM logo_cache`).run();
+    return reply.send({ deleted: result.changes });
   });
 }

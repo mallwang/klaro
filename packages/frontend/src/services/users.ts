@@ -115,6 +115,34 @@ export async function changeAccountRole(id: string, role: Role): Promise<void> {
 }
 
 /**
+ * Fetches the current logo cache contents from the admin endpoint.
+ *
+ * @returns the total entry count and the sorted list of cached provider name keys
+ */
+export async function getLogoCacheInfo(): Promise<{ count: number; keys: string[] }> {
+  const res = await fetch('/api/admin/logos/cache', { credentials: 'include' });
+  if (!res.ok)
+    throw new AuthError(res.status, await readErrorMessage(res, 'Failed to fetch logo cache info'));
+  return (await res.json()) as { count: number; keys: string[] };
+}
+
+/**
+ * Deletes all entries from the server-side logo cache and returns the count of removed rows.
+ *
+ * @returns the number of cache entries deleted
+ */
+export async function pruneLogoCache(): Promise<number> {
+  const res = await fetch('/api/admin/logos/cache', {
+    method: 'DELETE',
+    credentials: 'include',
+  });
+  if (!res.ok)
+    throw new AuthError(res.status, await readErrorMessage(res, 'Failed to prune logo cache'));
+  const json = (await res.json()) as { deleted: number };
+  return json.deleted;
+}
+
+/**
  * Sends a test email to the given address to verify SMTP configuration.
  *
  * @param body - The test email payload containing the recipient address

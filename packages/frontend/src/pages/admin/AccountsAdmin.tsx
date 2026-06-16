@@ -14,11 +14,13 @@ import {
   Center,
   Modal,
   Divider,
-  Box,
+  SimpleGrid,
+  Collapse,
+  UnstyledButton,
 } from '@mantine/core';
 import type { Account, Invitation } from '@pcm/shared';
 import { AuthError } from '../../services/auth.js';
-import { sendTestEmail } from '../../services/users.js';
+import { getLogoCacheInfo, pruneLogoCache, sendTestEmail } from '../../services/users.js';
 import { useCurrentUser } from '../../hooks/useAuth.js';
 import {
   useAccounts,
@@ -82,6 +84,115 @@ function InvitationStatusBadge({ invitation }: Readonly<{ invitation: Invitation
     <Badge color={c.color} variant="light">
       {c.label}
     </Badge>
+  );
+}
+
+/**
+ * Renders a warning button that fetches cache info and opens a confirmation modal before pruning.
+ * The modal shows the number of entries to be deleted and an expandable list of their keys.
+ */
+function LogoCacheSection() {
+  const { t } = useTranslation();
+  const [modalOpen, setModalOpen] = useState(false);
+  const [keysOpen, setKeysOpen] = useState(false);
+  const [cacheInfo, setCacheInfo] = useState<{ count: number; keys: string[] } | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isPruning, setIsPruning] = useState(false);
+
+  /**
+   * Fetches cache info then opens the confirmation modal.
+   */
+  async function handleOpenModal() {
+    setIsLoading(true);
+    try {
+      const info = await getLogoCacheInfo();
+      setCacheInfo(info);
+      setKeysOpen(false);
+      setModalOpen(true);
+    } catch {
+      showError(t('accountsAdmin.logoCacheLoadError'));
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  /**
+   * Calls the prune endpoint, shows toast feedback, and closes the modal.
+   */
+  async function handleConfirmPrune() {
+    setIsPruning(true);
+    try {
+      const deleted = await pruneLogoCache();
+      showSuccess(t('accountsAdmin.logoCachePruneSuccess', { count: deleted }));
+      setModalOpen(false);
+    } catch {
+      showError(t('accountsAdmin.logoCachePruneError'));
+    } finally {
+      setIsPruning(false);
+    }
+  }
+
+  return (
+    <>
+      <Paper withBorder p="md">
+        <Button color="yellow" variant="filled" onClick={handleOpenModal} loading={isLoading}>
+          {t('accountsAdmin.logoCachePruneButton')}
+        </Button>
+      </Paper>
+
+      <Modal
+        opened={modalOpen}
+        onClose={() => setModalOpen(false)}
+        title={t('accountsAdmin.logoCacheModalTitle')}
+        centered
+      >
+        <Stack gap="md">
+          {cacheInfo && cacheInfo.count === 0 ? (
+            <Text size="sm">{t('accountsAdmin.logoCacheModalEmpty')}</Text>
+          ) : (
+            <>
+              <Text size="sm">
+                {t('accountsAdmin.logoCacheModalCount', { count: cacheInfo?.count ?? 0 })}
+              </Text>
+              {cacheInfo && cacheInfo.keys.length > 0 && (
+                <Stack gap="xs">
+                  <UnstyledButton
+                    onClick={() => setKeysOpen((o) => !o)}
+                    style={{
+                      color: 'var(--mantine-color-dimmed)',
+                      fontSize: 'var(--mantine-font-size-sm)',
+                    }}
+                  >
+                    {keysOpen
+                      ? t('accountsAdmin.logoCacheModalHideKeys')
+                      : t('accountsAdmin.logoCacheModalShowKeys')}
+                  </UnstyledButton>
+                  <Collapse in={keysOpen}>
+                    <Text
+                      size="xs"
+                      c="dimmed"
+                      style={{ wordBreak: 'break-all', fontFamily: 'monospace' }}
+                    >
+                      {cacheInfo.keys.join(', ')}
+                    </Text>
+                  </Collapse>
+                </Stack>
+              )}
+            </>
+          )}
+          <Group justify="flex-end" gap="sm">
+            <Button variant="default" onClick={() => setModalOpen(false)}>
+              {t('accountsAdmin.logoCacheModalCancel')}
+            </Button>
+            {cacheInfo && cacheInfo.count > 0 && (
+              <Button color="yellow" loading={isPruning} onClick={handleConfirmPrune}>
+                {t('accountsAdmin.logoCacheModalConfirm')}
+              </Button>
+            )}
+          </Group>
+        </Stack>
+      </Modal>
+    </>
   );
 }
 
@@ -533,16 +644,27 @@ export function AccountsAdmin() {
 
       <Divider my="md" />
 
-      {/* Test email — diagnostic utility, shown last */}
-      <Stack gap={4}>
-        <Title order={3}>{t('accountsAdmin.testEmailTitle')}</Title>
-        <Text size="sm" c="dimmed">
-          {t('accountsAdmin.testEmailDescription')}
-        </Text>
-      </Stack>
-      <Box maw="50%">
-        <TestEmailForm />
-      </Box>
+      {/* Diagnostic utilities — test email and logo cache side by side */}
+      <SimpleGrid cols={2} spacing="xl">
+        <Stack gap="sm">
+          <Stack gap={4}>
+            <Title order={3}>{t('accountsAdmin.testEmailTitle')}</Title>
+            <Text size="sm" c="dimmed">
+              {t('accountsAdmin.testEmailDescription')}
+            </Text>
+          </Stack>
+          <TestEmailForm />
+        </Stack>
+        <Stack gap="sm">
+          <Stack gap={4}>
+            <Title order={3}>{t('accountsAdmin.logoCacheTitle')}</Title>
+            <Text size="sm" c="dimmed">
+              {t('accountsAdmin.logoCacheDescription')}
+            </Text>
+          </Stack>
+          <LogoCacheSection />
+        </Stack>
+      </SimpleGrid>
 
       <Modal
         opened={confirmDeleteId !== null}

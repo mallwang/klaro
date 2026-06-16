@@ -41,8 +41,8 @@ Eine vollständige Anleitung zur Benutzeroberfläche findest du unter [docs/user
 
 ## Voraussetzungen
 
-- Node.js 22+
-- pnpm 9+
+- Node.js 24+
+- pnpm 10+
 
 ## Erste Schritte
 
@@ -110,6 +110,15 @@ Beim ersten Start mit einer frischen Datenbank werden die E-Mail-Adresse und ein
 **Host-Port ändern**: die Zeile `ports:` in `docker-compose.yml` bearbeiten — nur die linke Seite (Host-Port) muss geändert werden, z. B. macht `"9090:3000"` die App unter Port 9090 erreichbar.
 
 **Speicherort der Datenbank ändern**: die Zeile `volumes:` in `docker-compose.yml` auf ein beliebiges Host-Verzeichnis anpassen, z. B. `/mnt/storage/pcm-data:/data`.
+
+**Anbieter-Logos aktivieren**: Die App ruft Logo-Bilder über das eigene Backend ab, sodass der Token serverseitig bleibt. `LOGO_DEV_TOKEN` in `docker-compose.yml` auskommentieren und mit einem Token von [logo.dev](https://logo.dev) befüllen:
+
+```yaml
+environment:
+  LOGO_DEV_TOKEN: pk_dein_token_hier
+```
+
+Ohne diesen Token funktioniert die App normal — statt Anbieter-Logos wird ein generisches Symbol angezeigt.
 
 **Auf eine neuere Version aktualisieren**: `docker compose pull && docker compose up -d` ausführen — Docker lädt das neue `latest`-Image und startet den Container neu. Die Daten bleiben dabei unberührt.
 

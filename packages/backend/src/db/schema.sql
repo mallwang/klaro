@@ -65,3 +65,10 @@ CREATE TABLE IF NOT EXISTS contracts (
   created_at       TEXT NOT NULL,
   updated_at       TEXT NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS logo_cache (
+  name         TEXT PRIMARY KEY,
+  data         BLOB NOT NULL,
+  content_type TEXT NOT NULL,
+  cached_at    INTEGER NOT NULL
+);

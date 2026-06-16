@@ -408,6 +408,20 @@ The app always keeps at least one active administrator. Archive, demote, and del
 
 At the bottom of the **Accounts** page there is a **Send test email** section. Enter any email address and click **Send** to check whether outgoing mail is configured correctly. Use this after changing your SMTP settings to verify delivery before inviting users.
 
+### Provider logo cache (administrators only)
+
+The app fetches provider logos through its own backend and stores them in a local cache so they load instantly on repeat visits. If a provider updates their logo and the old version is showing, an administrator can clear the cache:
+
+1. Call `DELETE /api/admin/logos/cache` with an active admin session — for example, using `curl`:
+   ```bash
+   curl -X DELETE http://localhost:3001/api/admin/logos/cache \
+     -H "Cookie: session=<your-session-cookie>"
+   ```
+2. The response reports how many cached entries were removed: `{ "deleted": N }`.
+3. The next time any logo is viewed, the backend re-fetches it from the logo service and repopulates the cache.
+
+> **Note**: Logo fetching requires `LOGO_DEV_TOKEN` to be set in the server environment. Without it, a generic icon is shown for all providers.
+
 ---
 
 ## 11. Summary Email

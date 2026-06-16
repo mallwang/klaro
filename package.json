@@ -6,6 +6,10 @@
     "type": "git",
     "url": "https://github.com/mallwang/klaro"
   },
+  "engines": {
+    "node": ">=24",
+    "pnpm": ">=10"
+  },
   "type": "module",
   "scripts": {
     "dev": "pnpm --filter @pcm/shared build && concurrently \"pnpm --filter backend dev\" \"pnpm --filter frontend dev\"",
