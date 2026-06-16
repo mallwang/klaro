@@ -98,11 +98,22 @@ Contracts whose end date is in the past appear in an amber-highlighted panel. Th
 
 Open **Contracts** from the navigation to see all your contracts in a table.
 
+The table is compact — each row fits on a single line at normal desktop widths. Contract names that are too long to display in full are shortened with an ellipsis (…); the full name is always visible on the edit page.
+
 ### Sorting
 
 Click any column header to sort by that column. Click again to reverse the order. A third click clears the sort. The active sort direction is shown with a small up or down arrow.
 
 Available sort columns: Name, Category, Amount, Status, End Date.
+
+### Row actions
+
+Each row has two compact action buttons:
+
+| Button | What it does |
+|--------|--------------|
+| Edit | Opens the contract edit form |
+| Delete | Shows an inline confirmation; click **Confirm** to delete or **Cancel** to dismiss |
 
 ### Toolbar
 

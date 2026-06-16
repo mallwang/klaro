@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { IconChevronUp, IconChevronDown, IconSelector } from '@tabler/icons-react';
-import { Table, Text, Group, Anchor, Button, Center } from '@mantine/core';
+import { Table, Text, Group, Button, Center, Pagination } from '@mantine/core';
 import type { ContractData } from '@pcm/shared';
 import { useLocaleFormat } from '../hooks/useLocaleFormat.js';
 import { CategoryIcon } from './CategoryIcon.js';
@@ -10,8 +10,10 @@ import { ProviderLogo } from './ProviderLogo.js';
 import classes from './ContractTable.module.css';
 
 /**
- * Sortable contract table displaying name, category, amount, status, end date, and
- * action links. Supports client-side sorting and an anonymization flip animation.
+ * Sortable, compact contract table displaying name, category, amount, status, end date, and
+ * action buttons. Long names truncate with an ellipsis. Action buttons match the Manage
+ * Accounts page style (compact-sm, default variant). Supports client-side sorting and an
+ * anonymization flip animation.
  */
 
 type SortColumn = 'name' | 'category' | 'amount' | 'status' | 'endDate';
@@ -29,7 +31,7 @@ interface ContractTableProps {
   getDisplayName?: (contract: ContractData) => string;
 }
 
-function SortIcon({ col, sortState }: { col: SortColumn; sortState: SortState }) {
+function SortIcon({ col, sortState }: Readonly<{ col: SortColumn; sortState: SortState }>) {
   if (sortState.column === col) {
     return sortState.direction === 'asc' ? (
       <IconChevronUp
@@ -51,8 +53,9 @@ function SortIcon({ col, sortState }: { col: SortColumn; sortState: SortState })
 }
 
 /**
- * Renders a sortable table of contracts with delete confirmation, anonymization support,
- * and locale-aware currency/date formatting.
+ * Renders a compact, sortable table of contracts with delete confirmation, anonymization
+ * support, and locale-aware currency/date formatting. Long contract names are truncated with
+ * an ellipsis. Action buttons use the same compact-sm default-variant style as Manage Accounts.
  *
  * @param props.contracts - array of contract data to display
  * @param props.onDelete - callback invoked with the contract ID when deletion is confirmed
@@ -64,11 +67,13 @@ export function ContractTable({
   onDelete,
   isAnonymized = false,
   getDisplayName,
-}: ContractTableProps) {
+}: Readonly<ContractTableProps>) {
   const { t } = useTranslation();
   const { formatCurrency, formatDate } = useLocaleFormat();
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const [sortState, setSortState] = useState<SortState>({ column: null, direction: null });
+  const [currentPage, setCurrentPage] = useState(1);
+  const PAGE_SIZE = 12;
 
   const sortedContracts = (() => {
     const col = sortState.column ?? 'name';
@@ -89,12 +94,24 @@ export function ContractTable({
     });
   })();
 
+  const totalPages = Math.ceil(sortedContracts.length / PAGE_SIZE);
+  const pagedContracts = sortedContracts.slice(
+    (currentPage - 1) * PAGE_SIZE,
+    currentPage * PAGE_SIZE,
+  );
+
+  /**
+   * Handles column sort toggling and resets pagination to page 1.
+   *
+   * @param col - the column to sort by
+   */
   function handleSort(col: SortColumn) {
     setSortState((prev) => {
       if (prev.column !== col) return { column: col, direction: 'asc' };
       if (prev.direction === 'asc') return { column: col, direction: 'desc' };
       return { column: null, direction: null };
     });
+    setCurrentPage(1);
   }
 
   const [displayAnonymized, setDisplayAnonymized] = useState(isAnonymized);
@@ -135,118 +152,136 @@ export function ContractTable({
   }
 
   return (
-    <Table.ScrollContainer minWidth={600}>
-      <Table stickyHeader withTableBorder withColumnBorders={false} highlightOnHover>
-        <Table.Thead>
-          <Table.Tr>
-            <Table.Th className={classes.th} onClick={() => handleSort('name')}>
-              <div className={classes.thInner}>
-                {t('contractList.nameColumn')}
-                <SortIcon col="name" sortState={sortState} />
-              </div>
-            </Table.Th>
-            <Table.Th className={classes.th} onClick={() => handleSort('category')}>
-              <div className={classes.thInner}>
-                {t('contractList.categoryColumn')}
-                <SortIcon col="category" sortState={sortState} />
-              </div>
-            </Table.Th>
-            <Table.Th className={classes.th} onClick={() => handleSort('amount')}>
-              <div className={classes.thInner}>
-                {t('contractList.amountColumn')}
-                <SortIcon col="amount" sortState={sortState} />
-              </div>
-            </Table.Th>
-            <Table.Th className={classes.th} onClick={() => handleSort('status')}>
-              <div className={classes.thInner}>
-                {t('contractList.statusColumn')}
-                <SortIcon col="status" sortState={sortState} />
-              </div>
-            </Table.Th>
-            <Table.Th className={classes.th} onClick={() => handleSort('endDate')}>
-              <div className={classes.thInner}>
-                {t('contractList.endDateColumn')}
-                <SortIcon col="endDate" sortState={sortState} />
-              </div>
-            </Table.Th>
-            <Table.Th className={classes.thActions}>{t('contractList.actionsColumn')}</Table.Th>
-          </Table.Tr>
-        </Table.Thead>
-        <Table.Tbody>
-          {sortedContracts.map((contract) => (
-            <Table.Tr key={contract.id}>
-              <Table.Td>
-                <div className={`${classes.nameCell}${isFlipping ? ' animate-name-flip' : ''}`}>
-                  {contract.useGenericIcon ? (
-                    <ProviderLogo name="" isAnonymized size={20} />
-                  ) : (
-                    <ProviderLogo
-                      name={contract.logoName ?? contract.name}
-                      isAnonymized={displayAnonymized || contract.anonymize}
-                      size={20}
-                    />
-                  )}
-                  {resolveName(contract)}
+    <>
+      <Table.ScrollContainer minWidth={600}>
+        <Table
+          stickyHeader
+          withTableBorder
+          withColumnBorders={false}
+          highlightOnHover
+          verticalSpacing="xs"
+        >
+          <Table.Thead>
+            <Table.Tr>
+              <Table.Th className={classes.th} onClick={() => handleSort('name')}>
+                <div className={classes.thInner}>
+                  {t('contractList.nameColumn')}
+                  <SortIcon col="name" sortState={sortState} />
                 </div>
-              </Table.Td>
-              <Table.Td>
-                <div className={classes.categoryCell}>
-                  <CategoryIcon category={contract.category} size={16} />
-                  {t(`category.${contract.category}`)}
+              </Table.Th>
+              <Table.Th className={classes.th} onClick={() => handleSort('category')}>
+                <div className={classes.thInner}>
+                  {t('contractList.categoryColumn')}
+                  <SortIcon col="category" sortState={sortState} />
                 </div>
-              </Table.Td>
-              <Table.Td>
-                {formatCurrency(contract.amount)}
-                {' / '}
-                {t(`billingInterval.${contract.billingInterval}`)}
-              </Table.Td>
-              <Table.Td>{t(`status.${contract.status}`)}</Table.Td>
-              <Table.Td>
-                {contract.endDate ? formatDate(contract.endDate) : t('common.noData')}
-              </Table.Td>
-              <Table.Td>
-                {pendingDeleteId === contract.id ? (
-                  <Group gap="xs">
-                    <Button
-                      size="compact-sm"
-                      color="red"
-                      variant="filled"
-                      onClick={() => {
-                        onDelete(contract.id);
-                        setPendingDeleteId(null);
-                      }}
-                    >
-                      {t('common.confirm')}
-                    </Button>
-                    <Button
-                      size="compact-sm"
-                      variant="subtle"
-                      color="gray"
-                      onClick={() => setPendingDeleteId(null)}
-                    >
-                      {t('common.cancel')}
-                    </Button>
-                  </Group>
-                ) : (
-                  <Group gap="xs">
-                    <Anchor component={Link} to={`/contracts/${contract.id}/edit`} size="sm">
-                      {t('common.edit')}
-                    </Anchor>
-                    <Button
-                      size="compact-sm"
-                      variant="subtle"
-                      color="red"
-                      onClick={() => setPendingDeleteId(contract.id)}
-                    >
-                      {t('common.delete')}
-                    </Button>
-                  </Group>
-                )}
-              </Table.Td>
+              </Table.Th>
+              <Table.Th className={classes.th} onClick={() => handleSort('amount')}>
+                <div className={classes.thInner}>
+                  {t('contractList.amountColumn')}
+                  <SortIcon col="amount" sortState={sortState} />
+                </div>
+              </Table.Th>
+              <Table.Th className={classes.th} onClick={() => handleSort('status')}>
+                <div className={classes.thInner}>
+                  {t('contractList.statusColumn')}
+                  <SortIcon col="status" sortState={sortState} />
+                </div>
+              </Table.Th>
+              <Table.Th className={classes.th} onClick={() => handleSort('endDate')}>
+                <div className={classes.thInner}>
+                  {t('contractList.endDateColumn')}
+                  <SortIcon col="endDate" sortState={sortState} />
+                </div>
+              </Table.Th>
+              <Table.Th className={classes.thActions}>{t('contractList.actionsColumn')}</Table.Th>
             </Table.Tr>
-          ))}
-        </Table.Tbody>
-      </Table>
-    </Table.ScrollContainer>
+          </Table.Thead>
+          <Table.Tbody>
+            {pagedContracts.map((contract) => (
+              <Table.Tr key={contract.id}>
+                <Table.Td>
+                  <div className={`${classes.nameCell}${isFlipping ? ' animate-name-flip' : ''}`}>
+                    {contract.useGenericIcon ? (
+                      <ProviderLogo name="" isAnonymized size={20} />
+                    ) : (
+                      <ProviderLogo
+                        name={contract.logoName ?? contract.name}
+                        isAnonymized={displayAnonymized || contract.anonymize}
+                        size={20}
+                      />
+                    )}
+                    <Text size="sm" fw={500} truncate="end">
+                      {resolveName(contract)}
+                    </Text>
+                  </div>
+                </Table.Td>
+                <Table.Td>
+                  <div className={classes.categoryCell}>
+                    <CategoryIcon category={contract.category} size={16} />
+                    {t(`category.${contract.category}`)}
+                  </div>
+                </Table.Td>
+                <Table.Td>
+                  {formatCurrency(contract.amount)}
+                  {' / '}
+                  {t(`billingInterval.${contract.billingInterval}`)}
+                </Table.Td>
+                <Table.Td>{t(`status.${contract.status}`)}</Table.Td>
+                <Table.Td>
+                  {contract.endDate ? formatDate(contract.endDate) : t('common.noData')}
+                </Table.Td>
+                <Table.Td>
+                  {pendingDeleteId === contract.id ? (
+                    <Group gap="xs">
+                      <Button
+                        size="compact-sm"
+                        color="red"
+                        variant="filled"
+                        onClick={() => {
+                          onDelete(contract.id);
+                          setPendingDeleteId(null);
+                        }}
+                      >
+                        {t('common.confirm')}
+                      </Button>
+                      <Button
+                        size="compact-sm"
+                        variant="default"
+                        onClick={() => setPendingDeleteId(null)}
+                      >
+                        {t('common.cancel')}
+                      </Button>
+                    </Group>
+                  ) : (
+                    <Group gap="xs">
+                      <Button
+                        size="compact-sm"
+                        variant="default"
+                        component={Link}
+                        to={`/contracts/${contract.id}/edit`}
+                      >
+                        {t('common.edit')}
+                      </Button>
+                      <Button
+                        size="compact-sm"
+                        variant="default"
+                        onClick={() => setPendingDeleteId(contract.id)}
+                      >
+                        {t('common.delete')}
+                      </Button>
+                    </Group>
+                  )}
+                </Table.Td>
+              </Table.Tr>
+            ))}
+          </Table.Tbody>
+        </Table>
+      </Table.ScrollContainer>
+      {totalPages > 1 && (
+        <Group justify="center" py="sm">
+          <Pagination total={totalPages} value={currentPage} onChange={setCurrentPage} size="sm" />
+        </Group>
+      )}
+    </>
   );
 }

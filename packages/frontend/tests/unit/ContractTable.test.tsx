@@ -347,3 +347,30 @@ describe('ContractTable – sort indicators', () => {
     expect(within(actionsHeader).queryByRole('img', { name: 'Sort' })).not.toBeInTheDocument();
   });
 });
+
+describe('ContractTable – name cell rendering', () => {
+  it('wraps the contract name inside a text element (not a raw text node)', () => {
+    renderTable(sampleContracts);
+    const nameEl = screen.getByText('Netflix');
+    // After the compact refactor the name must live inside a DOM element, not be a bare text
+    // node directly inside the flex wrapper. Any wrapping tag satisfies this.
+    expect(nameEl.tagName).not.toBe('DIV');
+    expect(nameEl.closest('td')).toBeInTheDocument();
+  });
+});
+
+describe('ContractTable – action button styles', () => {
+  it('Edit is reachable as a link pointing to the contract edit path', () => {
+    renderTable(sampleContracts);
+    const editLinks = screen.getAllByRole('link', { name: /edit/i });
+    expect(editLinks[0]).toHaveAttribute('href', `/contracts/${sampleContracts[0]!.id}/edit`);
+  });
+
+  it('Edit does not use the Mantine Anchor root class (it should be a Button)', () => {
+    renderTable(sampleContracts);
+    const editLinks = screen.getAllByRole('link', { name: /edit/i });
+    // This test FAILS before implementation: Anchor renders with mantine-Anchor-root class.
+    // After replacing Anchor with Button component={Link}, the class should not be present.
+    expect(editLinks[0]!.className).not.toMatch(/mantine-Anchor-root/);
+  });
+});

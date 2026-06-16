@@ -11,7 +11,7 @@ Eine persönliche Web-App zum Verwalten von Verträgen — Abonnements, Versiche
 ## Funktionen
 
 - **Dashboard** — gesamte monatliche Ausgaben aktiver Verträge, Aufschlüsselung nach Kategorie, anstehende Verlängerungen (innerhalb von 30 Tagen) und abgelaufene Verträge
-- **Vertragsliste** — sortierbare Tabelle mit Anbieter-Logos und Kategorie-Icons
+- **Vertragsliste** — kompakte, sortierbare Tabelle mit Anbieter-Logos und Kategorie-Icons; lange Namen werden mit einem Auslassungszeichen (…) gekürzt; Aktionsschaltflächen entsprechen dem Stil der Konto-Verwaltungsseite
 - **Erstellen / Bearbeiten / Löschen** von Verträgen mit Feldern für Name, Kategorie, Betrag (mit statischem EUR-Währungsbadge), Abrechnungsintervall, Status, Start-/Enddatum (Datumsauswahl mit optionaler Abwahl), Service-URL, Kündigungsfrist, Notizen und einem vertragsspezifischen Anonymisierungsschalter; das Formular verwendet ein kompaktes mehrspaltiges Layout (Name+Kategorie, Betrag+Intervall sowie Status+Start+Ende teilen sich jeweils eine Zeile), das auf mobilen Geräten zu einer einspaltigen Ansicht wechselt
 - **Export** — alle Verträge als JSON oder Excel (.xlsx) herunterladen
 - **Import** — JSON oder Excel hochladen mit intelligenter Spaltenzuordnung
