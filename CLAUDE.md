@@ -95,5 +95,5 @@ CI scan has run on a branch or PR.
 <!-- SPECKIT START -->
 For additional context about technologies to be used, project structure,
 shell commands, and other important information, read the current plan
-at specs/031-logo-proxy-cache/plan.md
+at specs/032-faq-section/plan.md
 <!-- SPECKIT END -->
