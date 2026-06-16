@@ -69,5 +69,5 @@ CI scan has run on a branch or PR.
 <!-- SPECKIT START -->
 For additional context about technologies to be used, project structure,
 shell commands, and other important information, read the current plan
-at specs/026-compact-contract-form/plan.md
+at specs/027-mantine-form-inputs/plan.md
 <!-- SPECKIT END -->
