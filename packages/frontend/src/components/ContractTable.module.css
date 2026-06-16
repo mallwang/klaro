@@ -28,7 +28,9 @@
   display: flex;
   align-items: center;
   gap: var(--mantine-spacing-xs);
-  font-weight: 500;
+  /* min-width: 0 lets the flex item shrink so text-overflow: ellipsis can fire */
+  min-width: 0;
+  overflow: hidden;
 }
 
 .categoryCell {

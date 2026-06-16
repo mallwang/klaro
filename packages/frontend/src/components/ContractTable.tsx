@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { IconChevronUp, IconChevronDown, IconSelector } from '@tabler/icons-react';
-import { Table, Text, Group, Anchor, Button, Center } from '@mantine/core';
+import { Table, Text, Group, Button, Center } from '@mantine/core';
 import type { ContractData } from '@pcm/shared';
 import { useLocaleFormat } from '../hooks/useLocaleFormat.js';
 import { CategoryIcon } from './CategoryIcon.js';
@@ -10,8 +10,10 @@ import { ProviderLogo } from './ProviderLogo.js';
 import classes from './ContractTable.module.css';
 
 /**
- * Sortable contract table displaying name, category, amount, status, end date, and
- * action links. Supports client-side sorting and an anonymization flip animation.
+ * Sortable, compact contract table displaying name, category, amount, status, end date, and
+ * action buttons. Long names truncate with an ellipsis. Action buttons match the Manage
+ * Accounts page style (compact-sm, default variant). Supports client-side sorting and an
+ * anonymization flip animation.
  */
 
 type SortColumn = 'name' | 'category' | 'amount' | 'status' | 'endDate';
@@ -51,8 +53,9 @@ function SortIcon({ col, sortState }: { col: SortColumn; sortState: SortState })
 }
 
 /**
- * Renders a sortable table of contracts with delete confirmation, anonymization support,
- * and locale-aware currency/date formatting.
+ * Renders a compact, sortable table of contracts with delete confirmation, anonymization
+ * support, and locale-aware currency/date formatting. Long contract names are truncated with
+ * an ellipsis. Action buttons use the same compact-sm default-variant style as Manage Accounts.
  *
  * @param props.contracts - array of contract data to display
  * @param props.onDelete - callback invoked with the contract ID when deletion is confirmed
@@ -136,7 +139,13 @@ export function ContractTable({
 
   return (
     <Table.ScrollContainer minWidth={600}>
-      <Table stickyHeader withTableBorder withColumnBorders={false} highlightOnHover>
+      <Table
+        stickyHeader
+        withTableBorder
+        withColumnBorders={false}
+        highlightOnHover
+        verticalSpacing="xs"
+      >
         <Table.Thead>
           <Table.Tr>
             <Table.Th className={classes.th} onClick={() => handleSort('name')}>
@@ -186,7 +195,9 @@ export function ContractTable({
                       size={20}
                     />
                   )}
-                  {resolveName(contract)}
+                  <Text size="sm" fw={500} truncate="end">
+                    {resolveName(contract)}
+                  </Text>
                 </div>
               </Table.Td>
               <Table.Td>
@@ -220,8 +231,7 @@ export function ContractTable({
                     </Button>
                     <Button
                       size="compact-sm"
-                      variant="subtle"
-                      color="gray"
+                      variant="default"
                       onClick={() => setPendingDeleteId(null)}
                     >
                       {t('common.cancel')}
@@ -229,13 +239,17 @@ export function ContractTable({
                   </Group>
                 ) : (
                   <Group gap="xs">
-                    <Anchor component={Link} to={`/contracts/${contract.id}/edit`} size="sm">
-                      {t('common.edit')}
-                    </Anchor>
                     <Button
                       size="compact-sm"
-                      variant="subtle"
-                      color="red"
+                      variant="default"
+                      component={Link}
+                      to={`/contracts/${contract.id}/edit`}
+                    >
+                      {t('common.edit')}
+                    </Button>
+                    <Button
+                      size="compact-sm"
+                      variant="default"
                       onClick={() => setPendingDeleteId(contract.id)}
                     >
                       {t('common.delete')}

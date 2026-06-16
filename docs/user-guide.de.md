@@ -98,11 +98,22 @@ Verträge, deren Enddatum in der Vergangenheit liegt, erscheinen in einem gelb h
 
 Öffne **Verträge** über die Navigation, um alle Verträge in einer Tabelle zu sehen.
 
+Die Tabelle ist kompakt gestaltet – jede Zeile passt bei normaler Desktop-Breite in eine einzige Zeile. Vertragsbezeichnungen, die zu lang für die Spalte sind, werden mit einem Auslassungszeichen (…) gekürzt; der vollständige Name ist immer auf der Bearbeitungsseite sichtbar.
+
 ### Sortierung
 
 Klicke auf eine Spaltenüberschrift, um nach dieser Spalte zu sortieren. Ein weiterer Klick kehrt die Reihenfolge um. Ein dritter Klick hebt die Sortierung auf. Die aktive Sortierrichtung wird mit einem kleinen Pfeil nach oben oder unten angezeigt.
 
 Verfügbare Sortierspalten: Name, Kategorie, Betrag, Status, Enddatum.
+
+### Zeilenaktionen
+
+Jede Zeile hat zwei kompakte Aktionsschaltflächen:
+
+| Schaltfläche | Funktion |
+|--------------|---------|
+| Bearbeiten | Öffnet das Bearbeitungsformular des Vertrags |
+| Löschen | Zeigt eine Inline-Bestätigung; klicke auf **Bestätigen** zum Löschen oder auf **Abbrechen** |
 
 ### Werkzeugleiste
 

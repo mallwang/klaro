@@ -11,7 +11,7 @@ A personal web app for tracking contracts — subscriptions, insurance, housing,
 ## Features
 
 - **Dashboard** — total active monthly spending, category breakdown, upcoming renewals (within 30 days), and expired contracts
-- **Contract list** — sortable table with provider logos and category icons
+- **Contract list** — compact, sortable table with provider logos and category icons; long names truncate with an ellipsis; action buttons match the Manage Accounts style
 - **Create / edit / delete** contracts with fields for name, category, amount (displayed with a static EUR currency badge), billing interval, status, start/end dates (date picker with optional deselection), service URL, cancellation notice period, notes, and a per-contract anonymization flag; the form uses a compact multi-column layout (name+category, amount+interval, and status+start+end each share a row) that collapses to a single column on mobile
 - **Export** — download all contracts as JSON or Excel (.xlsx)
 - **Import** — upload JSON or Excel with intelligent column auto-mapping
