@@ -7,23 +7,22 @@ import { Building2 } from 'lucide-react';
  */
 
 /**
- * Constructs the logo.dev image URL for the given provider name.
+ * Constructs the proxy URL for fetching a provider logo from the backend.
  *
  * @param name - The contract/provider name to look up
  * @param isAnonymized - When true, returns null to suppress the logo fetch
- * @returns The logo.dev image URL, or null when the logo should be hidden
+ * @returns The backend proxy URL, or null when the logo should be hidden
  */
 export function logoUrl(name: string, isAnonymized: boolean): string | null {
   if (isAnonymized || !name.trim()) return null;
-  const token = import.meta.env['VITE_LOGO_DEV_TOKEN'] as string | undefined;
-  return `https://img.logo.dev/name/${encodeURIComponent(name)}?token=${token ?? ''}`;
+  return `/api/logos?name=${encodeURIComponent(name)}`;
 }
 
 interface ProviderLogoProps {
-  name: string;
-  isAnonymized?: boolean;
-  size?: number;
-  className?: string;
+  readonly name: string;
+  readonly isAnonymized?: boolean;
+  readonly size?: number;
+  readonly className?: string;
 }
 
 /**

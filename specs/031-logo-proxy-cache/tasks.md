@@ -21,8 +21,8 @@ testing of each story.
 
 **Purpose**: Environment configuration so the feature can be developed and tested locally.
 
-- [ ] T001 Add `LOGO_DEV_TOKEN` entry to `packages/backend/.env.example` (commented out, with description)
-- [ ] T002 [P] Add commented `LOGO_DEV_TOKEN` entry to `docker-compose.yml` environment section
+- [x] T001 Add `LOGO_DEV_TOKEN` entry to `packages/backend/.env.example` (commented out, with description)
+- [x] T002 [P] Add commented `LOGO_DEV_TOKEN` entry to `docker-compose.yml` environment section
 
 ---
 
@@ -32,8 +32,8 @@ testing of each story.
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete.
 
-- [ ] T003 Add `CREATE TABLE IF NOT EXISTS logo_cache …` DDL block at the end of `packages/backend/src/db/schema.sql` (columns: `name TEXT PRIMARY KEY`, `data BLOB NOT NULL`, `content_type TEXT NOT NULL`, `cached_at INTEGER NOT NULL`)
-- [ ] T004 Add migration guard for `logo_cache` table in `runMigrations()` in `packages/backend/src/db/client.ts` — check `sqlite_master`, create table only if absent; add JSDoc
+- [x] T003 Add `CREATE TABLE IF NOT EXISTS logo_cache …` DDL block at the end of `packages/backend/src/db/schema.sql` (columns: `name TEXT PRIMARY KEY`, `data BLOB NOT NULL`, `content_type TEXT NOT NULL`, `cached_at INTEGER NOT NULL`)
+- [x] T004 Add migration guard for `logo_cache` table in `runMigrations()` in `packages/backend/src/db/client.ts` — check `sqlite_master`, create table only if absent; add JSDoc
 
 **Checkpoint**: `logo_cache` table is created on both fresh and migrated databases. Verify by running `pnpm --filter @pcm/backend test` — existing tests must remain green.
 
@@ -47,15 +47,15 @@ testing of each story.
 
 ### Tests for User Story 1 ⚠️ Write FIRST — confirm they FAIL before implementing
 
-- [ ] T005 [P] [US1] Create `packages/backend/tests/integration/logos.route.test.ts` — write failing tests for: GET `/api/logos?name=Netflix` returns 200 with binary body and `image/*` content type (mock `fetch` to return a fake PNG buffer); sets `Cache-Control: public, max-age=86400`; GET `/api/logos` (missing name) returns 400; GET `/api/logos?name=` (blank name) returns 400; logo.dev non-2xx causes 502 response (mock `fetch` to return 404)
-- [ ] T006 [P] [US1] Add test to `packages/backend/tests/integration/logos.route.test.ts` — non-2xx from logo.dev does NOT insert a row into `logo_cache`
+- [x] T005 [P] [US1] Create `packages/backend/tests/integration/logos.route.test.ts` — write failing tests for: GET `/api/logos?name=Netflix` returns 200 with binary body and `image/*` content type (mock `fetch` to return a fake PNG buffer); sets `Cache-Control: public, max-age=86400`; GET `/api/logos` (missing name) returns 400; GET `/api/logos?name=` (blank name) returns 400; logo.dev non-2xx causes 502 response (mock `fetch` to return 404)
+- [x] T006 [P] [US1] Add test to `packages/backend/tests/integration/logos.route.test.ts` — non-2xx from logo.dev does NOT insert a row into `logo_cache`
 
 ### Implementation for User Story 1
 
-- [ ] T007 [US1] Create `packages/backend/src/routes/logos.ts`: export `logosRoutes` Fastify plugin; implement `GET /api/logos` — validate `name` param (trim+lowercase, 400 if blank); check `logo_cache`; if miss: fetch `https://img.logo.dev/name/{encodedName}?token=${LOGO_DEV_TOKEN}`; if non-2xx return 502; otherwise insert into `logo_cache` and reply with binary; if hit: reply from cache. Set `Cache-Control: public, max-age=86400` on all 200 responses. Full JSDoc on all functions.
-- [ ] T008 [US1] Register `logosRoutes` in `packages/backend/src/server.ts` and add `(m, p) => m === 'GET' && p === '/api/logos'` to `PUBLIC_ROUTES`
-- [ ] T009 [US1] Update `logoUrl()` in `packages/frontend/src/components/ProviderLogo.tsx` — replace logo.dev URL with `/api/logos?name=${encodeURIComponent(name)}`; remove `token` variable and `import.meta.env` reference; update JSDoc
-- [ ] T010 [US1] Remove `VITE_LOGO_DEV_TOKEN=…` line from `packages/frontend/.env`
+- [x] T007 [US1] Create `packages/backend/src/routes/logos.ts`: export `logosRoutes` Fastify plugin; implement `GET /api/logos` — validate `name` param (trim+lowercase, 400 if blank); check `logo_cache`; if miss: fetch `https://img.logo.dev/name/{encodedName}?token=${LOGO_DEV_TOKEN}`; if non-2xx return 502; otherwise insert into `logo_cache` and reply with binary; if hit: reply from cache. Set `Cache-Control: public, max-age=86400` on all 200 responses. Full JSDoc on all functions.
+- [x] T008 [US1] Register `logosRoutes` in `packages/backend/src/server.ts` and add `(m, p) => m === 'GET' && p === '/api/logos'` to `PUBLIC_ROUTES`
+- [x] T009 [US1] Update `logoUrl()` in `packages/frontend/src/components/ProviderLogo.tsx` — replace logo.dev URL with `/api/logos?name=${encodeURIComponent(name)}`; remove `token` variable and `import.meta.env` reference; update JSDoc
+- [x] T010 [US1] Remove `VITE_LOGO_DEV_TOKEN=…` line from `packages/frontend/.env`
 
 **Checkpoint**: US1 fully testable. Run `pnpm --filter @pcm/backend test` — all logos tests pass. Start dev server, open contract list, confirm logos load via `/api/logos` with no browser requests to `img.logo.dev`.
 
@@ -69,12 +69,12 @@ testing of each story.
 
 ### Tests for User Story 2 ⚠️ Write FIRST — confirm they FAIL before implementing
 
-- [ ] T011 [P] [US2] Add tests to `packages/backend/tests/integration/logos.route.test.ts` — cache hit: pre-insert a row into `logo_cache`, call `GET /api/logos?name=…`, assert `fetch` was NOT called (spy/mock) and response body matches the pre-inserted blob
-- [ ] T012 [P] [US2] Add test — name normalisation: pre-insert cache row with key `"netflix"`, request `GET /api/logos?name=Netflix`, assert cache hit (no fetch call)
+- [x] T011 [P] [US2] Add tests to `packages/backend/tests/integration/logos.route.test.ts` — cache hit: pre-insert a row into `logo_cache`, call `GET /api/logos?name=…`, assert `fetch` was NOT called (spy/mock) and response body matches the pre-inserted blob
+- [x] T012 [P] [US2] Add test — name normalisation: pre-insert cache row with key `"netflix"`, request `GET /api/logos?name=Netflix`, assert cache hit (no fetch call)
 
 ### Implementation for User Story 2
 
-- [ ] T013 [US2] Verify cache lookup in `logos.ts` uses `name.trim().toLowerCase()` as the key for both SELECT and INSERT — adjust if needed after running T011/T012 tests; no separate file needed if already correct from T007
+- [x] T013 [US2] Verify cache lookup in `logos.ts` uses `name.trim().toLowerCase()` as the key for both SELECT and INSERT — adjust if needed after running T011/T012 tests; no separate file needed if already correct from T007
 
 **Checkpoint**: US2 fully testable. `pnpm --filter @pcm/backend test` passes. Cache hit path confirmed by test spy — zero outbound calls for cached names.
 
@@ -88,11 +88,11 @@ testing of each story.
 
 ### Tests for User Story 3 ⚠️ Write FIRST — confirm they FAIL before implementing
 
-- [ ] T014 [P] [US3] Add tests to `packages/backend/tests/integration/admin.route.test.ts` — `DELETE /api/admin/logos/cache`: returns `{ deleted: N }` for admin with N rows in cache; returns `{ deleted: 0 }` when cache is already empty; returns 403 for a member; returns 401 for unauthenticated request
+- [x] T014 [P] [US3] Add tests to `packages/backend/tests/integration/admin.route.test.ts` — `DELETE /api/admin/logos/cache`: returns `{ deleted: N }` for admin with N rows in cache; returns `{ deleted: 0 }` when cache is already empty; returns 403 for a member; returns 401 for unauthenticated request
 
 ### Implementation for User Story 3
 
-- [ ] T015 [US3] Add `DELETE /api/admin/logos/cache` handler inside `adminRoutes()` in `packages/backend/src/routes/admin.ts` — run `DELETE FROM logo_cache`, return `{ deleted: result.changes }`; add JSDoc
+- [x] T015 [US3] Add `DELETE /api/admin/logos/cache` handler inside `adminRoutes()` in `packages/backend/src/routes/admin.ts` — run `DELETE FROM logo_cache`, return `{ deleted: result.changes }`; add JSDoc
 
 **Checkpoint**: US3 fully testable. All admin route tests pass. Prune endpoint returns correct `deleted` count and 403/401 for non-admins.
 
@@ -102,11 +102,11 @@ testing of each story.
 
 **Purpose**: Documentation, env cleanup, and quality validation.
 
-- [ ] T016 [P] Update `README.md` — replace `VITE_LOGO_DEV_TOKEN` reference with `LOGO_DEV_TOKEN`; document that the backend proxies logo.dev requests
-- [ ] T017 [P] Update `README.de.md` — same changes as T016, in German; keep consistent with T016
-- [ ] T018 [P] Update `docs/user-guide.md` — add section on admin logo cache prune: where to find it, what it does, when to use it
-- [ ] T019 [P] Update `docs/user-guide.de.md` — same content as T018, in German; keep consistent with T018
-- [ ] T020 Run full test suite and type-check: `pnpm -r tsc --noEmit && pnpm --filter @pcm/backend test && pnpm --filter @pcm/frontend test` — all must pass
+- [x] T016 [P] Update `README.md` — replace `VITE_LOGO_DEV_TOKEN` reference with `LOGO_DEV_TOKEN`; document that the backend proxies logo.dev requests
+- [x] T017 [P] Update `README.de.md` — same changes as T016, in German; keep consistent with T016
+- [x] T018 [P] Update `docs/user-guide.md` — add section on admin logo cache prune: where to find it, what it does, when to use it
+- [x] T019 [P] Update `docs/user-guide.de.md` — same content as T018, in German; keep consistent with T018
+- [x] T020 Run full test suite and type-check: `pnpm -r tsc --noEmit && pnpm --filter @pcm/backend test && pnpm --filter @pcm/frontend test` — all must pass
 
 ---
 
