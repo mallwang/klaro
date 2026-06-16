@@ -1,5 +1,12 @@
 # Changelog
 
+# [1.2.0](https://github.com/mallwang/klaro/compare/v1.1.0...v1.2.0) (2026-06-16)
+
+
+### Features
+
+* **frontend:** add FAQ page with Mantine accordion layout and i18n content ([#37](https://github.com/mallwang/klaro/issues/37)) ([37783c2](https://github.com/mallwang/klaro/commit/37783c21922b661a8e361c77412efc3388b66654))
+
 # [1.1.0](https://github.com/mallwang/klaro/compare/v1.0.0...v1.1.0) (2026-06-16)
 
 
