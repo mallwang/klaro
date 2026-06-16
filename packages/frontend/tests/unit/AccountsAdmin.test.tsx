@@ -267,6 +267,46 @@ describe('AccountsAdmin – InviteForm', () => {
   });
 });
 
+describe('AccountsAdmin – layout order', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    notifications.clean();
+  });
+
+  it('renders the accounts table before the invite email input', () => {
+    const { container } = renderPage();
+    const aliceCell = container.querySelector('td');
+    const inviteInput = container.querySelector('#invite-email');
+    expect(aliceCell).toBeInTheDocument();
+    expect(inviteInput).toBeInTheDocument();
+    // accounts table cell must precede the invite input in DOM order
+    expect(
+      aliceCell!.compareDocumentPosition(inviteInput!) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+  });
+
+  it('renders the invitations heading as a semantic heading element', () => {
+    renderPage();
+    expect(document.querySelector('h3, h4, h5, h6, [role="heading"]')).toBeInTheDocument();
+    // The pendingInvitationsTitle must appear as a heading, not a plain bold Text
+    const headings = Array.from(
+      document.querySelectorAll('h1, h2, h3, h4, h5, h6, [role="heading"]'),
+    );
+    const invitationsHeading = headings.find((el) =>
+      el.textContent?.toLowerCase().includes('invitation'),
+    );
+    expect(invitationsHeading).toBeInTheDocument();
+  });
+
+  it('does not render a standalone InviteForm card with its own bold title text', () => {
+    renderPage();
+    // The old InviteForm rendered a Text fw={600} with inviteTitle ("Invite by email")
+    // as a standalone card heading. After the refactor, this heading is removed —
+    // the invite input is inline within the Invitations section with no separate card title.
+    expect(screen.queryByText('Invite by email')).not.toBeInTheDocument();
+  });
+});
+
 describe('AccountsAdmin – TestEmailForm', () => {
   beforeEach(() => {
     vi.clearAllMocks();

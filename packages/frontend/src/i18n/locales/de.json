@@ -186,6 +186,7 @@
     "duplicateEmailError": "Diese E-Mail-Adresse hat bereits ein Konto.",
     "mailerError": "Die Einladungs-E-Mail konnte nicht gesendet werden. Bitte SMTP-Konfiguration prüfen.",
     "pendingInvitationsTitle": "Einladungen",
+    "pendingInvitationsDescription": "Angenommene, zurückgezogene und ersetzte Einladungen werden nach 30 Tagen automatisch entfernt.",
     "columnSentAt": "Gesendet",
     "columnDate": "Letzte Aktion",
     "acceptedOn": "Angenommen am",
@@ -269,7 +270,9 @@
     "emailChangeConflict": "Diese E-Mail-Adresse wird bereits von einem anderen Konto verwendet.",
     "emailChangeError": "E-Mail-Änderung konnte nicht angefordert werden. Bitte erneut versuchen.",
     "emailSettingsSectionTitle": "E-Mail-Einstellungen",
-    "accountSectionTitle": "Konto"
+    "emailSettingsSectionDescription": "Konfiguriere deine Zusammenfassungs-E-Mail und die Sprache für alle ausgehenden E-Mails.",
+    "accountSectionTitle": "Konto",
+    "accountSectionDescription": "Aktualisiere deinen Anzeigenamen, deine E-Mail-Adresse, dein Passwort oder lösche dein Konto dauerhaft."
   },
   "emailVerify": {
     "loading": "E-Mail-Adresse wird verifiziert…",

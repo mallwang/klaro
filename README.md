@@ -18,7 +18,7 @@ A personal web app for tracking contracts — subscriptions, insurance, housing,
 - **Anonymization** — hide real contract names globally or per contract using deterministic fantasy names
 - **Localization** — English and German with locale-aware currency and date formatting
 - **Multi-user accounts** — every family member signs in with their own account; contracts, dashboards, exports, and imports are scoped per account; administrators can create, archive, reactivate, delete, and manage roles for other accounts
-- **Email invitations** — administrators invite new users by email; the invitation panel tracks pending, accepted, and expired invitations and allows resending or withdrawing them
+- **Email invitations** — administrators invite new users by email via an inline invite field in the Pending Invitations section; the invitations table directly below tracks pending, accepted, and expired invitations and allows resending or withdrawing them
 - **Account settings** — the "My Account" page is divided into two sections: **Email Settings** (summary email preferences and email language) and **Account** (display name, email address change, password, and account deletion)
 - **Email notifications** — transactional emails for key events: email-change verification, email-change confirmation, and password-change notification; administrators can send a test email from the admin panel to verify the SMTP connection
 - **Delete account** — users can permanently delete their own account and all associated contracts via a "Danger Zone" section on the account settings page; a modal prompts for an optional JSON export before confirming; sole administrators are blocked from deleting until a second admin exists

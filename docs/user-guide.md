@@ -365,9 +365,11 @@ Open **My Account** and scroll to the **Danger Zone** section at the bottom. Cli
 
 ### Inviting new members (administrators only)
 
-To add someone to the household, go to **Accounts** in the admin sidebar section and enter their email address in the **Invite** form, then click **Send invitation**. The app emails them a link that lets them set their own password and sign in. The invitation expires after 7 days; you can resend it at any time from the invitations table.
+To add someone to the household, go to **Accounts** in the admin sidebar section. Scroll past the accounts table to the **Pending Invitations** section, enter the person's email address in the inline invite field, and click **Send invitation**. The app emails them a link that lets them set their own password and sign in. The invitation expires after 7 days; you can resend it at any time from the invitations table directly below.
 
-The invitations table below the form shows all past invitations and their status:
+The invitations table shows all past invitations and their status:
+
+> **Automatic cleanup**: Accepted, withdrawn, and superseded invitation records are automatically removed after 30 days. Pending invitations that have already expired are removed on the next server restart.
 
 | Status | Meaning |
 |--------|---------|
@@ -393,7 +395,7 @@ The app always keeps at least one active administrator. Archive, demote, and del
 
 ### SMTP test (administrators only)
 
-At the top of the **Accounts** page there is a **Send test email** panel. Enter any email address and click **Send** to check whether outgoing mail is configured correctly. Use this after changing your SMTP settings to verify delivery before inviting users.
+At the bottom of the **Accounts** page there is a **Send test email** section. Enter any email address and click **Send** to check whether outgoing mail is configured correctly. Use this after changing your SMTP settings to verify delivery before inviting users.
 
 ---
 

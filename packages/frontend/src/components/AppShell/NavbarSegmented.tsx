@@ -1,7 +1,16 @@
 import { useState } from 'react';
 import { NavLink as RouterNavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Group, Text, SegmentedControl, Stack, Tooltip, ActionIcon, Avatar } from '@mantine/core';
+import {
+  Badge,
+  Group,
+  Text,
+  SegmentedControl,
+  Stack,
+  Tooltip,
+  ActionIcon,
+  Avatar,
+} from '@mantine/core';
 import {
   IconLayoutDashboard,
   IconFileText,
@@ -34,7 +43,9 @@ export function NavbarSegmented() {
   const { mutate: signOut, isPending } = useSignOut();
   const location = useLocation();
   const navigate = useNavigate();
-  const [segment, setSegment] = useState<Segment>('app');
+  const [segment, setSegment] = useState<Segment>(
+    location.pathname.startsWith('/admin') ? 'admin' : 'app',
+  );
 
   /**
    * Switches the active nav segment and navigates to the segment's default route.
@@ -111,9 +122,11 @@ export function NavbarSegmented() {
               <Text size="sm" fw={500} truncate>
                 {user?.displayName}
               </Text>
-              <Text size="xs" c="dimmed">
-                {user?.role === 'ADMIN' ? t('nav.roleAdmin') : t('nav.roleMember')}
-              </Text>
+              <Badge color={user?.role === 'ADMIN' ? 'red' : 'blue'} variant="light" size="xs">
+                {user?.role === 'ADMIN'
+                  ? t('accountsAdmin.roleAdmin')
+                  : t('accountsAdmin.roleMember')}
+              </Badge>
             </div>
           </Group>
           <Tooltip label={t('auth.signOut')}>

@@ -186,6 +186,7 @@
     "duplicateEmailError": "This email address already has an account.",
     "mailerError": "The invitation email could not be sent. Please check the SMTP configuration.",
     "pendingInvitationsTitle": "Invitations",
+    "pendingInvitationsDescription": "Accepted, withdrawn, and superseded invitations are automatically removed after 30 days.",
     "columnSentAt": "Sent",
     "columnDate": "Last action",
     "acceptedOn": "Accepted at",
@@ -269,7 +270,9 @@
     "emailChangeConflict": "This email address is already in use by another account.",
     "emailChangeError": "Failed to request email change. Please try again.",
     "emailSettingsSectionTitle": "Email Settings",
-    "accountSectionTitle": "Account"
+    "emailSettingsSectionDescription": "Configure your summary email and the language used for all outgoing emails.",
+    "accountSectionTitle": "Account",
+    "accountSectionDescription": "Update your display name, email address, password, or permanently delete your account."
   },
   "emailVerify": {
     "loading": "Verifying your email address…",
@@ -336,7 +339,7 @@
     "title": "Email Language",
     "label": "Language for emails",
     "en": "English",
-    "de": "Deutsch",
+    "de": "German",
     "save": "Save email language",
     "saved": "Email language saved",
     "error": "Email language could not be saved. Please try again."
