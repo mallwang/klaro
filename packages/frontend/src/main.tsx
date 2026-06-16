@@ -30,6 +30,7 @@ import { EmailVerifyConfirm } from './pages/EmailVerifyConfirm.js';
 import { ForgotPassword } from './pages/ForgotPassword.js';
 import { ResetPassword } from './pages/ResetPassword.js';
 import { AccountSettings } from './pages/AccountSettings.js';
+import { Faq } from './pages/Faq.js';
 import { AccountsAdmin } from './pages/admin/AccountsAdmin.js';
 import { AppShell } from './components/AppShell/AppShell.js';
 import { RequireAuth } from './components/RequireAuth.js';
@@ -89,6 +90,7 @@ createRoot(root).render(
                         <Route path="/contracts/import" element={<ContractImport />} />
                         <Route path="/contracts/:id/edit" element={<ContractEdit />} />
                         <Route path="/account" element={<AccountSettings />} />
+                        <Route path="/faq" element={<Faq />} />
                         <Route
                           path="/admin/accounts"
                           element={

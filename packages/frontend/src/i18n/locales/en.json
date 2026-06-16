@@ -11,7 +11,8 @@
     "myAccount": "My Account",
     "backToAccounts": "← Accounts",
     "roleAdmin": "Admin",
-    "roleMember": "Member"
+    "roleMember": "Member",
+    "faq": "FAQ"
   },
   "settings": {
     "darkMode": "Switch to dark mode",
@@ -359,5 +360,42 @@
     "save": "Save email language",
     "saved": "Email language saved",
     "error": "Email language could not be saved. Please try again."
+  },
+  "faq": {
+    "title": "Frequently Asked Questions",
+    "items": [
+      {
+        "question": "How do I add a new contract?",
+        "answer": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Navigate to the Contracts page and click the Add Contract button to get started."
+      },
+      {
+        "question": "Can I export my contracts?",
+        "answer": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut enim ad minim veniam, quis nostrud exercitation ullamco. You can export your contracts as JSON or Excel from the Contracts page."
+      },
+      {
+        "question": "How does the renewal reminder work?",
+        "answer": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis aute irure dolor in reprehenderit in voluptate velit. Upcoming renewals appear on your Dashboard with the number of days remaining."
+      },
+      {
+        "question": "What does anonymizing a contract do?",
+        "answer": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Excepteur sint occaecat cupidatat non proident. When a contract is anonymized, its name is hidden in list views to protect your privacy."
+      },
+      {
+        "question": "How do I change my account password?",
+        "answer": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sunt in culpa qui officia deserunt mollit anim id est laborum. Go to Account Settings and use the Change Password section."
+      },
+      {
+        "question": "Can I use the app with multiple family members?",
+        "answer": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam libero tempore, cum soluta nobis est eligendi optio. An administrator can invite additional users from the Admin panel under Manage Accounts."
+      },
+      {
+        "question": "What contract categories are available?",
+        "answer": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Temporibus autem quibusdam et aut officiis debitis rerum necessitatibus. The available categories are Utilities, Subscriptions, Insurance, Housing, and Other."
+      },
+      {
+        "question": "How do I set a cancellation period for a contract?",
+        "answer": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quis autem vel eum iure reprehenderit qui in ea voluptate. Open the contract edit form and fill in the Cancellation Period field with the number and unit."
+      }
+    ]
   }
 }

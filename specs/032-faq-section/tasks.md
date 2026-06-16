@@ -27,7 +27,7 @@ All paths are relative to repository root. This feature touches only `packages/f
 
 **Purpose**: Acquire the decorative image asset that both user stories depend on for the FAQ page layout.
 
-- [ ] T001 Download the FAQ illustration SVG from the Mantine UI example (https://ui.mantine.dev/category/faq/#faq-with-image — source the image used by that example) and save it as `packages/frontend/src/assets/faq-image.svg`
+- [X] T001 Download the FAQ illustration SVG from the Mantine UI example (https://ui.mantine.dev/category/faq/#faq-with-image — source the image used by that example) and save it as `packages/frontend/src/assets/faq-image.svg`
 
 **Checkpoint**: Image asset in place. All subsequent tasks can reference it.
 
@@ -39,9 +39,9 @@ All paths are relative to repository root. This feature touches only `packages/f
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete.
 
-- [ ] T002 Add `nav.faq` translation key to `packages/frontend/src/i18n/locales/en.json` (value: `"FAQ"`) in the existing `nav` section
-- [ ] T003 [P] Add `faq` section with `title` and `items` array (8–10 lorem ipsum Q&A entries) to `packages/frontend/src/i18n/locales/en.json` — see data-model.md for the expected JSON schema
-- [ ] T004 [P] Add `nav.faq` key (value: `"FAQ"`) and matching `faq` section (German translations for all entries from T003) to `packages/frontend/src/i18n/locales/de.json` — entry count must match en.json exactly
+- [X] T002 Add `nav.faq` translation key to `packages/frontend/src/i18n/locales/en.json` (value: `"FAQ"`) in the existing `nav` section
+- [X] T003 [P] Add `faq` section with `title` and `items` array (8–10 lorem ipsum Q&A entries) to `packages/frontend/src/i18n/locales/en.json` — see data-model.md for the expected JSON schema
+- [X] T004 [P] Add `nav.faq` key (value: `"FAQ"`) and matching `faq` section (German translations for all entries from T003) to `packages/frontend/src/i18n/locales/de.json` — entry count must match en.json exactly
 
 **Note**: T003 and T004 touch different files and can proceed in parallel after T002 is committed.
 
@@ -57,29 +57,29 @@ All paths are relative to repository root. This feature touches only `packages/f
 
 ### Tests for User Story 1 ⚠️ Write FIRST — verify they FAIL before implementation
 
-- [ ] T005 [US1] Write failing Vitest component test in `packages/frontend/tests/unit/Faq.test.tsx`:
+- [X] T005 [US1] Write failing Vitest component test in `packages/frontend/tests/unit/Faq.test.tsx`:
   - Mock `react-i18next` `useTranslation` to return a fixture with `faq.items` (3 entries) and `faq.title`
   - Assert the page renders the heading text
   - Assert the correct number of `Accordion.Item` elements are present (one per entry)
   - Assert each item's control button contains the question text
   - Assert the page renders without crashing when `faq.items` returns a non-array (graceful fallback)
-- [ ] T006 [P] [US1] Write failing Playwright E2E test in `packages/frontend/tests/e2e/faq.spec.ts`:
+- [X] T006 [P] [US1] Write failing Playwright E2E test in `packages/frontend/tests/e2e/faq.spec.ts`:
   - Sign in, click the FAQ nav link, assert `/faq` route is active
   - Assert the page heading is visible
   - Click the first accordion item, assert its answer panel expands (becomes visible)
 
 ### Implementation for User Story 1
 
-- [ ] T007 [US1] Create `packages/frontend/src/pages/Faq.tsx` implementing the Mantine "faq-with-image" layout:
+- [X] T007 [US1] Create `packages/frontend/src/pages/Faq.tsx` implementing the Mantine "faq-with-image" layout:
   - Use `SimpleGrid` with `cols={{ base: 1, sm: 2 }}` (image column + accordion column)
   - Render the decorative image from `../assets/faq-image.svg` using Mantine `Image`
   - Use `useTranslation()` to read `faq.title` (section heading) and `faq.items` with `returnObjects: true`
   - Cast the result to `FaqEntry[]` (type defined in the same file) and guard with `Array.isArray`
   - Render a Mantine `Accordion` mapping over the entries; use array index as item value (`item-0`, `item-1`, …)
   - Apply JSDoc to all functions and a file-level description block (per CLAUDE.md standards)
-- [ ] T008 [US1] Add named export for `Faq` to `packages/frontend/src/pages/index.ts` (create the file if it does not exist; use the same export style as other pages if an index already exists)
-- [ ] T009 [US1] Add `import { Faq } from './pages/Faq.js';` and `<Route path="/faq" element={<Faq />} />` inside the authenticated `<Routes>` block in `packages/frontend/src/main.tsx`
-- [ ] T010 [US1] Add FAQ nav link to `appLinks` array in `packages/frontend/src/components/AppShell/NavbarSegmented.tsx`:
+- [X] T008 [US1] Add named export for `Faq` to `packages/frontend/src/pages/index.ts` (create the file if it does not exist; use the same export style as other pages if an index already exists)
+- [X] T009 [US1] Add `import { Faq } from './pages/Faq.js';` and `<Route path="/faq" element={<Faq />} />` inside the authenticated `<Routes>` block in `packages/frontend/src/main.tsx`
+- [X] T010 [US1] Add FAQ nav link to `appLinks` array in `packages/frontend/src/components/AppShell/NavbarSegmented.tsx`:
   - Label: `t('nav.faq')`
   - Route: `/faq`
   - Icon: `<IconHelp size={18} />` from `@tabler/icons-react`
@@ -96,7 +96,7 @@ All paths are relative to repository root. This feature touches only `packages/f
 
 ### Tests for User Story 2 ⚠️ Write FIRST — verify they FAIL before implementation
 
-- [ ] T011 [US2] Write failing Vitest test in `packages/frontend/tests/unit/FaqContent.test.ts`:
+- [X] T011 [US2] Write failing Vitest test in `packages/frontend/tests/unit/FaqContent.test.ts`:
   - Import `en.json` and `de.json` directly
   - Assert both have a `faq.items` property that is an `Array`
   - Assert both arrays have the same length
@@ -105,8 +105,8 @@ All paths are relative to repository root. This feature touches only `packages/f
 
 ### Implementation for User Story 2
 
-- [ ] T012 [P] [US2] Verify `packages/frontend/src/i18n/locales/en.json` `faq.items` entries from T003 are well-formed (non-empty question and answer, no placeholder left unfilled)
-- [ ] T013 [P] [US2] Verify `packages/frontend/src/i18n/locales/de.json` `faq.items` entries from T004 are well-formed and match entry count in en.json
+- [X] T012 [P] [US2] Verify `packages/frontend/src/i18n/locales/en.json` `faq.items` entries from T003 are well-formed (non-empty question and answer, no placeholder left unfilled)
+- [X] T013 [P] [US2] Verify `packages/frontend/src/i18n/locales/de.json` `faq.items` entries from T004 are well-formed and match entry count in en.json
 
 **Note**: T012 and T013 can run in parallel. The structural test T011 will catch any mismatch at CI time.
 
@@ -118,11 +118,11 @@ All paths are relative to repository root. This feature touches only `packages/f
 
 **Purpose**: Documentation, README updates, and validation sweep required by CLAUDE.md.
 
-- [ ] T014 [P] Update `README.md` to document the FAQ section: where to find it, how to edit content files
-- [ ] T015 [P] Update `README.de.md` with the German equivalent of the README changes from T014
-- [ ] T016 [P] Update `docs/user-guide.md` to document the FAQ page from a user perspective (navigation, accordion usage)
-- [ ] T017 [P] Update `docs/user-guide.de.md` with the German equivalent of the user-guide changes from T016
-- [ ] T018 Run the full quickstart validation from `specs/032-faq-section/quickstart.md` (all 5 scenarios) and confirm all pass
+- [X] T014 [P] Update `README.md` to document the FAQ section: where to find it, how to edit content files
+- [X] T015 [P] Update `README.de.md` with the German equivalent of the README changes from T014
+- [X] T016 [P] Update `docs/user-guide.md` to document the FAQ page from a user perspective (navigation, accordion usage)
+- [X] T017 [P] Update `docs/user-guide.de.md` with the German equivalent of the user-guide changes from T016
+- [X] T018 Run the full quickstart validation from `specs/032-faq-section/quickstart.md` (all 5 scenarios) and confirm all pass
 
 ---
 

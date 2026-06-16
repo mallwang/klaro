@@ -11,7 +11,8 @@
     "myAccount": "Mein Konto",
     "backToAccounts": "← Konten",
     "roleAdmin": "Admin",
-    "roleMember": "Mitglied"
+    "roleMember": "Mitglied",
+    "faq": "FAQ"
   },
   "settings": {
     "darkMode": "Dunkelmodus aktivieren",
@@ -359,5 +360,42 @@
     "save": "E-Mail-Sprache speichern",
     "saved": "E-Mail-Sprache gespeichert",
     "error": "E-Mail-Sprache konnte nicht gespeichert werden. Bitte erneut versuchen."
+  },
+  "faq": {
+    "title": "Häufig gestellte Fragen",
+    "items": [
+      {
+        "question": "Wie füge ich einen neuen Vertrag hinzu?",
+        "answer": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Navigieren Sie zur Seite Verträge und klicken Sie auf Vertrag hinzufügen."
+      },
+      {
+        "question": "Kann ich meine Verträge exportieren?",
+        "answer": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut enim ad minim veniam, quis nostrud exercitation ullamco. Sie können Ihre Verträge als JSON oder Excel von der Vertragsseite exportieren."
+      },
+      {
+        "question": "Wie funktioniert die Verlängerungserinnerung?",
+        "answer": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis aute irure dolor in reprehenderit in voluptate velit. Bevorstehende Verlängerungen werden auf dem Dashboard mit den verbleibenden Tagen angezeigt."
+      },
+      {
+        "question": "Was bewirkt die Anonymisierung eines Vertrags?",
+        "answer": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Excepteur sint occaecat cupidatat non proident sunt in culpa. Wenn ein Vertrag anonymisiert wird, wird sein Name in der Listenansicht verborgen."
+      },
+      {
+        "question": "Wie ändere ich mein Kontokennwort?",
+        "answer": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sunt in culpa qui officia deserunt mollit anim id est laborum. Gehen Sie zu den Kontoeinstellungen und nutzen Sie den Bereich Passwort ändern."
+      },
+      {
+        "question": "Kann ich die App mit mehreren Familienmitgliedern nutzen?",
+        "answer": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam libero tempore cum soluta nobis est eligendi optio cumque. Ein Administrator kann weitere Benutzer im Admin-Bereich unter Konten verwalten einladen."
+      },
+      {
+        "question": "Welche Vertragskategorien stehen zur Verfügung?",
+        "answer": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Temporibus autem quibusdam et aut officiis debitis rerum necessitatibus. Die verfügbaren Kategorien sind Versorgungsleistungen, Abonnements, Versicherungen, Wohnen und Sonstiges."
+      },
+      {
+        "question": "Wie lege ich eine Kündigungsfrist für einen Vertrag fest?",
+        "answer": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quis autem vel eum iure reprehenderit qui in ea voluptate. Öffnen Sie das Bearbeitungsformular des Vertrags und füllen Sie das Feld Kündigungsfrist aus."
+      }
+    ]
   }
 }

@@ -22,7 +22,9 @@ Klaro is a local web app that keeps all your contracts — streaming services, i
 10. [Accounts & sign-in](#10-accounts--sign-in)
 11. [Summary Email](#11-summary-email)
 12. [Email Language](#12-email-language)
-13. [Contract fields reference](#13-contract-fields-reference)
+13. [Updating a self-hosted instance](#13-updating-a-self-hosted-instance)
+14. [Contract fields reference](#14-contract-fields-reference)
+15. [FAQ](#15-faq)
 
 ---
 
@@ -37,6 +39,7 @@ The app has a persistent navigation sidebar on the left. It is divided into two 
 | Dashboard | `/` | Spending overview, renewals, expired contracts |
 | Contracts | `/contracts` | Full list; create, import, export |
 | My Account | `/account` | Display name, email, password, delete account |
+| FAQ | `/faq` | Frequently asked questions |
 
 **Admin** — visible only to administrators:
 
@@ -542,3 +545,23 @@ After updating, open the browser developer tools → Network → any API request
 | Service URL | No | Valid URL | Link to your account page |
 | Details | No | Up to 2 000 characters | Policy numbers, account IDs, notes |
 | Anonymize | No | Boolean | Per-contract privacy flag |
+
+---
+
+## 15. FAQ
+
+The FAQ page provides answers to common questions about the app.
+
+**How to reach it**: Click **FAQ** in the App segment of the sidebar, or navigate directly to `/faq`.
+
+### Reading the FAQ
+
+The page shows a decorative illustration on the left and an accordion list of questions on the right (stacked vertically on mobile). Click any question to expand its answer. Click the same question again to collapse it.
+
+### Language
+
+FAQ content follows the active application language. When you switch the language (see [Section 9](#9-language)), all questions and answers update automatically without a page reload.
+
+### Updating FAQ content
+
+Questions and answers are stored in the application's translation files (`en.json` and `de.json`). To add, edit, or remove an entry, modify the `faq.items` array in the relevant file — no changes to application code are needed. A rebuild is required for the changes to take effect.
