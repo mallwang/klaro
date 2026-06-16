@@ -13,6 +13,7 @@ import {
   TextInput,
   Center,
   Modal,
+  Divider,
 } from '@mantine/core';
 import type { Account, Invitation } from '@pcm/shared';
 import { AuthError } from '../../services/auth.js';
@@ -34,11 +35,17 @@ import {
 import { showSuccess, showError } from '../../lib/notifications.js';
 
 /**
- * Admin page for managing user accounts and invitations. Provides account listing with
- * role/status controls, invitation sending, test email functionality, and invitation
- * lifecycle management (resend, cancel).
+ * Admin page for managing user accounts and invitations. Shows the accounts list first,
+ * followed by a compact invitations section with an inline invite form, and a test email
+ * utility at the bottom. Page width is constrained to match the My Account page.
  */
 
+/**
+ * Formats an ISO date string as a locale-aware date.
+ *
+ * @param iso - ISO 8601 date string
+ * @returns localised date string, or the original string on parse failure
+ */
 function localeDate(iso: string): string {
   try {
     return new Date(iso).toLocaleDateString();
@@ -47,6 +54,12 @@ function localeDate(iso: string): string {
   }
 }
 
+/**
+ * Renders a status badge for an invitation, treating pending-but-expired invitations as expired.
+ *
+ * @param invitation - the invitation whose status to display
+ * @returns a coloured Badge element
+ */
 function InvitationStatusBadge({ invitation }: { invitation: Invitation }) {
   const { t } = useTranslation();
   const isExpired = invitation.status === 'PENDING' && new Date(invitation.expiresAt) < new Date();
@@ -60,74 +73,6 @@ function InvitationStatusBadge({ invitation }: { invitation: Invitation }) {
   const c = config[invitation.status];
   if (!c) return <span>{invitation.status}</span>;
   return <Badge color={c.color}>{c.label}</Badge>;
-}
-
-/**
- * Renders the invite-by-email form. Shows a success toast on send and an error toast on failure.
- */
-function InviteForm() {
-  const { t } = useTranslation();
-  const { mutate: sendInvitation, isPending } = useSendInvitation();
-  const [email, setEmail] = useState('');
-
-  /**
-   * Returns the localised error message for an invitation failure.
-   *
-   * @param error - the error thrown by the mutation
-   * @returns localised error string
-   */
-  function resolveInviteError(error: unknown): string {
-    if (error instanceof AuthError) {
-      if (error.status === 409) return t('accountsAdmin.duplicateEmailError');
-      if (error.status === 502) return t('accountsAdmin.mailerError');
-    }
-    return t('accountsAdmin.inviteError');
-  }
-
-  /**
-   * Submits the invite form and shows toast feedback on completion.
-   */
-  function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    sendInvitation(
-      { email: email.trim() },
-      {
-        onSuccess: () => {
-          setEmail('');
-          showSuccess(t('accountsAdmin.inviteSuccess'));
-        },
-        onError: (error) => {
-          showError(resolveInviteError(error));
-        },
-      },
-    );
-  }
-
-  return (
-    <Paper withBorder p="md">
-      <Text fw={600} mb="sm">
-        {t('accountsAdmin.inviteTitle')}
-      </Text>
-      <form onSubmit={handleSubmit}>
-        <Stack gap="sm">
-          <Group align="flex-end" gap="sm">
-            <TextInput
-              id="invite-email"
-              label={t('accountsAdmin.emailLabel')}
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              style={{ flex: 1 }}
-            />
-            <Button type="submit" loading={isPending}>
-              {isPending ? t('accountsAdmin.inviting') : t('accountsAdmin.inviteButton')}
-            </Button>
-          </Group>
-        </Stack>
-      </form>
-    </Paper>
-  );
 }
 
 /**
@@ -170,12 +115,6 @@ function TestEmailForm() {
 
   return (
     <Paper withBorder p="md">
-      <Text fw={600} mb={4}>
-        {t('accountsAdmin.testEmailTitle')}
-      </Text>
-      <Text size="sm" c="dimmed" mb="sm">
-        {t('accountsAdmin.testEmailDescription')}
-      </Text>
       <form onSubmit={handleSubmit}>
         <Stack gap="sm">
           <Group align="flex-end" gap="sm">
@@ -198,6 +137,9 @@ function TestEmailForm() {
   );
 }
 
+/**
+ * Renders the invitations table with resend and cancel actions.
+ */
 function InvitationsTable() {
   const { t } = useTranslation();
   const { data: invitations, isLoading } = useInvitations();
@@ -220,9 +162,6 @@ function InvitationsTable() {
 
   return (
     <Paper withBorder>
-      <Text fw={600} p="md" pb={0}>
-        {t('accountsAdmin.pendingInvitationsTitle')}
-      </Text>
       <Table.ScrollContainer minWidth={600}>
         <Table withTableBorder={false}>
           <Table.Thead>
@@ -288,6 +227,9 @@ function InvitationsTable() {
 
 /**
  * Renders the admin panel for managing user accounts and invitations.
+ *
+ * Sections from top to bottom: accounts list, invitations (with inline invite form), test email.
+ * Page width matches the My Account page via maw/mx constraints on the outer Stack.
  */
 export function AccountsAdmin() {
   const { t } = useTranslation();
@@ -297,6 +239,10 @@ export function AccountsAdmin() {
   const { mutate: deleteAccount } = useDeleteAccount();
   const { mutate: changeRole } = useChangeAccountRole();
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+
+  // Invite form state (lifted from the dissolved InviteForm sub-component)
+  const { mutate: sendInvitation, isPending: isInviting } = useSendInvitation();
+  const [inviteEmail, setInviteEmail] = useState('');
 
   /**
    * Returns the localised error message for an account action failure.
@@ -313,19 +259,72 @@ export function AccountsAdmin() {
     return t('accountsAdmin.actionError');
   }
 
+  /**
+   * Returns the localised error message for an invitation failure.
+   *
+   * @param error - the error thrown by the mutation
+   * @returns localised error string
+   */
+  function resolveInviteError(error: unknown): string {
+    if (error instanceof AuthError) {
+      if (error.status === 409) return t('accountsAdmin.duplicateEmailError');
+      if (error.status === 502) return t('accountsAdmin.mailerError');
+    }
+    return t('accountsAdmin.inviteError');
+  }
+
+  /**
+   * Submits the invite form and shows toast feedback on completion.
+   *
+   * @param e - the form submit event
+   */
+  function handleInviteSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    sendInvitation(
+      { email: inviteEmail.trim() },
+      {
+        onSuccess: () => {
+          setInviteEmail('');
+          showSuccess(t('accountsAdmin.inviteSuccess'));
+        },
+        onError: (error) => {
+          showError(resolveInviteError(error));
+        },
+      },
+    );
+  }
+
   useEffect(() => {
     if (isError) showError(t('accountsAdmin.loadError'));
   }, [isError, t]);
 
+  /**
+   * Returns true when the given email has been reassigned to an archived-account placeholder address.
+   *
+   * @param email - the account email to check
+   * @returns true if the email ends with the archived-account domain
+   */
   function isEmailReassigned(email: string): boolean {
     return email.endsWith('@archived.invalid');
   }
 
+  /**
+   * Returns true when at least one other active admin account exists besides the given account.
+   *
+   * @param account - the account to check against
+   * @returns true if another active admin exists
+   */
   function otherActiveAdminExists(account: Account): boolean {
     if (!accounts) return false;
     return accounts.some((a) => a.id !== account.id && a.role === 'ADMIN' && a.status === 'ACTIVE');
   }
 
+  /**
+   * Derives up-to-two uppercase initials from a display name.
+   *
+   * @param name - the user's display name
+   * @returns initials string (1–2 characters, uppercase)
+   */
   function userInitials(name: string): string {
     return name
       .split(' ')
@@ -336,7 +335,7 @@ export function AccountsAdmin() {
   }
 
   return (
-    <Stack gap="lg">
+    <Stack gap="lg" maw={900} mx="auto">
       <div>
         <Title order={2}>{t('accountsAdmin.title')}</Title>
         <Text size="sm" c="dimmed">
@@ -344,10 +343,7 @@ export function AccountsAdmin() {
         </Text>
       </div>
 
-      <InviteForm />
-      <TestEmailForm />
-      <InvitationsTable />
-
+      {/* Accounts list — primary content, shown first */}
       {isLoading && (
         <Center py="xl">
           <Text c="dimmed">{t('common.loading')}</Text>
@@ -487,6 +483,39 @@ export function AccountsAdmin() {
           </Table.ScrollContainer>
         </Paper>
       )}
+
+      <Divider my="md" />
+
+      {/* Invitations section — inline invite form above the invitations table */}
+      <Title order={3}>{t('accountsAdmin.pendingInvitationsTitle')}</Title>
+
+      <form onSubmit={handleInviteSubmit}>
+        <Group align="flex-end" gap="sm">
+          <TextInput
+            id="invite-email"
+            label={t('accountsAdmin.emailLabel')}
+            type="email"
+            required
+            value={inviteEmail}
+            onChange={(e) => setInviteEmail(e.target.value)}
+            style={{ flex: 1 }}
+          />
+          <Button type="submit" loading={isInviting}>
+            {isInviting ? t('accountsAdmin.inviting') : t('accountsAdmin.inviteButton')}
+          </Button>
+        </Group>
+      </form>
+
+      <InvitationsTable />
+
+      <Divider my="md" />
+
+      {/* Test email — diagnostic utility, shown last */}
+      <Title order={3}>{t('accountsAdmin.testEmailTitle')}</Title>
+      <Text size="sm" c="dimmed">
+        {t('accountsAdmin.testEmailDescription')}
+      </Text>
+      <TestEmailForm />
 
       <Modal
         opened={confirmDeleteId !== null}

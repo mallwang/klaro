@@ -365,9 +365,9 @@ Die App sendet transaktionale E-Mails bei sicherheitsrelevanten Ereignissen:
 
 ### Neue Mitglieder einladen (nur Administratoren)
 
-Um jemanden zum Haushalt hinzuzufügen, öffne **Konten** im Admin-Bereich der Seitenleiste und gib die E-Mail-Adresse der Person in das **Einladen**-Formular ein, dann klicke auf **Einladung senden**. Die App schickt der Person einen Link, über den sie ihr eigenes Passwort festlegen und sich anmelden kann. Die Einladung läuft nach 7 Tagen ab; du kannst sie jederzeit aus der Einladungstabelle heraus erneut senden.
+Um jemanden zum Haushalt hinzuzufügen, öffne **Konten** im Admin-Bereich der Seitenleiste. Scrolle hinter die Kontentabelle zum Abschnitt **Ausstehende Einladungen**, gib die E-Mail-Adresse der Person in das Eingabefeld ein und klicke auf **Einladung senden**. Die App schickt der Person einen Link, über den sie ihr eigenes Passwort festlegen und sich anmelden kann. Die Einladung läuft nach 7 Tagen ab; du kannst sie jederzeit aus der direkt darunter liegenden Einladungstabelle heraus erneut senden.
 
-Die Einladungstabelle unterhalb des Formulars zeigt alle bisherigen Einladungen und ihren Status:
+Die Einladungstabelle zeigt alle bisherigen Einladungen und ihren Status:
 
 | Status | Bedeutung |
 |--------|----------|
@@ -393,7 +393,7 @@ Die App stellt sicher, dass stets mindestens ein aktiver Administrator vorhanden
 
 ### SMTP-Test (nur Administratoren)
 
-Am oberen Rand der **Konten**-Seite befindet sich ein Bereich **Test-E-Mail senden**. Gib eine beliebige E-Mail-Adresse ein und klicke auf **Senden**, um zu prüfen, ob der ausgehende E-Mail-Versand korrekt konfiguriert ist. Nutze dies nach einer Änderung der SMTP-Einstellungen, um den Versand zu testen, bevor du Benutzer einlädst.
+Am unteren Rand der **Konten**-Seite befindet sich der Abschnitt **Test-E-Mail senden**. Gib eine beliebige E-Mail-Adresse ein und klicke auf **Senden**, um zu prüfen, ob der ausgehende E-Mail-Versand korrekt konfiguriert ist. Nutze dies nach einer Änderung der SMTP-Einstellungen, um den Versand zu testen, bevor du Benutzer einlädst.
 
 ---
 

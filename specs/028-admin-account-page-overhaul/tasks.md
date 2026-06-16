@@ -32,7 +32,7 @@ README.md, README.de.md                               ← readme files
 
 **Purpose**: Confirm no new dependencies or files are needed before starting.
 
-- [ ] T001 Verify `AccountsAdmin.tsx` and `AccountsAdmin.test.tsx` are the only files that need changes (cross-check plan.md §Source Code against the spec — no new packages, hooks, or shared types are introduced)
+- [x] T001 Verify `AccountsAdmin.tsx` and `AccountsAdmin.test.tsx` are the only files that need changes (cross-check plan.md §Source Code against the spec — no new packages, hooks, or shared types are introduced)
 
 ---
 
@@ -46,15 +46,15 @@ fails for the right reason before proceeding to Phase 3.
 
 ### Tests for US1 — Accounts Table First
 
-- [ ] T002 [US1] Add `describe('AccountsAdmin – layout order')` block to `packages/frontend/tests/unit/AccountsAdmin.test.tsx` with a test that calls `renderPage()`, then uses `compareDocumentPosition` to assert that the accounts table (identified by the row containing `'Alice'`) appears before the invite email input (`getByLabelText(/email/i)` scoped to the invite form) in the DOM. Run — confirm FAIL.
+- [x] T002 [US1] Add `describe('AccountsAdmin – layout order')` block to `packages/frontend/tests/unit/AccountsAdmin.test.tsx` with a test that calls `renderPage()`, then uses `compareDocumentPosition` to assert that the accounts table (identified by the row containing `'Alice'`) appears before the invite email input (`getByLabelText(/email/i)` scoped to the invite form) in the DOM. Run — confirm FAIL.
 
 ### Tests for US2 — Inline Invite Row (no standalone InviteForm Paper)
 
-- [ ] T003 [US2] In the same `describe` block in `packages/frontend/tests/unit/AccountsAdmin.test.tsx`, add a test that asserts the invite email input is rendered directly inside the invitations section — verified by checking that the `<form>` ancestor of the invite input does NOT contain a `Text` element with the text matching `t('accountsAdmin.inviteTitle')` (i.e., the standalone card heading is gone). Run — confirm FAIL.
+- [x] T003 [US2] In the same `describe` block in `packages/frontend/tests/unit/AccountsAdmin.test.tsx`, add a test that asserts the invite email input is rendered directly inside the invitations section — verified by checking that the `<form>` ancestor of the invite input does NOT contain a `Text` element with the text matching `t('accountsAdmin.inviteTitle')` (i.e., the standalone card heading is gone). Run — confirm FAIL.
 
 ### Tests for US5 — Section Heading Outside the Table Paper
 
-- [ ] T004 [US5] In the same `describe` block in `packages/frontend/tests/unit/AccountsAdmin.test.tsx`, add a test that asserts the `pendingInvitationsTitle` text is rendered as a `heading` element (e.g., `getByRole('heading', { name: /pending invitations/i })`), confirming it is a `Title` component rather than a `Text fw={600}` inside the `Paper`. Run — confirm FAIL.
+- [x] T004 [US5] In the same `describe` block in `packages/frontend/tests/unit/AccountsAdmin.test.tsx`, add a test that asserts the `pendingInvitationsTitle` text is rendered as a `heading` element (e.g., `getByRole('heading', { name: /pending invitations/i })`), confirming it is a `Title` component rather than a `Text fw={600}` inside the `Paper`. Run — confirm FAIL.
 
 **Checkpoint — Phase 2 complete**: All three tests (T002, T003, T004) confirmed failing. Implementation may now begin.
 
@@ -68,7 +68,7 @@ fails for the right reason before proceeding to Phase 3.
 
 ### Implementation for US1
 
-- [ ] T005 [US1] In `packages/frontend/src/pages/admin/AccountsAdmin.tsx`, move the accounts `Paper` + `Table.ScrollContainer` block (currently at the bottom of the `Stack`) to immediately after the page title `<div>` block, before the invite form and test email sections. Keep all account-row JSX, the loading spinner, and the delete-confirmation `Modal` unchanged. Run `pnpm --filter @pcm/frontend test --run` — T002 must now pass.
+- [x] T005 [US1] In `packages/frontend/src/pages/admin/AccountsAdmin.tsx`, move the accounts `Paper` + `Table.ScrollContainer` block (currently at the bottom of the `Stack`) to immediately after the page title `<div>` block, before the invite form and test email sections. Keep all account-row JSX, the loading spinner, and the delete-confirmation `Modal` unchanged. Run `pnpm --filter @pcm/frontend test --run` — T002 must now pass.
 
 **Checkpoint — Phase 3 complete**: Accounts table visible first; T002 green; all pre-existing tests still pass.
 
@@ -82,11 +82,11 @@ fails for the right reason before proceeding to Phase 3.
 
 ### Implementation for US2
 
-- [ ] T006 [US2] In `packages/frontend/src/pages/admin/AccountsAdmin.tsx`, dissolve the `InviteForm` sub-component: lift its `email` state (`useState('')`), the `useSendInvitation` hook call, `resolveInviteError`, and `handleSubmit` into the body of `AccountsAdmin`. Update the JSDoc comment on each moved function. Delete the `InviteForm` function entirely.
+- [x] T006 [US2] In `packages/frontend/src/pages/admin/AccountsAdmin.tsx`, dissolve the `InviteForm` sub-component: lift its `email` state (`useState('')`), the `useSendInvitation` hook call, `resolveInviteError`, and `handleSubmit` into the body of `AccountsAdmin`. Update the JSDoc comment on each moved function. Delete the `InviteForm` function entirely.
 
-- [ ] T007 [US2] In `packages/frontend/src/pages/admin/AccountsAdmin.tsx`, render the inline invite row in the Invitations section — a `<form onSubmit={handleSubmit}>` containing a `Group align="flex-end" gap="sm"` with the `TextInput` (id `"invite-email"`, type email, label `t('accountsAdmin.emailLabel')`, flex: 1) and the `Button` (type submit) — placed directly above the `<InvitationsTable />` call, inside the Stack, without a wrapping standalone `Paper` card.
+- [x] T007 [US2] In `packages/frontend/src/pages/admin/AccountsAdmin.tsx`, render the inline invite row in the Invitations section — a `<form onSubmit={handleSubmit}>` containing a `Group align="flex-end" gap="sm"` with the `TextInput` (id `"invite-email"`, type email, label `t('accountsAdmin.emailLabel')`, flex: 1) and the `Button` (type submit) — placed directly above the `<InvitationsTable />` call, inside the Stack, without a wrapping standalone `Paper` card.
 
-- [ ] T008 [US2] In `packages/frontend/src/pages/admin/AccountsAdmin.tsx`, remove the `Text fw={600}` heading from inside `InvitationsTable`'s wrapping `Paper` (the `pendingInvitationsTitle` text inside the `Paper` above the `Table.ScrollContainer`). The section `Title order={3}` rendered in the parent (added in Phase 6) will replace it. Run `pnpm --filter @pcm/frontend test --run` — T003 must now pass and all existing invite-form tests (success toast, 409 error, 502 error) must remain green.
+- [x] T008 [US2] In `packages/frontend/src/pages/admin/AccountsAdmin.tsx`, remove the `Text fw={600}` heading from inside `InvitationsTable`'s wrapping `Paper` (the `pendingInvitationsTitle` text inside the `Paper` above the `Table.ScrollContainer`). The section `Title order={3}` rendered in the parent (added in Phase 6) will replace it. Run `pnpm --filter @pcm/frontend test --run` — T003 must now pass and all existing invite-form tests (success toast, 409 error, 502 error) must remain green.
 
 **Checkpoint — Phase 4 complete**: Inline invite row rendered; T003 green; invite-form functionality tests green.
 
@@ -100,7 +100,7 @@ fails for the right reason before proceeding to Phase 3.
 
 ### Implementation for US3
 
-- [ ] T009 [US3] In `packages/frontend/src/pages/admin/AccountsAdmin.tsx`, change the outermost `<Stack gap="lg">` to `<Stack gap="lg" maw={900} mx="auto">`. Confirm via `pnpm --filter @pcm/frontend tsc --noEmit` (no type errors) and `pnpm --filter @pcm/frontend test --run` (all tests still green). Visual verification per `quickstart.md` Scenario 2 is required before marking complete.
+- [x] T009 [US3] In `packages/frontend/src/pages/admin/AccountsAdmin.tsx`, change the outermost `<Stack gap="lg">` to `<Stack gap="lg" maw={900} mx="auto">`. Confirm via `pnpm --filter @pcm/frontend tsc --noEmit` (no type errors) and `pnpm --filter @pcm/frontend test --run` (all tests still green). Visual verification per `quickstart.md` Scenario 2 is required before marking complete.
 
 **Checkpoint — Phase 5 complete**: Width constraint applied; all tests green; visual check done.
 
@@ -114,7 +114,7 @@ fails for the right reason before proceeding to Phase 3.
 
 ### Implementation for US5
 
-- [ ] T010 [US5] In `packages/frontend/src/pages/admin/AccountsAdmin.tsx`, add the following structure to the Stack between the accounts table block and the `InvitationsTable` / inline invite row:
+- [x] T010 [US5] In `packages/frontend/src/pages/admin/AccountsAdmin.tsx`, add the following structure to the Stack between the accounts table block and the `InvitationsTable` / inline invite row:
   ```
   <Divider my="md" />
   <Title order={3}>{t('accountsAdmin.pendingInvitationsTitle')}</Title>
@@ -127,7 +127,7 @@ fails for the right reason before proceeding to Phase 3.
   ```
   Remove the `Text fw={600}` / `Text size="sm" c="dimmed"` heading block from inside `TestEmailForm`'s `Paper` (since the section `Title` + description `Text` are now outside it).
 
-- [ ] T011 [US5] Run `pnpm --filter @pcm/frontend test --run` — T004 (`heading` role for "Pending Invitations") must now pass. Confirm visual alignment per `quickstart.md` Scenario 3.
+- [x] T011 [US5] Run `pnpm --filter @pcm/frontend test --run` — T004 (`heading` role for "Pending Invitations") must now pass. Confirm visual alignment per `quickstart.md` Scenario 3.
 
 **Checkpoint — Phase 6 complete**: Section titles outside Papers; T004 green; alignment visually confirmed.
 
@@ -141,7 +141,7 @@ fails for the right reason before proceeding to Phase 3.
 
 ### Implementation for US4
 
-- [ ] T012 [US4] Verify the current JSX order in `packages/frontend/src/pages/admin/AccountsAdmin.tsx` after Phases 3–6: accounts table → Divider → Invitations heading + invite row + InvitationsTable → Divider → Test Email heading + description + TestEmailForm. If `TestEmailForm` is already last (it should be after Phase 6), no code change is needed — mark as confirmed. Visual verification per `quickstart.md` Scenario 1 (step "scroll to bottom") is the acceptance gate.
+- [x] T012 [US4] Verify the current JSX order in `packages/frontend/src/pages/admin/AccountsAdmin.tsx` after Phases 3–6: accounts table → Divider → Invitations heading + invite row + InvitationsTable → Divider → Test Email heading + description + TestEmailForm. If `TestEmailForm` is already last (it should be after Phase 6), no code change is needed — mark as confirmed. Visual verification per `quickstart.md` Scenario 1 (step "scroll to bottom") is the acceptance gate.
 
 **Checkpoint — Phase 7 complete**: Test email section confirmed last; all tests green.
 
@@ -151,17 +151,17 @@ fails for the right reason before proceeding to Phase 3.
 
 **Purpose**: JSDoc, docs, and final verification.
 
-- [ ] T013 [P] Update the file-level JSDoc block in `packages/frontend/src/pages/admin/AccountsAdmin.tsx` to reflect the new section structure (accounts first, invitations section with inline invite row, test email last).
+- [x] T013 [P] Update the file-level JSDoc block in `packages/frontend/src/pages/admin/AccountsAdmin.tsx` to reflect the new section structure (accounts first, invitations section with inline invite row, test email last).
 
-- [ ] T014 [P] Add/update JSDoc on all functions in `packages/frontend/src/pages/admin/AccountsAdmin.tsx` whose implementation changed during Phases 3–7: `AccountsAdmin` (return JSX restructured), `resolveInviteError` (moved from `InviteForm`), `handleSubmit` (moved from `InviteForm`). Verify `handleSubmit` for the test email form also has a JSDoc if it changed.
+- [x] T014 [P] Add/update JSDoc on all functions in `packages/frontend/src/pages/admin/AccountsAdmin.tsx` whose implementation changed during Phases 3–7: `AccountsAdmin` (return JSX restructured), `resolveInviteError` (moved from `InviteForm`), `handleSubmit` (moved from `InviteForm`). Verify `handleSubmit` for the test email form also has a JSDoc if it changed.
 
-- [ ] T015 [P] Update `README.md` and `README.de.md` to note that the admin Manage Accounts page now shows the accounts list first, with the invitations and test email sections below in a constrained, centred layout consistent with the My Account page.
+- [x] T015 [P] Update `README.md` and `README.de.md` to note that the admin Manage Accounts page now shows the accounts list first, with the invitations and test email sections below in a constrained, centred layout consistent with the My Account page.
 
-- [ ] T016 [P] Update `docs/user-guide.md` and `docs/user-guide.de.md` to document the new page layout: accounts table at top, Invitations section with inline invite form below, Test Email at the bottom; note the improved alignment in the Invitations section.
+- [x] T016 [P] Update `docs/user-guide.md` and `docs/user-guide.de.md` to document the new page layout: accounts table at top, Invitations section with inline invite form below, Test Email at the bottom; note the improved alignment in the Invitations section.
 
-- [ ] T017 Run full test suite and type-check: `pnpm --filter @pcm/frontend test --run && pnpm --filter @pcm/frontend tsc --noEmit`. All tests must pass, zero type errors.
+- [x] T017 Run full test suite and type-check: `pnpm --filter @pcm/frontend test --run && pnpm --filter @pcm/frontend tsc --noEmit`. All tests must pass, zero type errors.
 
-- [ ] T018 Run all six quickstart.md validation scenarios manually in the browser to confirm end-to-end correctness before closing the feature branch.
+- [x] T018 Run all six quickstart.md validation scenarios manually in the browser to confirm end-to-end correctness before closing the feature branch.
 
 ---
 
