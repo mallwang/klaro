@@ -476,7 +476,44 @@ E-Mail-Vorlagen müssen für jede Sprache vorhanden sein, die die UI unterstütz
 
 ---
 
-## 13. Feldreferenz
+## 13. Eine selbst gehostete Instanz aktualisieren
+
+Klaro wird als Docker-Image auf Docker Hub (`walefish/klaro`) veröffentlicht. Für ein Update ist kein Quellcode-Checkout erforderlich.
+
+### So wird aktualisiert
+
+1. Ein Terminal im Verzeichnis öffnen, das die `docker-compose.yml`-Datei enthält.
+2. Das neue Image herunterladen und den Container neu starten:
+
+   ```bash
+   docker compose pull
+   docker compose up -d
+   ```
+
+Docker ersetzt den laufenden Container durch das neue Image. Die Datenbank (standardmäßig unter `./data/contracts.db` gespeichert) ist als Volume eingebunden und wird beim Update nicht verändert.
+
+### Versions-Tags
+
+Jedes Release veröffentlicht zwei Docker-Tags:
+
+| Tag | Bedeutung |
+|-----|-----------|
+| `walefish/klaro:latest` | Zeigt immer auf das aktuellste stabile Release |
+| `walefish/klaro:vX.Y.Z` | Eine festgelegte Version (z. B. `v1.2.0`), nach dem Push unveränderlich |
+
+`docker-compose.yml` verwendet standardmäßig `latest`. Um eine bestimmte Version festzulegen, die `image:`-Zeile anpassen:
+
+```yaml
+image: walefish/klaro:v1.2.0
+```
+
+### Laufende Version prüfen
+
+Nach einem Update die Browser-Entwicklertools öffnen → Netzwerk → beliebige API-Anfrage → Antwort-Header. Der Header `x-klaro-version` (falls vorhanden) zeigt die laufende Version. Alternativ die Docker-Hub-Tags-Seite (`hub.docker.com/r/walefish/klaro/tags`) aufrufen und die Digests vergleichen.
+
+---
+
+## 14. Feldreferenz
 
 | Feld | Pflicht | Einschränkungen | Hinweise |
 |------|---------|-----------------|---------|

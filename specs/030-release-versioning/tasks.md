@@ -22,7 +22,7 @@ performed via the runnable scenarios in quickstart.md (Phase 7).
 **Purpose**: Add the new npm packages to the workspace root. Must complete before any config
 or implementation tasks.
 
-- [ ] T001 Install `release-it` and `@release-it/conventional-changelog` as workspace-root devDependencies: run `pnpm add -D -w release-it @release-it/conventional-changelog` and verify both appear in `package.json` devDependencies
+- [x] T001 Install `release-it` and `@release-it/conventional-changelog` as workspace-root devDependencies: run `pnpm add -D -w release-it @release-it/conventional-changelog` and verify both appear in `package.json` devDependencies
 
 **Checkpoint**: `node_modules/release-it` and `node_modules/@release-it/conventional-changelog` exist at workspace root.
 
@@ -36,8 +36,8 @@ US2 (the tag format used by CI comes from this config).
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete.
 
-- [ ] T002 Add `"version": "1.0.0"` field and `"release": "release-it"` script to `package.json` (workspace root)
-- [ ] T003 Create `.release-it.json` at workspace root with:
+- [x] T002 Add `"version": "1.0.0"` field and `"release": "release-it"` script to `package.json` (workspace root)
+- [x] T003 Create `.release-it.json` at workspace root with:
   - `plugins["@release-it/conventional-changelog"]`: preset `angular`, infile `CHANGELOG.md`
   - `git.commitMessage`: `"chore(release): v${version}"`
   - `git.tagName`: `"v${version}"`
@@ -63,7 +63,7 @@ prior commits since last tag and confirm the skill exits cleanly with "Nothing t
 
 ### Implementation for User Story 1
 
-- [ ] T004 [US1] Create `.claude/skills/release.md` implementing the guided `/release` skill with these steps in order:
+- [x] T004 [US1] Create `.claude/skills/release.md` implementing the guided `/release` skill with these steps in order:
   1. **Branch check**: verify `git branch --show-current` returns `main`; if not, abort with message "Must be on main branch to release"
   2. **Clean tree check**: verify `git status --porcelain` returns empty; if not, abort with message "Working tree has uncommitted changes — commit or stash before releasing"
   3. **Dry-run preview**: run `pnpm run release -- --dry-run` and display the full output (proposed version, changelog entries) to the developer
@@ -97,7 +97,7 @@ on `hub.docker.com/r/walefish/klaro/tags`. Clean up the test tag afterwards.
 
 ### Implementation for User Story 2
 
-- [ ] T005 [US2] Create `.github/workflows/release.yml` with:
+- [x] T005 [US2] Create `.github/workflows/release.yml` with:
   - `on: push: tags: ['v*.*.*']`
   - Single job `docker` on `ubuntu-latest`
   - Steps: `actions/checkout@v4`, `docker/setup-buildx-action@v3`, `docker/login-action@v3` (secrets `DOCKERHUB_USERNAME` + `DOCKERHUB_TOKEN`), `docker/build-push-action@v6` with `push: true` and tags `walefish/klaro:latest,walefish/klaro:${{ github.ref_name }}`
@@ -119,7 +119,7 @@ with no build step logged.
 
 ### Implementation for User Story 3
 
-- [ ] T006 [US3] Update `docker-compose.yml`:
+- [x] T006 [US3] Update `docker-compose.yml`:
   - Replace `image: pcm` with `image: walefish/klaro:latest`
   - Remove the `build: .` line entirely
   - Leave all other fields (ports, environment, volumes, restart) unchanged
@@ -133,11 +133,11 @@ key. `docker-compose pull` succeeds without a source checkout.
 
 **Purpose**: Documentation updates required by CLAUDE.md after every feature implementation.
 
-- [ ] T007 [P] Update `README.md`: add a "Releases" or "Docker" section documenting the `walefish/klaro` image, how to pull with `docker-compose`, and the `pnpm run release` + `/release` skill workflow for maintainers
-- [ ] T008 [P] Update `README.de.md`: same content as T007 in German, keeping both files consistent
-- [ ] T009 [P] Update `docs/user-guide.md`: document how to update a self-hosted Klaro instance (`docker-compose pull` + restart) and what the versioned tags mean
-- [ ] T010 [P] Update `docs/user-guide.de.md`: same content as T009 in German
-- [ ] T011 Validate all quickstart.md scenarios: dry-run preview (Scenario 1), full local release (Scenario 2), self-host compose (Scenario 4), `/release` skill (Scenario 5), branch guard (Scenario 6)
+- [x] T007 [P] Update `README.md`: add a "Releases" or "Docker" section documenting the `walefish/klaro` image, how to pull with `docker-compose`, and the `pnpm run release` + `/release` skill workflow for maintainers
+- [x] T008 [P] Update `README.de.md`: same content as T007 in German, keeping both files consistent
+- [x] T009 [P] Update `docs/user-guide.md`: document how to update a self-hosted Klaro instance (`docker-compose pull` + restart) and what the versioned tags mean
+- [x] T010 [P] Update `docs/user-guide.de.md`: same content as T009 in German
+- [x] T011 Validate all quickstart.md scenarios: dry-run preview (Scenario 1), full local release (Scenario 2), self-host compose (Scenario 4), `/release` skill (Scenario 5), branch guard (Scenario 6)
 
 ---
 

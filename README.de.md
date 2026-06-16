@@ -93,15 +93,13 @@ packages/
 
 ## Bereitstellung
 
-Die App lässt sich als einzelnes Docker-Image verpacken und selbst hosten, z. B. auf einem Homeserver.
+Die App wird als Docker-Image unter [`walefish/klaro`](https://hub.docker.com/r/walefish/klaro) auf Docker Hub veröffentlicht. Sie lässt sich auf jedem Rechner mit Docker selbst hosten — ohne Quellcode-Checkout.
 
 **Voraussetzungen**: [Docker](https://docs.docker.com/get-docker/) und Docker Compose (in Docker Desktop enthalten / `docker compose`).
 
 ```bash
-# Image bauen
-docker build -t pcm .
-
-# App starten (erstellt beim ersten Start auch ./data)
+# Aktuelles Image herunterladen und App starten
+docker compose pull
 docker compose up -d
 ```
 
@@ -112,6 +110,25 @@ Beim ersten Start mit einer frischen Datenbank werden die E-Mail-Adresse und ein
 **Host-Port ändern**: die Zeile `ports:` in `docker-compose.yml` bearbeiten — nur die linke Seite (Host-Port) muss geändert werden, z. B. macht `"9090:3000"` die App unter Port 9090 erreichbar.
 
 **Speicherort der Datenbank ändern**: die Zeile `volumes:` in `docker-compose.yml` auf ein beliebiges Host-Verzeichnis anpassen, z. B. `/mnt/storage/pcm-data:/data`.
+
+**Auf eine neuere Version aktualisieren**: `docker compose pull && docker compose up -d` ausführen — Docker lädt das neue `latest`-Image und startet den Container neu. Die Daten bleiben dabei unberührt.
+
+## Releases
+
+Releases folgen [Conventional Commits](https://www.conventionalcommits.org/) und [Semantic Versioning](https://semver.org/). Jedes Release erzeugt:
+
+- einen Versions-Bump in `package.json`
+- einen neuen Eintrag in `CHANGELOG.md`
+- einen Git-Tag `vX.Y.Z`
+- ein Docker-Image auf `walefish/klaro` mit den Tags `latest` und `vX.Y.Z`
+
+**Für Maintainer** — um ein Release zu erstellen, den `/release`-Skill von Claude Code aufrufen:
+
+```
+/release
+```
+
+Der Skill führt durch eine Dry-Run-Vorschau, fordert eine Bestätigung an, führt `pnpm run release` aus, verifiziert das Ergebnis und generiert formatierte GitHub-Release-Notizen. Nach der Bestätigung `git push --follow-tags` ausführen, um den Tag zu veröffentlichen und den Docker-CI-Workflow automatisch auszulösen.
 
 ## Datenbankskripte
 
