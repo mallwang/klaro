@@ -1,26 +1,16 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { ProviderLogo, logoUrl } from '../../src/components/ProviderLogo.js';
 
-const TOKEN = 'pk_dTJBcEKxQgCQUZhio2o9Vw';
-
-beforeEach(() => {
-  vi.stubEnv('VITE_LOGO_DEV_TOKEN', TOKEN);
-});
-
-afterEach(() => {
-  vi.unstubAllEnvs();
-});
-
 describe('logoUrl()', () => {
-  it('returns a logo.dev URL for a non-empty name when not anonymized', () => {
+  it('returns a proxy URL for a non-empty name when not anonymized', () => {
     const url = logoUrl('Netflix', false);
-    expect(url).toBe(`https://img.logo.dev/name/Netflix?token=${TOKEN}`);
+    expect(url).toBe('/api/logos?name=Netflix');
   });
 
   it('URL-encodes names with spaces', () => {
     const url = logoUrl('Amazon Prime', false);
-    expect(url).toBe(`https://img.logo.dev/name/Amazon%20Prime?token=${TOKEN}`);
+    expect(url).toBe('/api/logos?name=Amazon%20Prime');
   });
 
   it('returns null when name is empty string', () => {
@@ -40,7 +30,7 @@ describe('ProviderLogo component', () => {
   it('renders an <img> with correct src when name is non-empty and not anonymized', () => {
     render(<ProviderLogo name="Netflix" />);
     const img = screen.getByRole('img');
-    expect(img).toHaveAttribute('src', `https://img.logo.dev/name/Netflix?token=${TOKEN}`);
+    expect(img).toHaveAttribute('src', '/api/logos?name=Netflix');
   });
 
   it('renders a fallback Building2 SVG when name is empty', () => {

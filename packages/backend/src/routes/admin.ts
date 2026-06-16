@@ -59,6 +59,18 @@ export async function adminRoutes(fastify: FastifyInstance): Promise<void> {
   });
 
   /**
+   * Returns the current logo cache contents: total entry count and all cached provider names.
+   *
+   * @returns `{ count: number, keys: string[] }` — cache size and sorted list of cached names
+   */
+  fastify.get('/api/admin/logos/cache', async (_request, reply) => {
+    const rows = fastify.db
+      .prepare<[], { name: string }>(`SELECT name FROM logo_cache ORDER BY name`)
+      .all();
+    return reply.send({ count: rows.length, keys: rows.map((r) => r.name) });
+  });
+
+  /**
    * Removes all entries from the logo_cache table and returns the number of deleted rows.
    * Subsequent logo requests will re-fetch from logo.dev and repopulate the cache.
    *
