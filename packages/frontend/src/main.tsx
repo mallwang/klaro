@@ -8,7 +8,7 @@ import { StrictMode } from 'react';
  */
 
 import { createRoot } from 'react-dom/client';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Navigate, Routes, Route, useLocation } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import {
   MantineProvider,
@@ -19,6 +19,7 @@ import {
 import { Notifications } from '@mantine/notifications';
 import { DatesProvider } from '@mantine/dates';
 import { useTranslation } from 'react-i18next';
+import { useCurrentUser } from './hooks/useAuth.js';
 import { Dashboard } from './pages/Dashboard.js';
 import { ContractList } from './pages/ContractList.js';
 import { ContractNew } from './pages/ContractNew.js';
@@ -33,7 +34,7 @@ import { AccountSettings } from './pages/AccountSettings.js';
 import { Faq } from './pages/Faq.js';
 import { AccountsAdmin } from './pages/admin/AccountsAdmin.js';
 import { AppShell } from './components/AppShell/AppShell.js';
-import { RequireAuth } from './components/RequireAuth.js';
+import { PublicLayout } from './components/PublicLayout.js';
 import { RequireAdmin } from './components/RequireAdmin.js';
 
 /**
@@ -43,6 +44,31 @@ import { RequireAdmin } from './components/RequireAdmin.js';
 function LocalizedDatesProvider({ children }: { readonly children: React.ReactNode }) {
   const { i18n } = useTranslation();
   return <DatesProvider settings={{ locale: i18n.language }}>{children}</DatesProvider>;
+}
+
+/** Routes accessible without a session; all other routes redirect to sign-in. */
+const PUBLIC_PATHS = ['/faq'];
+
+/**
+ * Wraps the entire app route tree in the appropriate shell based on auth state.
+ * Authenticated users always see a single AppShell instance (sidebar stays mounted
+ * across navigations). Unauthenticated users see PublicLayout for designated public
+ * paths and are redirected to sign-in for everything else.
+ */
+function AuthenticatedShell({ children }: { readonly children: React.ReactNode }) {
+  const { data: user, isLoading } = useCurrentUser();
+  const location = useLocation();
+
+  if (isLoading) return null;
+
+  if (!user) {
+    if (PUBLIC_PATHS.some((p) => location.pathname.startsWith(p))) {
+      return <PublicLayout showSignIn>{children}</PublicLayout>;
+    }
+    return <Navigate to="/sign-in" replace state={{ from: location }} />;
+  }
+
+  return <AppShell>{children}</AppShell>;
 }
 
 const queryClient = new QueryClient({
@@ -81,27 +107,25 @@ createRoot(root).render(
               <Route
                 path="*"
                 element={
-                  <RequireAuth>
-                    <AppShell>
-                      <Routes>
-                        <Route path="/" element={<Dashboard />} />
-                        <Route path="/contracts" element={<ContractList />} />
-                        <Route path="/contracts/new" element={<ContractNew />} />
-                        <Route path="/contracts/import" element={<ContractImport />} />
-                        <Route path="/contracts/:id/edit" element={<ContractEdit />} />
-                        <Route path="/account" element={<AccountSettings />} />
-                        <Route path="/faq" element={<Faq />} />
-                        <Route
-                          path="/admin/accounts"
-                          element={
-                            <RequireAdmin>
-                              <AccountsAdmin />
-                            </RequireAdmin>
-                          }
-                        />
-                      </Routes>
-                    </AppShell>
-                  </RequireAuth>
+                  <AuthenticatedShell>
+                    <Routes>
+                      <Route path="/" element={<Dashboard />} />
+                      <Route path="/contracts" element={<ContractList />} />
+                      <Route path="/contracts/new" element={<ContractNew />} />
+                      <Route path="/contracts/import" element={<ContractImport />} />
+                      <Route path="/contracts/:id/edit" element={<ContractEdit />} />
+                      <Route path="/account" element={<AccountSettings />} />
+                      <Route path="/faq" element={<Faq />} />
+                      <Route
+                        path="/admin/accounts"
+                        element={
+                          <RequireAdmin>
+                            <AccountsAdmin />
+                          </RequireAdmin>
+                        }
+                      />
+                    </Routes>
+                  </AuthenticatedShell>
                 }
               />
             </Routes>

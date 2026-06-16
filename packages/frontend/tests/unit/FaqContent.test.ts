@@ -20,9 +20,9 @@ describe('FAQ content structure', () => {
     expect(en.faq.items.length).toBe(de.faq.items.length);
   });
 
-  it('en.json faq.items has between 1 and 10 entries', () => {
+  it('en.json faq.items has between 1 and 15 entries', () => {
     expect(en.faq.items.length).toBeGreaterThanOrEqual(1);
-    expect(en.faq.items.length).toBeLessThanOrEqual(10);
+    expect(en.faq.items.length).toBeLessThanOrEqual(15);
   });
 
   it('every en.json faq entry has a non-empty question and answer', () => {

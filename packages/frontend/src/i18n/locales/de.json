@@ -365,36 +365,48 @@
     "title": "Häufig gestellte Fragen",
     "items": [
       {
+        "question": "Was ist Klaro und welche Probleme löst es?",
+        "answer": "Klaro ist eine selbst gehostete App, die alle Ihre laufenden Verträge – Streaming-Dienste, Versicherungen, Mobilfunkverträge, Miete, Versorgungsleistungen – an einem Ort bündelt. Sie zeigt Ihnen, wie viel Sie monatlich für alle Verträge zusammen ausgeben, warnt Sie vor automatischen Verlängerungen und kennzeichnet bereits abgelaufene Verträge. Da Klaro auf Ihrem eigenen Server läuft, verlassen Ihre Finanzdaten nie Ihren Haushalt."
+      },
+      {
         "question": "Wie füge ich einen neuen Vertrag hinzu?",
-        "answer": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Navigieren Sie zur Seite Verträge und klicken Sie auf Vertrag hinzufügen."
+        "answer": "Gehen Sie in der Seitenleiste auf Verträge und klicken Sie auf Vertrag hinzufügen. Füllen Sie die Pflichtfelder Name, Kategorie, Betrag und Abrechnungsintervall aus und klicken Sie auf Speichern. Alle weiteren Felder (Enddatum, Kündigungsfrist, Notizen usw.) sind optional, liefern aber nützlichere Erinnerungen im Dashboard."
       },
       {
-        "question": "Kann ich meine Verträge exportieren?",
-        "answer": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut enim ad minim veniam, quis nostrud exercitation ullamco. Sie können Ihre Verträge als JSON oder Excel von der Vertragsseite exportieren."
+        "question": "Wie wird der monatliche Gesamtbetrag im Dashboard berechnet?",
+        "answer": "Das Dashboard rechnet jeden aktiven Vertrag in einen monatlichen Betrag um: Jahresbeträge werden durch 12 geteilt, Quartalsbeträge durch 3, Wochenbeträge mit 52 multipliziert und dann durch 12 geteilt. Verträge mit dem Abrechnungsintervall \"Einmalig\" werden nicht berücksichtigt. Der angezeigte Gesamtbetrag ist die Summe aller umgerechneten Werte."
       },
       {
-        "question": "Wie funktioniert die Verlängerungserinnerung?",
-        "answer": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis aute irure dolor in reprehenderit in voluptate velit. Bevorstehende Verlängerungen werden auf dem Dashboard mit den verbleibenden Tagen angezeigt."
+        "question": "Was ist die Kündigungsfrist, und wie unterscheidet sie sich vom Enddatum?",
+        "answer": "Das Enddatum ist der Tag, an dem der Vertrag ausläuft oder sich automatisch verlängert. Die Kündigungsfrist ist der letzte Tag, an dem Sie kündigen können, ohne für eine weitere Periode gebunden zu sein – berechnet als Enddatum minus der eingetragenen Kündigungsfrist. Wenn Sie keine Kündigungsfrist angeben, gilt das Enddatum selbst als Frist. Beide Angaben werden im Bereich Bevorstehende Verlängerungen im Dashboard angezeigt."
       },
       {
         "question": "Was bewirkt die Anonymisierung eines Vertrags?",
-        "answer": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Excepteur sint occaecat cupidatat non proident sunt in culpa. Wenn ein Vertrag anonymisiert wird, wird sein Name in der Listenansicht verborgen."
+        "answer": "Die Anonymisierung ersetzt den echten Namen eines Vertrags überall in der App – in der Vertragsliste, im Dashboard und in Zusammenfassungs-E-Mails – durch einen gleichbleibenden fiktiven Namen (z. B. \"Aether Dynamics\"). Der Alias bleibt sitzungsübergreifend identisch. Einzelne Verträge lassen sich über das Kontrollkästchen Anonymisieren im Bearbeitungsformular anonymisieren; alle Namen auf einmal lassen sich mit dem Schalter Anonymisierung in der Symbolleiste der Vertragsliste ausblenden."
       },
       {
-        "question": "Wie ändere ich mein Kontokennwort?",
-        "answer": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sunt in culpa qui officia deserunt mollit anim id est laborum. Gehen Sie zu den Kontoeinstellungen und nutzen Sie den Bereich Passwort ändern."
+        "question": "Was ist der Unterschied zwischen den Status \"Aktiv\" und \"Inaktiv\"?",
+        "answer": "Aktive Verträge werden in den monatlichen Gesamtbetrag und in Dashboard-Zusammenfassungen einbezogen. Inaktive Verträge bleiben als Referenz erhalten, werden jedoch aus allen Berechnungen ausgeschlossen. Verwenden Sie den Status \"Inaktiv\" für Verträge, die Sie bereits gekündigt haben, aber zu Dokumentationszwecken behalten möchten."
       },
       {
-        "question": "Kann ich die App mit mehreren Familienmitgliedern nutzen?",
-        "answer": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam libero tempore cum soluta nobis est eligendi optio cumque. Ein Administrator kann weitere Benutzer im Admin-Bereich unter Konten verwalten einladen."
+        "question": "Wie ändere ich mein Passwort oder meine E-Mail-Adresse?",
+        "answer": "Öffnen Sie Mein Konto über die Seitenleiste. Um das Passwort zu ändern, geben Sie im Bereich Passwort Ihr aktuelles und ein neues Passwort (mindestens 8 Zeichen) ein und klicken Sie auf Passwort ändern. Um die E-Mail-Adresse zu ändern, geben Sie die neue Adresse im Bereich E-Mail-Adresse ein und klicken Sie auf Änderung beantragen – an die neue Adresse wird ein Bestätigungslink gesendet, der angeklickt werden muss, damit die Änderung wirksam wird."
       },
       {
-        "question": "Welche Vertragskategorien stehen zur Verfügung?",
-        "answer": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Temporibus autem quibusdam et aut officiis debitis rerum necessitatibus. Die verfügbaren Kategorien sind Versorgungsleistungen, Abonnements, Versicherungen, Wohnen und Sonstiges."
+        "question": "Kann ich eine regelmäßige Zusammenfassung meiner Verträge per E-Mail erhalten?",
+        "answer": "Ja. Öffnen Sie Mein Konto, suchen Sie den Bereich Zusammenfassungs-E-Mail und aktivieren Sie \"Regelmäßige Vertragszusammenfassung per E-Mail senden\". Wählen Sie wöchentlich (jeden Montag um 10:00 UTC) oder monatlich (am 1. des Monats um 10:00 UTC). Die E-Mail enthält Ihren monatlichen Gesamtbetrag, eine Aufschlüsselung pro Vertrag und bevorstehende Verlängerungen innerhalb der nächsten 30 Tage."
       },
       {
-        "question": "Wie lege ich eine Kündigungsfrist für einen Vertrag fest?",
-        "answer": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quis autem vel eum iure reprehenderit qui in ea voluptate. Öffnen Sie das Bearbeitungsformular des Vertrags und füllen Sie das Feld Kündigungsfrist aus."
+        "question": "Wie importiere ich Verträge aus einer Tabellenkalkulation oder JSON-Datei?",
+        "answer": "Gehen Sie zu Verträge und klicken Sie in der Symbolleiste auf Importieren. Laden Sie eine JSON- oder Excel-Datei (.xlsx, max. 5 MB) hoch. Der Assistent ordnet gängige Spaltennamen automatisch den App-Feldern zu und ermöglicht es Ihnen, Zuordnungen vor dem Import manuell anzupassen. Zeilen, die die Validierung nicht bestehen, werden übersprungen und einzeln gemeldet – erfolgreich geparste Zeilen werden immer gespeichert."
+      },
+      {
+        "question": "Wie hoste ich Klaro auf meinem eigenen Server?",
+        "answer": "Klaro wird als Docker-Image auf Docker Hub (walefish/klaro) bereitgestellt. Sie benötigen Docker und Docker Compose auf Ihrem Server. Erstellen Sie eine docker-compose.yml, die das Image referenziert, binden Sie ein lokales Verzeichnis für die Datenbank ein und exponieren Sie den gewünschten Port. Starten Sie die App mit \"docker compose up -d\". Um auf eine neuere Version zu aktualisieren, führen Sie \"docker compose pull\" gefolgt von \"docker compose up -d\" aus – Ihre Daten liegen in einem eingebundenen Volume und werden durch ein Update nicht beeinträchtigt."
+      },
+      {
+        "question": "Wo kann ich Support erhalten, Verbesserungen vorschlagen oder Fehler melden?",
+        "answer": "Klaro ist Open Source. Besuchen Sie das GitHub-Repository unter github.com/mallwang/klaro, um einen Issue für Fehlerberichte oder Feature-Wünsche zu öffnen oder bestehende Diskussionen zu durchsuchen. Pull Requests sind ebenfalls willkommen."
       }
     ]
   }

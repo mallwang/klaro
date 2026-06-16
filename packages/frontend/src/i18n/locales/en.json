@@ -365,36 +365,48 @@
     "title": "Frequently Asked Questions",
     "items": [
       {
+        "question": "What is Klaro and what problems does it solve?",
+        "answer": "Klaro is a self-hosted app that keeps all your recurring contracts — streaming services, insurance policies, mobile plans, rent, utilities — in one place. It shows you how much you spend per month across all contracts, warns you before auto-renewals slip past unnoticed, and flags contracts that have already expired. Because it runs on your own server, your financial data never leaves your household."
+      },
+      {
         "question": "How do I add a new contract?",
-        "answer": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Navigate to the Contracts page and click the Add Contract button to get started."
+        "answer": "Go to Contracts in the sidebar and click Add Contract. Fill in the required fields — Name, Category, Amount, and Billing interval — then click Save. All other fields (end date, cancellation notice, notes, etc.) are optional but give you more useful reminders on the dashboard."
       },
       {
-        "question": "Can I export my contracts?",
-        "answer": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut enim ad minim veniam, quis nostrud exercitation ullamco. You can export your contracts as JSON or Excel from the Contracts page."
+        "question": "How does the monthly spending figure on the dashboard work?",
+        "answer": "The dashboard converts every active contract to a monthly cost: yearly amounts are divided by 12, quarterly by 3, and weekly amounts are multiplied by 52 then divided by 12. Contracts with a Lifetime billing interval are excluded. The total you see is the sum of all those converted figures."
       },
       {
-        "question": "How does the renewal reminder work?",
-        "answer": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis aute irure dolor in reprehenderit in voluptate velit. Upcoming renewals appear on your Dashboard with the number of days remaining."
+        "question": "What is the cancellation deadline, and how does it differ from the end date?",
+        "answer": "The end date is when the contract expires or auto-renews. The cancellation deadline is the last day you can cancel without being locked in for another period — calculated as end date minus the notice period you set on the contract. If you leave the notice period blank, the end date itself is treated as the deadline. Both are shown on the Upcoming Renewals panel on the dashboard."
       },
       {
         "question": "What does anonymizing a contract do?",
-        "answer": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Excepteur sint occaecat cupidatat non proident. When a contract is anonymized, its name is hidden in list views to protect your privacy."
+        "answer": "Anonymizing a contract replaces its real name with a consistent fictional alias (like \"Aether Dynamics\") everywhere in the app — in the contract list, on the dashboard, and in summary emails. The alias stays the same across sessions. You can anonymize individual contracts via the Anonymize checkbox in the edit form, or hide all names at once with the Anonymization toggle in the contract list toolbar."
       },
       {
-        "question": "How do I change my account password?",
-        "answer": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sunt in culpa qui officia deserunt mollit anim id est laborum. Go to Account Settings and use the Change Password section."
+        "question": "What is the difference between Active and Inactive contract status?",
+        "answer": "Active contracts are included in your monthly spending total and in dashboard summaries. Inactive contracts are kept for reference but excluded from all calculations. Use Inactive for contracts you have already cancelled but want to keep a record of."
       },
       {
-        "question": "Can I use the app with multiple family members?",
-        "answer": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam libero tempore, cum soluta nobis est eligendi optio. An administrator can invite additional users from the Admin panel under Manage Accounts."
+        "question": "How do I change my password or email address?",
+        "answer": "Open My Account from the sidebar. To change your password, enter your current password and a new one (at least 8 characters) in the Password section, then click Change password. To change your email address, enter the new address in the Email address section and click Request change — a verification link is sent to the new address and must be clicked before the change takes effect."
       },
       {
-        "question": "What contract categories are available?",
-        "answer": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Temporibus autem quibusdam et aut officiis debitis rerum necessitatibus. The available categories are Utilities, Subscriptions, Insurance, Housing, and Other."
+        "question": "Can I get a periodic summary of my contracts by email?",
+        "answer": "Yes. Open My Account, find the Summary Email section, and toggle on \"Send me a periodic contract summary email\". Choose weekly (every Monday at 10:00 UTC) or monthly (1st of the month at 10:00 UTC). The email shows your total monthly spending, a per-contract breakdown, and any upcoming renewals within the next 30 days."
       },
       {
-        "question": "How do I set a cancellation period for a contract?",
-        "answer": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quis autem vel eum iure reprehenderit qui in ea voluptate. Open the contract edit form and fill in the Cancellation Period field with the number and unit."
+        "question": "How do I import contracts from a spreadsheet or JSON file?",
+        "answer": "Go to Contracts and click Import in the toolbar. Upload a JSON or Excel (.xlsx) file (max 5 MB). The wizard automatically maps common column names to app fields and lets you adjust any mappings manually before the import runs. Rows that fail validation are skipped and reported individually — successfully parsed rows are always saved."
+      },
+      {
+        "question": "How do I host Klaro on my own server?",
+        "answer": "Klaro is distributed as a Docker image on Docker Hub (walefish/klaro). You need Docker and Docker Compose installed on your server. Create a docker-compose.yml that references the image, mount a local directory for the database, and expose the desired port. Run \"docker compose up -d\" to start it. To update to a newer version, run \"docker compose pull\" followed by \"docker compose up -d\" — your data is stored in a mounted volume and is never affected by an update."
+      },
+      {
+        "question": "Where can I get support, suggest improvements, or report bugs?",
+        "answer": "Klaro is open source. Head to the GitHub repository at github.com/mallwang/klaro to open an issue for bug reports or feature requests, or to browse existing discussions. Pull requests are welcome too."
       }
     ]
   }

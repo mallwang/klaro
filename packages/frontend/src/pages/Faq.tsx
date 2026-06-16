@@ -27,10 +27,10 @@ export function Faq() {
     <div className={classes.wrapper}>
       <Container size="lg">
         <Grid id="faq-grid" gutter={50}>
-          <Grid.Col span={{ base: 12, md: 6 }}>
+          <Grid.Col span={{ base: 12, md: 4 }}>
             <Image src={faqImage} alt="Frequently Asked Questions" />
           </Grid.Col>
-          <Grid.Col span={{ base: 12, md: 6 }}>
+          <Grid.Col span={{ base: 12, md: 8 }}>
             <Title order={2} ta="left" className={classes.title}>
               {title}
             </Title>
@@ -39,7 +39,7 @@ export function Faq() {
                 <Accordion.Item
                   className={classes.item}
                   value={`item-${index}`}
-                  key={`item-${index}`}
+                  key={entry.question}
                 >
                   <Accordion.Control>{entry.question}</Accordion.Control>
                   <Accordion.Panel>{entry.answer}</Accordion.Panel>

@@ -20,19 +20,21 @@ describe('Faq', () => {
     render(<Faq />, { wrapper });
     const buttons = screen.getAllByRole('button');
     // Each accordion item renders a button for its control
-    expect(buttons.length).toBeGreaterThanOrEqual(8);
+    expect(buttons.length).toBeGreaterThanOrEqual(10);
   });
 
   it('renders question text as accordion control labels', () => {
     render(<Faq />, { wrapper });
+    expect(
+      screen.getByText(/What is Klaro and what problems does it solve\?/i),
+    ).toBeInTheDocument();
     expect(screen.getByText(/How do I add a new contract\?/i)).toBeInTheDocument();
-    expect(screen.getByText(/Can I export my contracts\?/i)).toBeInTheDocument();
   });
 
-  it('answer panel is initially collapsed (not visible)', () => {
+  it('answer panels are initially collapsed (not visible)', () => {
     render(<Faq />, { wrapper });
-    // Answers contain the word "Lorem" — none should be visible by default
-    const answerTexts = screen.queryAllByText(/Lorem ipsum/i);
+    // All answer panels start hidden; query by a known phrase in the first answer
+    const answerTexts = screen.queryAllByText(/self-hosted app/i);
     answerTexts.forEach((el) => {
       expect(el).not.toBeVisible();
     });
@@ -41,10 +43,12 @@ describe('Faq', () => {
   it('expands an answer when the question button is clicked', async () => {
     const user = userEvent.setup();
     render(<Faq />, { wrapper });
-    const firstButton = screen.getByText(/How do I add a new contract\?/i).closest('button');
+    const firstButton = screen
+      .getByText(/What is Klaro and what problems does it solve\?/i)
+      .closest('button');
     expect(firstButton).toBeTruthy();
     await user.click(firstButton!);
-    const panel = screen.getByText(/Navigate to the Contracts page/i);
+    const panel = screen.getByText(/self-hosted app/i);
     expect(panel).toBeVisible();
   });
 
