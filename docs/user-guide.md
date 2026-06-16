@@ -509,7 +509,7 @@ image: walefish/klaro:v1.2.0
 
 ### Checking the running version
 
-After updating, open the browser developer tools → Network → any API request → Response Headers. The `x-klaro-version` header (if present) shows the running version. Alternatively, check the Docker Hub tags page (`hub.docker.com/r/walefish/klaro/tags`) to compare digests.
+After updating, open the browser developer tools → Network → any API request → Response Headers. The `x-klaro-version` header shows the running version. Alternatively, check the Docker Hub tags page (`hub.docker.com/r/walefish/klaro/tags`) to compare digests.
 
 ---
 
