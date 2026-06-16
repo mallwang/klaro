@@ -151,7 +151,8 @@ describe('ContractEdit', () => {
     });
 
     await waitFor(() => expect(screen.getByDisplayValue('Netflix')).toBeInTheDocument());
-    expect(screen.getByDisplayValue('2024-01-15')).toBeInTheDocument();
+    // DatePickerInput renders as a button — verify formatted date appears in its text content
+    expect(screen.getByLabelText(/start date/i).textContent).toContain('2024-01-15');
     expect(screen.getByDisplayValue('Test notes')).toBeInTheDocument();
     expect(screen.getByDisplayValue('https://example.com')).toBeInTheDocument();
     // Cancellation period NumberInput (no prefix) shows '30'

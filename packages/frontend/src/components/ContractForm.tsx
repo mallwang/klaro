@@ -13,6 +13,9 @@ import {
   Text,
   Anchor,
 } from '@mantine/core';
+import dayjs from 'dayjs';
+import { DatePickerInput } from '@mantine/dates';
+import '@mantine/dates/styles.css';
 import { Category, ContractStatus, BillingInterval, CancellationPeriodUnit } from '@pcm/shared';
 import type { CreateContractBody } from '@pcm/shared';
 import { ProviderLogo } from './ProviderLogo.js';
@@ -21,19 +24,43 @@ import classes from './ContractForm.module.css';
 /**
  * Reusable contract creation/editing form with validation, field defaults, and a compact
  * multi-column layout. The first row shows a live provider logo alongside the name and
- * category fields; amount+interval and status+start+end each share a row; the cancellation
- * period and anonymize checkbox share a row; the logo search name occupies the left half.
+ * category fields; the amount field uses a NumberInput with a static EUR badge in the right
+ * section; start and end dates use Mantine DatePickerInput with deselection support;
+ * amount+interval and status+start+end each share a row; the cancellation period and
+ * anonymize checkbox share a row; the logo search name occupies the left half.
  * Used by both the new-contract and edit-contract pages.
  */
 
+/** Internal form state — date fields are Date | null for DatePickerInput binding. */
 interface ContractFormValues {
   name: string;
   category: string;
   amount: string | number;
   billingInterval: string;
   status: string;
-  endDate: string;
-  startDate: string;
+  endDate: Date | null;
+  startDate: Date | null;
+  details: string;
+  serviceUrl: string;
+  cancellationPeriodValue: string | number;
+  cancellationPeriodUnit: string;
+  anonymize: boolean;
+  logoName: string;
+  useGenericIcon: boolean;
+}
+
+/**
+ * Pre-fill values accepted by callers — date fields are ISO strings as returned by the API.
+ * The form converts them to Date objects internally.
+ */
+interface ContractFormDefaultValues {
+  name: string;
+  category: string;
+  amount: string | number;
+  billingInterval: string;
+  status: string;
+  endDate: string | null;
+  startDate: string | null;
   details: string;
   serviceUrl: string;
   cancellationPeriodValue: string | number;
@@ -44,11 +71,11 @@ interface ContractFormValues {
 }
 
 interface ContractFormProps {
-  defaultValues?: Partial<ContractFormValues>;
-  onSubmit: (data: CreateContractBody) => void;
-  onCancel: () => void;
-  submitLabel?: string;
-  isPending?: boolean;
+  readonly defaultValues?: Partial<ContractFormDefaultValues>;
+  readonly onSubmit: (data: CreateContractBody) => void;
+  readonly onCancel: () => void;
+  readonly submitLabel?: string;
+  readonly isPending?: boolean;
 }
 
 /**
@@ -74,8 +101,8 @@ export function ContractForm({
     amount: defaultValues?.amount ?? '',
     billingInterval: defaultValues?.billingInterval ?? BillingInterval.MONTHLY,
     status: defaultValues?.status ?? ContractStatus.ACTIVE,
-    endDate: defaultValues?.endDate ?? '',
-    startDate: defaultValues?.startDate ?? '',
+    endDate: defaultValues?.endDate ? dayjs(defaultValues.endDate).toDate() : null,
+    startDate: defaultValues?.startDate ? dayjs(defaultValues.startDate).toDate() : null,
     details: defaultValues?.details ?? '',
     serviceUrl: defaultValues?.serviceUrl ?? '',
     cancellationPeriodValue: defaultValues?.cancellationPeriodValue ?? '',
@@ -90,19 +117,19 @@ export function ContractForm({
     e.preventDefault();
     setValidationError(null);
 
-    if (!String(values.name).trim()) {
+    if (String(values.name).trim() === '') {
       setValidationError(t('contractForm.nameRequired'));
       return;
     }
     const amount =
-      typeof values.amount === 'number' ? values.amount : parseFloat(String(values.amount));
-    if (isNaN(amount) || amount < 0) {
+      typeof values.amount === 'number' ? values.amount : Number.parseFloat(String(values.amount));
+    if (Number.isNaN(amount) || amount < 0) {
       setValidationError(t('contractForm.amountInvalid'));
       return;
     }
 
     const cancellationPeriodValueNum =
-      values.cancellationPeriodValue !== '' ? Number(values.cancellationPeriodValue) : null;
+      values.cancellationPeriodValue === '' ? null : Number(values.cancellationPeriodValue);
 
     onSubmit({
       name: String(values.name).trim(),
@@ -110,17 +137,17 @@ export function ContractForm({
       amount,
       billingInterval: values.billingInterval as CreateContractBody['billingInterval'],
       status: values.status as CreateContractBody['status'],
-      endDate: values.endDate || null,
-      startDate: values.startDate || null,
+      endDate: values.endDate ? dayjs(values.endDate).format('YYYY-MM-DD') : null,
+      startDate: values.startDate ? dayjs(values.startDate).format('YYYY-MM-DD') : null,
       details: values.details || null,
       serviceUrl: values.serviceUrl || null,
       cancellationPeriod:
-        cancellationPeriodValueNum !== null
-          ? {
+        cancellationPeriodValueNum === null
+          ? null
+          : {
               value: cancellationPeriodValueNum,
               unit: values.cancellationPeriodUnit as CancellationPeriodUnit,
-            }
-          : null,
+            },
       anonymize: values.anonymize,
       logoName: values.logoName || null,
       useGenericIcon: values.useGenericIcon,
@@ -208,12 +235,17 @@ export function ContractForm({
             id="amount"
             label={t('contractForm.amountLabel')}
             variant="filled"
-            prefix="€"
             decimalScale={2}
             min={0}
             value={values.amount === '' ? '' : Number(values.amount)}
             onChange={(val) => setValues((v) => ({ ...v, amount: val }))}
             placeholder="0.00"
+            rightSection={
+              <Text size="sm" fw={500} c="dimmed" pr="xs">
+                EUR
+              </Text>
+            }
+            rightSectionWidth={52}
           />
 
           <Select
@@ -239,21 +271,25 @@ export function ContractForm({
             onChange={(val) => setValues((v) => ({ ...v, status: val ?? ContractStatus.ACTIVE }))}
             allowDeselect={false}
           />
-          <TextInput
+          <DatePickerInput
             id="startDate"
             label={t('contractForm.startDateLabel')}
+            placeholder={t('contractForm.startDatePlaceholder')}
             variant="filled"
-            type="date"
-            value={String(values.startDate)}
-            onChange={(e) => setValues((v) => ({ ...v, startDate: e.target.value }))}
+            value={values.startDate}
+            onChange={(val) => setValues((v) => ({ ...v, startDate: val }))}
+            valueFormat={t('contractForm.datePickerValueFormat')}
+            clearable
           />
-          <TextInput
+          <DatePickerInput
             id="endDate"
             label={t('contractForm.endDateLabel')}
+            placeholder={t('contractForm.endDatePlaceholder')}
             variant="filled"
-            type="date"
-            value={String(values.endDate)}
-            onChange={(e) => setValues((v) => ({ ...v, endDate: e.target.value }))}
+            value={values.endDate}
+            onChange={(val) => setValues((v) => ({ ...v, endDate: val }))}
+            valueFormat={t('contractForm.datePickerValueFormat')}
+            clearable
           />
         </div>
 

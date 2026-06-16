@@ -165,6 +165,8 @@ Mit diesen Angaben warnt dich das Dashboard ab dem 1. Februar (28 Tage vor dem 1
 
 ### Hinweise zu den Feldern
 
+- **Betrag** — gib eine Zahl ein; rechts neben dem Feld erscheint ein statisches **EUR**-Badge.
+- **Startdatum / Enddatum** — ein Klick auf das Feld öffnet einen Datumsauswähler. Um ein bereits gesetztes Datum zu löschen, klicke auf das **×**-Symbol, das im Feld erscheint.
 - **Status** ist standardmäßig Aktiv. Setze ihn auf Inaktiv für Verträge, die du bereits gekündigt hast, aber zur Referenz behalten möchtest.
 - **Kündigungsfrist** erfordert sowohl eine Zahl als auch eine Einheit (Tage / Wochen / Monate / Jahre). Lässt du sie leer, gilt das Enddatum selbst als Frist.
 - **Service-URL** muss eine gültige URL sein, wenn angegeben. Sie ist in der Tabelle nicht anklickbar, kann aber bequem aus dem Bearbeitungsformular kopiert werden.

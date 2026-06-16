@@ -165,6 +165,8 @@ With these values the dashboard will warn you on or before 1 February (28 days b
 
 ### Field notes
 
+- **Amount** — enter a number; a static **EUR** badge appears to the right of the field.
+- **Start date / End date** — clicking the field opens a date picker. To clear a date you have already set, click the **×** button that appears inside the field.
 - **Status** defaults to Active. Set it to Inactive for contracts you have already cancelled but want to keep for reference.
 - **Cancellation notice** requires both a number and a unit (Days / Weeks / Months / Years). If you leave it blank the dashboard treats the end date itself as the deadline.
 - **Service URL** must be a valid URL if provided. It is not clickable in the table, but useful to copy from the edit form.

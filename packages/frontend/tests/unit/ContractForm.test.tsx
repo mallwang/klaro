@@ -36,9 +36,19 @@ async function selectOption(
 describe('ContractForm – Mantine input style', () => {
   it('amount field has a visible EUR currency prefix when a value is set', () => {
     renderForm({ defaultValues: { amount: '100' } });
-    // Mantine NumberInput with prefix="€" shows "€100" as the input value
+    // EUR is shown as a right-section badge next to the number input
+    expect(screen.getByText('EUR')).toBeInTheDocument();
+  });
+
+  it('amount EUR badge is always visible regardless of input value', () => {
+    renderForm();
+    expect(screen.getByText('EUR')).toBeInTheDocument();
+  });
+
+  it('amount field does not show a € symbol in the input value', () => {
+    renderForm({ defaultValues: { amount: '100' } });
     const amountInput = screen.getByLabelText(/^amount/i);
-    expect(amountInput).toHaveDisplayValue(/€/);
+    expect(amountInput).not.toHaveDisplayValue(/€/);
   });
 
   it('name input is wrapped in a Mantine filled variant container', () => {
@@ -90,7 +100,8 @@ describe('ContractForm – field rendering', () => {
     });
     expect(screen.getByDisplayValue('Netflix')).toBeInTheDocument();
     expect(screen.getByLabelText(/^amount/i)).toHaveDisplayValue(/15\.99/);
-    expect(screen.getByDisplayValue('2026-12-31')).toBeInTheDocument();
+    // DatePickerInput renders as a button; verify the formatted date appears in its content
+    expect(screen.getByLabelText(/end date/i).textContent).toContain('2026-12-31');
     // Mantine Select shows the option LABEL (not value) in the combobox
     const billingCombobox = getCombobox(/billing interval/i);
     expect(billingCombobox).toHaveDisplayValue(/quarterly/i);
@@ -331,12 +342,51 @@ describe('ContractForm – edit mode layout grouping', () => {
       },
     });
     const statusCombobox = getCombobox(/status/i);
-    const startDateInput = screen.getByDisplayValue('2025-01-01');
-    const endDateInput = screen.getByDisplayValue('2025-12-31');
+    // getByLabelText returns the DatePickerInput button element via label association
+    const startDateEl = screen.getByLabelText(/start date/i);
+    const endDateEl = screen.getByLabelText(/end date/i);
     const statusParent = statusCombobox.closest('[class*="statusDateRow"]');
     expect(statusParent).not.toBeNull();
-    expect(statusParent).toBe(startDateInput.closest('[class*="statusDateRow"]'));
-    expect(statusParent).toBe(endDateInput.closest('[class*="statusDateRow"]'));
+    expect(statusParent).toBe(startDateEl.closest('[class*="statusDateRow"]'));
+    expect(statusParent).toBe(endDateEl.closest('[class*="statusDateRow"]'));
+  });
+});
+
+describe('ContractForm – DatePickerInput for dates', () => {
+  it('start date DatePickerInput is pre-populated from defaultValues', () => {
+    renderForm({ defaultValues: { startDate: '2026-03-15' } });
+    // DatePickerInput renders as a button — check date appears in its text content
+    expect(screen.getByLabelText(/start date/i).textContent).toContain('2026-03-15');
+  });
+
+  it('end date DatePickerInput is pre-populated from defaultValues', () => {
+    renderForm({ defaultValues: { endDate: '2026-12-31' } });
+    expect(screen.getByLabelText(/end date/i).textContent).toContain('2026-12-31');
+  });
+
+  it('start date submits as ISO string when pre-populated', async () => {
+    const onSubmit = vi.fn();
+    const user = userEvent.setup();
+    renderForm({
+      onSubmit,
+      defaultValues: { startDate: '2026-06-01', name: 'Test', amount: '10' },
+    });
+    await user.click(screen.getByRole('button', { name: /save/i }));
+    expect(onSubmit).toHaveBeenCalledOnce();
+    const payload = onSubmit.mock.calls[0]?.[0] as Record<string, unknown>;
+    expect(payload.startDate).toBe('2026-06-01');
+  });
+
+  it('end date submits as null when field is empty', async () => {
+    const onSubmit = vi.fn();
+    const user = userEvent.setup();
+    renderForm({ onSubmit });
+    await user.type(screen.getByLabelText(/^name/i), 'Test');
+    await user.type(screen.getByLabelText(/^amount/i), '10');
+    await user.click(screen.getByRole('button', { name: /save/i }));
+    expect(onSubmit).toHaveBeenCalledOnce();
+    const payload = onSubmit.mock.calls[0]?.[0] as Record<string, unknown>;
+    expect(payload.endDate).toBeNull();
   });
 });
 
@@ -374,11 +424,12 @@ describe('ContractForm – layout grouping (DOM structure)', () => {
   it('status, start date, and end date inputs share the same immediate parent wrapper', () => {
     renderForm();
     const statusCombobox = getCombobox(/status/i);
-    const startDateInput = screen.getByLabelText(/start date/i);
-    const endDateInput = screen.getByLabelText(/end date/i);
+    // getByLabelText returns the DatePickerInput button via label association
+    const startDateEl = screen.getByLabelText(/start date/i);
+    const endDateEl = screen.getByLabelText(/end date/i);
     const statusParent = statusCombobox.closest('[class*="statusDateRow"]');
-    const startParent = startDateInput.closest('[class*="statusDateRow"]');
-    const endParent = endDateInput.closest('[class*="statusDateRow"]');
+    const startParent = startDateEl.closest('[class*="statusDateRow"]');
+    const endParent = endDateEl.closest('[class*="statusDateRow"]');
     expect(statusParent).not.toBeNull();
     expect(statusParent).toBe(startParent);
     expect(statusParent).toBe(endParent);
