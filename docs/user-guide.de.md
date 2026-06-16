@@ -22,7 +22,9 @@ Klaro ist eine lokale Web-App, die alle deine Verträge — Streaming-Dienste, V
 10. [Konten & Anmeldung](#10-konten--anmeldung)
 11. [Zusammenfassungs-E-Mail](#11-zusammenfassungs-e-mail)
 12. [E-Mail-Sprache](#12-e-mail-sprache)
-13. [Feldreferenz](#13-feldreferenz)
+13. [Eine selbst gehostete Instanz aktualisieren](#13-eine-selbst-gehostete-instanz-aktualisieren)
+14. [Feldreferenz](#14-feldreferenz)
+15. [FAQ](#15-faq)
 
 ---
 
@@ -37,6 +39,7 @@ Die App hat eine dauerhaft sichtbare Navigationsleiste auf der linken Seite. Sie
 | Dashboard | `/` | Ausgabenübersicht, Verlängerungen, abgelaufene Verträge |
 | Verträge | `/contracts` | Vollständige Liste; Erstellen, Importieren, Exportieren |
 | Mein Konto | `/account` | Anzeigename, E-Mail, Passwort, Konto löschen |
+| FAQ | `/faq` | Häufig gestellte Fragen |
 
 **Admin** — nur für Administratoren sichtbar:
 
@@ -542,3 +545,23 @@ Nach einem Update die Browser-Entwicklertools öffnen → Netzwerk → beliebige
 | Service-URL | Nein | Gültige URL | Link zu deiner Kontoseite |
 | Details | Nein | Bis zu 2.000 Zeichen | Versicherungsscheinnummern, Kundennummern, Notizen |
 | Anonymisieren | Nein | Ja/Nein | Datenschutz-Flag pro Vertrag |
+
+---
+
+## 15. FAQ
+
+Die FAQ-Seite beantwortet häufig gestellte Fragen zur App.
+
+**Erreichbarkeit**: Klicke im App-Bereich der Seitennavigation auf **FAQ**, oder navigiere direkt zu `/faq`.
+
+### FAQ lesen
+
+Die Seite zeigt links eine dekorative Illustration und rechts eine Akkordeon-Liste mit Fragen (auf Mobilgeräten übereinander gestapelt). Klicke auf eine Frage, um die Antwort einzublenden. Klicke erneut auf dieselbe Frage, um sie wieder auszublenden.
+
+### Sprache
+
+Die FAQ-Inhalte folgen der aktiven App-Sprache. Wenn du die Sprache wechselst (siehe [Abschnitt 9](#9-sprache)), aktualisieren sich alle Fragen und Antworten automatisch ohne Neuladen der Seite.
+
+### FAQ-Inhalte aktualisieren
+
+Fragen und Antworten sind in den Übersetzungsdateien der App gespeichert (`en.json` und `de.json`). Um einen Eintrag hinzuzufügen, zu bearbeiten oder zu entfernen, ändere das Array `faq.items` in der entsprechenden Datei — Änderungen am Anwendungscode sind nicht erforderlich. Ein Neuerstellen der App ist nötig, damit die Änderungen wirksam werden.

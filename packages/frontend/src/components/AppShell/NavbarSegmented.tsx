@@ -14,6 +14,7 @@ import {
 import {
   IconLayoutDashboard,
   IconFileText,
+  IconHelp,
   IconUser,
   IconUsers,
   IconLogout,
@@ -62,6 +63,7 @@ export function NavbarSegmented() {
     { label: t('nav.dashboard'), to: '/', icon: <IconLayoutDashboard size={18} /> },
     { label: t('nav.contracts'), to: '/contracts', icon: <IconFileText size={18} /> },
     { label: t('nav.accountSettings'), to: '/account', icon: <IconUser size={18} /> },
+    { label: t('nav.faq'), to: '/faq', icon: <IconHelp size={18} /> },
   ];
 
   const adminLinks: NavItem[] = [

@@ -26,6 +26,7 @@ A personal web app for tracking contracts — subscriptions, insurance, housing,
 - **Summary email** — users can opt into a weekly (every Monday) or monthly (1st of each month) contract summary email delivered at 10:00 UTC; the email lists total monthly spending, a per-contract breakdown, upcoming renewals, a dashboard link, and a context-aware call to action; preferences are managed in Account Settings, which also displays the next scheduled send datetime; anonymized contract names are hidden in the email
 - **Email language preference** — users can choose the language for all outgoing emails (verification, password reset, summary, etc.) independently of their browser/UI language; the preference is set in Account Settings under "Email Language"; supported languages are English and German; dates and currency values in emails are formatted according to the selected locale
 - **Toast notifications** — success and error feedback on authenticated pages (account settings, admin panel, contract management) appears as auto-dismissing toast notifications in the top-right corner; public pages retain inline feedback
+- **FAQ** — a dedicated FAQ page accessible from the sidebar navigation, displaying questions and answers in an accordion layout alongside a decorative illustration; content is managed via the i18n translation files (no code changes needed to update questions or answers); fully localised in English and German
 
 For a full walkthrough of the UI, see [docs/user-guide.md](docs/user-guide.md).
 

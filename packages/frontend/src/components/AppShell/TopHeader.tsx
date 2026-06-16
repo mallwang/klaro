@@ -1,4 +1,5 @@
-import { Burger, ActionIcon, Group, useMantineColorScheme } from '@mantine/core';
+import { Burger, ActionIcon, Anchor, Group, useMantineColorScheme } from '@mantine/core';
+import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { IconSun, IconMoon } from '@tabler/icons-react';
 import { LanguagePicker } from './LanguagePicker.js';
@@ -13,6 +14,7 @@ import classes from './TopHeader.module.css';
 interface TopHeaderProps {
   readonly mobileOpened?: boolean;
   readonly toggleMobile?: () => void;
+  readonly showSignIn?: boolean;
 }
 
 /**
@@ -20,9 +22,9 @@ interface TopHeaderProps {
  * colour-scheme toggle.
  *
  * @param props - mobileOpened: whether the mobile sidebar is expanded; toggleMobile: callback
- *   to toggle it
+ *   to toggle it; showSignIn: whether to show a Sign In link for public pages
  */
-export function TopHeader({ mobileOpened, toggleMobile }: TopHeaderProps) {
+export function TopHeader({ mobileOpened, toggleMobile, showSignIn }: TopHeaderProps) {
   const { colorScheme, toggleColorScheme } = useMantineColorScheme();
   const { t } = useTranslation();
 
@@ -38,10 +40,25 @@ export function TopHeader({ mobileOpened, toggleMobile }: TopHeaderProps) {
             aria-label="Toggle navigation"
           />
         )}
-        <KlaroIcon size={28} />
+        <Link
+          to="/"
+          style={{
+            textDecoration: 'none',
+            color: 'inherit',
+            display: 'inline-flex',
+            alignItems: 'center',
+          }}
+        >
+          <KlaroIcon size={28} />
+        </Link>
       </Group>
 
       <Group className={classes.right}>
+        {showSignIn && (
+          <Anchor component={Link} to="/sign-in" size="sm" fw={500}>
+            {t('auth.signInTitle')}
+          </Anchor>
+        )}
         <LanguagePicker />
         <ActionIcon
           onClick={toggleColorScheme}

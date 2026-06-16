@@ -1,5 +1,6 @@
-import { ActionIcon, Container, Group, Text } from '@mantine/core';
-import { IconBrandGithub } from '@tabler/icons-react';
+import { ActionIcon, Anchor, Container, Group } from '@mantine/core';
+import { Link } from 'react-router-dom';
+import { IconBrandDocker, IconBrandGithub } from '@tabler/icons-react';
 import classes from './FooterSimple.module.css';
 import { KlaroIcon } from '../KlaroIcon.js';
 
@@ -9,10 +10,9 @@ import { KlaroIcon } from '../KlaroIcon.js';
  */
 
 /**
- * Renders the application footer bar with the app name, copyright year, and GitHub link.
+ * Renders the application footer bar with the app name, FAQ link, and GitHub link.
  */
 export function FooterSimple() {
-  const year = new Date().getFullYear();
   return (
     <div className={classes.footer}>
       <Container className={classes.inner}>
@@ -21,9 +21,9 @@ export function FooterSimple() {
         </div>
 
         <div className={classes.center}>
-          <Text c="dimmed" size="sm">
-            © {year}
-          </Text>
+          <Anchor component={Link} to="/faq" size="sm">
+            FAQ
+          </Anchor>
         </div>
 
         <div className={classes.right}>
@@ -39,6 +39,18 @@ export function FooterSimple() {
               aria-label="GitHub repository"
             >
               <IconBrandGithub size={18} stroke={1.5} />
+            </ActionIcon>
+            <ActionIcon
+              component="a"
+              href="https://hub.docker.com/r/walefish/klaro"
+              target="_blank"
+              rel="noopener noreferrer"
+              size="lg"
+              variant="default"
+              radius="xl"
+              aria-label="Docker Hub"
+            >
+              <IconBrandDocker size={18} stroke={1.5} />
             </ActionIcon>
           </Group>
         </div>
