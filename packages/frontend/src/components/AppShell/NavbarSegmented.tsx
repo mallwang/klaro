@@ -34,11 +34,19 @@ interface NavItem {
   icon: React.ReactNode;
 }
 
+interface NavbarSegmentedProps {
+  /** Called after any navigation action so the mobile sidebar can be closed. */
+  onNavigate?: () => void;
+}
+
 /**
  * Renders the sidebar navigation with app/admin segments, route links, and a sign-out
  * button.
+ *
+ * @param props - onNavigate: callback invoked after each navigation to allow the caller
+ *   to close the mobile sidebar
  */
-export function NavbarSegmented() {
+export function NavbarSegmented({ onNavigate }: NavbarSegmentedProps) {
   const { t } = useTranslation();
   const { data: user } = useCurrentUser();
   const { mutate: signOut, isPending } = useSignOut();
@@ -57,6 +65,7 @@ export function NavbarSegmented() {
     const next = value as Segment;
     setSegment(next);
     navigate(next === 'admin' ? '/admin/accounts' : '/');
+    onNavigate?.();
   }
 
   const appLinks: NavItem[] = [
@@ -104,6 +113,7 @@ export function NavbarSegmented() {
               key={item.to}
               to={item.to}
               className={[classes.link, isActive(item.to) ? classes.linkActive : ''].join(' ')}
+              onClick={onNavigate}
             >
               {item.icon}
               <Text ml="xs" size="sm" fw={500}>

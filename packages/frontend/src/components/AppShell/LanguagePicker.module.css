@@ -32,3 +32,14 @@
 [data-expanded] .icon {
   transform: rotate(180deg);
 }
+
+@media (max-width: 48em) {
+  .label,
+  .icon {
+    display: none;
+  }
+
+  .dropdownLabel {
+    display: none;
+  }
+}

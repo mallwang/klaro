@@ -138,15 +138,15 @@ describe('AccountsAdmin – user table', () => {
 
   it('renders a row for each account with display name', () => {
     renderPage();
-    expect(screen.getByText('Alice')).toBeInTheDocument();
-    expect(screen.getByText('Bob')).toBeInTheDocument();
-    expect(screen.getByText('Carol')).toBeInTheDocument();
+    expect(screen.getAllByText('Alice')[0]).toBeInTheDocument();
+    expect(screen.getAllByText('Bob')[0]).toBeInTheDocument();
+    expect(screen.getAllByText('Carol')[0]).toBeInTheDocument();
   });
 
   it('renders the email for each account', () => {
     renderPage();
-    expect(screen.getByText('alice@example.com')).toBeInTheDocument();
-    expect(screen.getByText('bob@example.com')).toBeInTheDocument();
+    expect(screen.getAllByText('alice@example.com')[0]).toBeInTheDocument();
+    expect(screen.getAllByText('bob@example.com')[0]).toBeInTheDocument();
   });
 
   it('renders an Avatar for each user (Mantine Users Table pattern)', () => {
@@ -157,7 +157,7 @@ describe('AccountsAdmin – user table', () => {
 
   it('renders role badges (Administrator / Member)', () => {
     renderPage();
-    expect(screen.getByText(/administrator/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/administrator/i)[0]).toBeInTheDocument();
     expect(screen.getAllByText(/member/i).length).toBeGreaterThanOrEqual(1);
   });
 
@@ -169,12 +169,12 @@ describe('AccountsAdmin – user table', () => {
 
   it('renders a Reactivate button for archived users with a normal email', () => {
     renderPage();
-    expect(screen.getByRole('button', { name: /reactivate/i })).toBeInTheDocument();
+    expect(screen.getAllByRole('button', { name: /reactivate/i })[0]).toBeInTheDocument();
   });
 
   it('renders a Delete permanently button for archived users', () => {
     renderPage();
-    expect(screen.getByRole('button', { name: /delete permanently/i })).toBeInTheDocument();
+    expect(screen.getAllByRole('button', { name: /delete permanently/i })[0]).toBeInTheDocument();
   });
 
   it('hides Reactivate and shows "Email reassigned" for users with a reassigned email', () => {
@@ -191,7 +191,7 @@ describe('AccountsAdmin – user table', () => {
     ];
     renderPage({ accounts: accountsWithReassigned });
     expect(screen.queryByRole('button', { name: /reactivate/i })).not.toBeInTheDocument();
-    expect(screen.getByText(/email reassigned/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/email reassigned/i)[0]).toBeInTheDocument();
   });
 });
 

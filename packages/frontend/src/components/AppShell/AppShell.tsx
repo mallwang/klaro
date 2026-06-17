@@ -21,7 +21,7 @@ interface AppShellProps {
  * @param props - children: page content to render in the main area
  */
 export function AppShell({ children }: AppShellProps) {
-  const [mobileOpened, { toggle: toggleMobile }] = useDisclosure();
+  const [mobileOpened, { toggle: toggleMobile, close: closeMobile }] = useDisclosure();
 
   return (
     <MantineAppShell
@@ -35,7 +35,7 @@ export function AppShell({ children }: AppShellProps) {
       </MantineAppShell.Header>
 
       <MantineAppShell.Navbar className={classes.navbar}>
-        <NavbarSegmented />
+        <NavbarSegmented onNavigate={closeMobile} />
       </MantineAppShell.Navbar>
 
       <MantineAppShell.Main className={classes.main}>

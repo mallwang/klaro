@@ -6,7 +6,7 @@ This guide validates the feature end-to-end once implemented. It does not duplic
 
 ## Prerequisites
 
-- Repository checked out on `claude/recent-implementations-kbwc7h`
+- Repository checked out on `033-mobile-responsive`
 - Dependencies installed: `pnpm install` at the repo root
 - Backend + frontend dev servers runnable via the existing project scripts
 
