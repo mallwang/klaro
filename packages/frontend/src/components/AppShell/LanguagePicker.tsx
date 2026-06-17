@@ -53,7 +53,7 @@ export function LanguagePicker() {
             leftSection={<Image src={image} w={18} h={18} alt="" />}
             onClick={() => handleSelect(code)}
           >
-            {label}
+            <span className={classes.dropdownLabel}>{label}</span>
           </Menu.Item>
         ))}
       </Menu.Dropdown>

@@ -17,6 +17,8 @@ import {
   SimpleGrid,
   Collapse,
   UnstyledButton,
+  Box,
+  Card,
 } from '@mantine/core';
 import type { Account, Invitation } from '@pcm/shared';
 import { AuthError } from '../../services/auth.js';
@@ -296,61 +298,114 @@ function InvitationsTable() {
   }
 
   return (
-    <Paper withBorder>
-      <Table.ScrollContainer minWidth={600}>
-        <Table withTableBorder={false}>
-          <Table.Thead>
-            <Table.Tr>
-              <Table.Th>{t('accountsAdmin.columnEmail')}</Table.Th>
-              <Table.Th>{t('accountsAdmin.columnInvitationStatus')}</Table.Th>
-              <Table.Th>{t('accountsAdmin.columnSentAt')}</Table.Th>
-              <Table.Th>{t('accountsAdmin.columnDate')}</Table.Th>
-              <Table.Th>{t('accountsAdmin.columnActions')}</Table.Th>
-            </Table.Tr>
-          </Table.Thead>
-          <Table.Tbody>
-            {invitations.map((inv) => {
-              const isPending = inv.status === 'PENDING';
-              const isExpired = isPending && new Date(inv.expiresAt) < new Date();
-              const canAct = isPending && !isExpired;
-              return (
-                <Table.Tr key={inv.token}>
-                  <Table.Td>{inv.email}</Table.Td>
-                  <Table.Td>
-                    <InvitationStatusBadge invitation={inv} />
-                  </Table.Td>
-                  <Table.Td>{localeDate(inv.createdAt)}</Table.Td>
-                  <Table.Td>{invitationDateLabel(inv)}</Table.Td>
-                  <Table.Td>
-                    <Group gap="xs">
-                      {(canAct || isExpired) && (
-                        <Button
-                          size="compact-sm"
-                          variant="default"
-                          onClick={() => resendInvitation(inv.token)}
-                        >
-                          {t('accountsAdmin.resendInviteButton')}
-                        </Button>
-                      )}
-                      {canAct && (
-                        <Button
-                          size="compact-sm"
-                          variant="default"
-                          color="red"
-                          onClick={() => cancelInvitation(inv.token)}
-                        >
-                          {t('accountsAdmin.cancelInviteButton')}
-                        </Button>
-                      )}
-                    </Group>
-                  </Table.Td>
+    <>
+      {/* Card list — mobile only */}
+      <Box hiddenFrom="sm">
+        <Stack gap="sm">
+          {invitations.map((inv) => {
+            const isPending = inv.status === 'PENDING';
+            const isExpired = isPending && new Date(inv.expiresAt) < new Date();
+            const canAct = isPending && !isExpired;
+            return (
+              <Card key={inv.token} withBorder padding="sm" radius="md">
+                <Group justify="space-between" align="flex-start" wrap="nowrap">
+                  <Text size="sm" fw={500} truncate style={{ minWidth: 0, flex: 1 }}>
+                    {inv.email}
+                  </Text>
+                  <InvitationStatusBadge invitation={inv} />
+                </Group>
+                <Text size="xs" c="dimmed" mt={4}>
+                  {t('accountsAdmin.columnSentAt')}: {localeDate(inv.createdAt)}
+                </Text>
+                <Text size="xs" c="dimmed">
+                  {invitationDateLabel(inv)}
+                </Text>
+                {(canAct || isExpired) && (
+                  <Group gap="xs" mt="sm">
+                    <Button
+                      size="compact-sm"
+                      variant="default"
+                      onClick={() => resendInvitation(inv.token)}
+                    >
+                      {t('accountsAdmin.resendInviteButton')}
+                    </Button>
+                    {canAct && (
+                      <Button
+                        size="compact-sm"
+                        variant="default"
+                        color="red"
+                        onClick={() => cancelInvitation(inv.token)}
+                      >
+                        {t('accountsAdmin.cancelInviteButton')}
+                      </Button>
+                    )}
+                  </Group>
+                )}
+              </Card>
+            );
+          })}
+        </Stack>
+      </Box>
+
+      {/* Full table — tablet and desktop */}
+      <Box visibleFrom="sm">
+        <Paper withBorder>
+          <Table.ScrollContainer minWidth={600}>
+            <Table withTableBorder={false}>
+              <Table.Thead>
+                <Table.Tr>
+                  <Table.Th>{t('accountsAdmin.columnEmail')}</Table.Th>
+                  <Table.Th>{t('accountsAdmin.columnInvitationStatus')}</Table.Th>
+                  <Table.Th>{t('accountsAdmin.columnSentAt')}</Table.Th>
+                  <Table.Th>{t('accountsAdmin.columnDate')}</Table.Th>
+                  <Table.Th>{t('accountsAdmin.columnActions')}</Table.Th>
                 </Table.Tr>
-              );
-            })}
-          </Table.Tbody>
-        </Table>
-      </Table.ScrollContainer>
-    </Paper>
+              </Table.Thead>
+              <Table.Tbody>
+                {invitations.map((inv) => {
+                  const isPending = inv.status === 'PENDING';
+                  const isExpired = isPending && new Date(inv.expiresAt) < new Date();
+                  const canAct = isPending && !isExpired;
+                  return (
+                    <Table.Tr key={inv.token}>
+                      <Table.Td>{inv.email}</Table.Td>
+                      <Table.Td>
+                        <InvitationStatusBadge invitation={inv} />
+                      </Table.Td>
+                      <Table.Td>{localeDate(inv.createdAt)}</Table.Td>
+                      <Table.Td>{invitationDateLabel(inv)}</Table.Td>
+                      <Table.Td>
+                        <Group gap="xs">
+                          {(canAct || isExpired) && (
+                            <Button
+                              size="compact-sm"
+                              variant="default"
+                              onClick={() => resendInvitation(inv.token)}
+                            >
+                              {t('accountsAdmin.resendInviteButton')}
+                            </Button>
+                          )}
+                          {canAct && (
+                            <Button
+                              size="compact-sm"
+                              variant="default"
+                              color="red"
+                              onClick={() => cancelInvitation(inv.token)}
+                            >
+                              {t('accountsAdmin.cancelInviteButton')}
+                            </Button>
+                          )}
+                        </Group>
+                      </Table.Td>
+                    </Table.Tr>
+                  );
+                })}
+              </Table.Tbody>
+            </Table>
+          </Table.ScrollContainer>
+        </Paper>
+      </Box>
+    </>
   );
 }
 
@@ -480,137 +535,266 @@ export function AccountsAdmin() {
       )}
 
       {accounts && (
-        <Paper withBorder>
-          <Table.ScrollContainer minWidth={500}>
-            <Table withTableBorder={false} highlightOnHover>
-              <Table.Thead>
-                <Table.Tr>
-                  <Table.Th>{t('accountsAdmin.columnName')}</Table.Th>
-                  <Table.Th>{t('accountsAdmin.columnEmail')}</Table.Th>
-                  <Table.Th>{t('accountsAdmin.columnRole')}</Table.Th>
-                  <Table.Th>{t('accountsAdmin.columnStatus')}</Table.Th>
-                  <Table.Th>{t('accountsAdmin.columnActions')}</Table.Th>
-                </Table.Tr>
-              </Table.Thead>
-              <Table.Tbody>
-                {accounts.map((account) => {
-                  const canChangeRoleOrArchive =
-                    account.role !== 'ADMIN' || otherActiveAdminExists(account);
-                  return (
-                    <Table.Tr key={account.id}>
-                      <Table.Td>
-                        <Group gap="sm">
-                          <Avatar size={32} radius="xl" color="blue">
-                            {userInitials(account.displayName)}
-                          </Avatar>
-                          <Text size="sm" fw={500}>
+        <>
+          {/* Card list — mobile only */}
+          <Box hiddenFrom="sm">
+            <Stack gap="sm">
+              {accounts.map((account) => {
+                const canChangeRoleOrArchive =
+                  account.role !== 'ADMIN' || otherActiveAdminExists(account);
+                return (
+                  <Card key={account.id} withBorder padding="sm" radius="md">
+                    <Group justify="space-between" align="flex-start" wrap="nowrap">
+                      <Group gap="xs" wrap="nowrap" style={{ minWidth: 0, flex: 1 }}>
+                        <Avatar size={32} radius="xl" color="blue">
+                          {userInitials(account.displayName)}
+                        </Avatar>
+                        <div style={{ minWidth: 0 }}>
+                          <Text size="sm" fw={500} truncate>
                             {account.displayName}
                           </Text>
-                        </Group>
-                      </Table.Td>
-                      <Table.Td>
-                        <Text size="sm" c="dimmed">
-                          {isEmailReassigned(account.email)
-                            ? t('accountsAdmin.emailReassigned')
-                            : account.email}
-                        </Text>
-                      </Table.Td>
-                      <Table.Td>
-                        <Badge color={account.role === 'ADMIN' ? 'red' : 'blue'} variant="light">
+                          <Text size="xs" c="dimmed" truncate>
+                            {isEmailReassigned(account.email)
+                              ? t('accountsAdmin.emailReassigned')
+                              : account.email}
+                          </Text>
+                        </div>
+                      </Group>
+                      <Group gap="xs" style={{ flexShrink: 0 }}>
+                        <Badge
+                          color={account.role === 'ADMIN' ? 'red' : 'blue'}
+                          variant="light"
+                          size="sm"
+                        >
                           {account.role === 'ADMIN'
                             ? t('accountsAdmin.roleAdmin')
                             : t('accountsAdmin.roleMember')}
                         </Badge>
-                      </Table.Td>
-                      <Table.Td>
                         <Badge
                           color={account.status === 'ACTIVE' ? 'green' : 'gray'}
                           variant="light"
+                          size="sm"
                         >
                           {account.status === 'ACTIVE'
                             ? t('accountsAdmin.statusActive')
                             : t('accountsAdmin.statusArchived')}
                         </Badge>
-                      </Table.Td>
-                      <Table.Td>
-                        <Group gap="xs">
-                          {account.status === 'ACTIVE' ? (
-                            <>
-                              <Button
-                                size="compact-sm"
-                                variant="default"
-                                onClick={() =>
-                                  archiveAccount(account.id, {
-                                    onError: (err) => showError(actionErrorMessage(err)),
-                                  })
-                                }
-                                disabled={account.role === 'ADMIN' && !canChangeRoleOrArchive}
-                              >
-                                {t('accountsAdmin.archiveButton')}
-                              </Button>
-                              {account.role === 'ADMIN' ? (
-                                <Button
-                                  size="compact-sm"
-                                  variant="default"
-                                  onClick={() =>
-                                    changeRole(
-                                      { id: account.id, role: 'MEMBER' },
-                                      { onError: (err) => showError(actionErrorMessage(err)) },
-                                    )
-                                  }
-                                  disabled={!canChangeRoleOrArchive}
-                                >
-                                  {t('accountsAdmin.makeMemberButton')}
-                                </Button>
-                              ) : (
-                                <Button
-                                  size="compact-sm"
-                                  variant="default"
-                                  onClick={() =>
-                                    changeRole(
-                                      { id: account.id, role: 'ADMIN' },
-                                      { onError: (err) => showError(actionErrorMessage(err)) },
-                                    )
-                                  }
-                                >
-                                  {t('accountsAdmin.makeAdminButton')}
-                                </Button>
-                              )}
-                            </>
+                      </Group>
+                    </Group>
+                    <Group gap="xs" mt="sm">
+                      {account.status === 'ACTIVE' ? (
+                        <>
+                          <Button
+                            size="compact-sm"
+                            variant="default"
+                            onClick={() =>
+                              archiveAccount(account.id, {
+                                onError: (err) => showError(actionErrorMessage(err)),
+                              })
+                            }
+                            disabled={account.role === 'ADMIN' && !canChangeRoleOrArchive}
+                          >
+                            {t('accountsAdmin.archiveButton')}
+                          </Button>
+                          {account.role === 'ADMIN' ? (
+                            <Button
+                              size="compact-sm"
+                              variant="default"
+                              onClick={() =>
+                                changeRole(
+                                  { id: account.id, role: 'MEMBER' },
+                                  { onError: (err) => showError(actionErrorMessage(err)) },
+                                )
+                              }
+                              disabled={!canChangeRoleOrArchive}
+                            >
+                              {t('accountsAdmin.makeMemberButton')}
+                            </Button>
                           ) : (
-                            <Group gap="xs">
-                              {!isEmailReassigned(account.email) && (
-                                <Button
-                                  size="compact-sm"
-                                  variant="default"
-                                  onClick={() =>
-                                    reactivateAccount(account.id, {
-                                      onError: (err) => showError(actionErrorMessage(err)),
-                                    })
-                                  }
-                                >
-                                  {t('accountsAdmin.reactivateButton')}
-                                </Button>
-                              )}
-                              <Button
-                                size="compact-sm"
-                                variant="filled"
-                                color="red"
-                                onClick={() => setConfirmDeleteId(account.id)}
-                              >
-                                {t('accountsAdmin.deleteButton')}
-                              </Button>
-                            </Group>
+                            <Button
+                              size="compact-sm"
+                              variant="default"
+                              onClick={() =>
+                                changeRole(
+                                  { id: account.id, role: 'ADMIN' },
+                                  { onError: (err) => showError(actionErrorMessage(err)) },
+                                )
+                              }
+                            >
+                              {t('accountsAdmin.makeAdminButton')}
+                            </Button>
                           )}
-                        </Group>
-                      </Table.Td>
+                        </>
+                      ) : (
+                        <>
+                          {!isEmailReassigned(account.email) && (
+                            <Button
+                              size="compact-sm"
+                              variant="default"
+                              onClick={() =>
+                                reactivateAccount(account.id, {
+                                  onError: (err) => showError(actionErrorMessage(err)),
+                                })
+                              }
+                            >
+                              {t('accountsAdmin.reactivateButton')}
+                            </Button>
+                          )}
+                          <Button
+                            size="compact-sm"
+                            variant="filled"
+                            color="red"
+                            onClick={() => setConfirmDeleteId(account.id)}
+                          >
+                            {t('accountsAdmin.deleteButton')}
+                          </Button>
+                        </>
+                      )}
+                    </Group>
+                  </Card>
+                );
+              })}
+            </Stack>
+          </Box>
+
+          {/* Full table — tablet and desktop */}
+          <Box visibleFrom="sm">
+            <Paper withBorder>
+              <Table.ScrollContainer minWidth={500}>
+                <Table withTableBorder={false} highlightOnHover>
+                  <Table.Thead>
+                    <Table.Tr>
+                      <Table.Th>{t('accountsAdmin.columnName')}</Table.Th>
+                      <Table.Th>{t('accountsAdmin.columnEmail')}</Table.Th>
+                      <Table.Th>{t('accountsAdmin.columnRole')}</Table.Th>
+                      <Table.Th>{t('accountsAdmin.columnStatus')}</Table.Th>
+                      <Table.Th>{t('accountsAdmin.columnActions')}</Table.Th>
                     </Table.Tr>
-                  );
-                })}
-              </Table.Tbody>
-            </Table>
-          </Table.ScrollContainer>
-        </Paper>
+                  </Table.Thead>
+                  <Table.Tbody>
+                    {accounts.map((account) => {
+                      const canChangeRoleOrArchive =
+                        account.role !== 'ADMIN' || otherActiveAdminExists(account);
+                      return (
+                        <Table.Tr key={account.id}>
+                          <Table.Td>
+                            <Group gap="sm">
+                              <Avatar size={32} radius="xl" color="blue">
+                                {userInitials(account.displayName)}
+                              </Avatar>
+                              <Text size="sm" fw={500}>
+                                {account.displayName}
+                              </Text>
+                            </Group>
+                          </Table.Td>
+                          <Table.Td>
+                            <Text size="sm" c="dimmed">
+                              {isEmailReassigned(account.email)
+                                ? t('accountsAdmin.emailReassigned')
+                                : account.email}
+                            </Text>
+                          </Table.Td>
+                          <Table.Td>
+                            <Badge
+                              color={account.role === 'ADMIN' ? 'red' : 'blue'}
+                              variant="light"
+                            >
+                              {account.role === 'ADMIN'
+                                ? t('accountsAdmin.roleAdmin')
+                                : t('accountsAdmin.roleMember')}
+                            </Badge>
+                          </Table.Td>
+                          <Table.Td>
+                            <Badge
+                              color={account.status === 'ACTIVE' ? 'green' : 'gray'}
+                              variant="light"
+                            >
+                              {account.status === 'ACTIVE'
+                                ? t('accountsAdmin.statusActive')
+                                : t('accountsAdmin.statusArchived')}
+                            </Badge>
+                          </Table.Td>
+                          <Table.Td>
+                            <Group gap="xs">
+                              {account.status === 'ACTIVE' ? (
+                                <>
+                                  <Button
+                                    size="compact-sm"
+                                    variant="default"
+                                    onClick={() =>
+                                      archiveAccount(account.id, {
+                                        onError: (err) => showError(actionErrorMessage(err)),
+                                      })
+                                    }
+                                    disabled={account.role === 'ADMIN' && !canChangeRoleOrArchive}
+                                  >
+                                    {t('accountsAdmin.archiveButton')}
+                                  </Button>
+                                  {account.role === 'ADMIN' ? (
+                                    <Button
+                                      size="compact-sm"
+                                      variant="default"
+                                      onClick={() =>
+                                        changeRole(
+                                          { id: account.id, role: 'MEMBER' },
+                                          { onError: (err) => showError(actionErrorMessage(err)) },
+                                        )
+                                      }
+                                      disabled={!canChangeRoleOrArchive}
+                                    >
+                                      {t('accountsAdmin.makeMemberButton')}
+                                    </Button>
+                                  ) : (
+                                    <Button
+                                      size="compact-sm"
+                                      variant="default"
+                                      onClick={() =>
+                                        changeRole(
+                                          { id: account.id, role: 'ADMIN' },
+                                          { onError: (err) => showError(actionErrorMessage(err)) },
+                                        )
+                                      }
+                                    >
+                                      {t('accountsAdmin.makeAdminButton')}
+                                    </Button>
+                                  )}
+                                </>
+                              ) : (
+                                <Group gap="xs">
+                                  {!isEmailReassigned(account.email) && (
+                                    <Button
+                                      size="compact-sm"
+                                      variant="default"
+                                      onClick={() =>
+                                        reactivateAccount(account.id, {
+                                          onError: (err) => showError(actionErrorMessage(err)),
+                                        })
+                                      }
+                                    >
+                                      {t('accountsAdmin.reactivateButton')}
+                                    </Button>
+                                  )}
+                                  <Button
+                                    size="compact-sm"
+                                    variant="filled"
+                                    color="red"
+                                    onClick={() => setConfirmDeleteId(account.id)}
+                                  >
+                                    {t('accountsAdmin.deleteButton')}
+                                  </Button>
+                                </Group>
+                              )}
+                            </Group>
+                          </Table.Td>
+                        </Table.Tr>
+                      );
+                    })}
+                  </Table.Tbody>
+                </Table>
+              </Table.ScrollContainer>
+            </Paper>
+          </Box>
+        </>
       )}
 
       <Divider my="md" />

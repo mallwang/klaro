@@ -61,14 +61,14 @@ const sampleContracts: ContractData[] = [
 describe('ContractTable – data display', () => {
   it('renders a row for each contract', () => {
     renderTable(sampleContracts);
-    expect(screen.getByText('Netflix')).toBeInTheDocument();
-    expect(screen.getByText('Rent')).toBeInTheDocument();
+    expect(screen.getAllByText('Netflix')[0]).toBeInTheDocument();
+    expect(screen.getAllByText('Rent')[0]).toBeInTheDocument();
   });
 
   it('displays the amount and interval label for each contract', () => {
     renderTable(sampleContracts);
-    expect(screen.getByText(/15\.99.*Monthly|Monthly.*15\.99/)).toBeInTheDocument();
-    expect(screen.getByText(/1[,.]?200.*Monthly|Monthly.*1[,.]?200/)).toBeInTheDocument();
+    expect(screen.getAllByText(/15\.99.*Monthly|Monthly.*15\.99/)[0]).toBeInTheDocument();
+    expect(screen.getAllByText(/1[,.]?200.*Monthly|Monthly.*1[,.]?200/)[0]).toBeInTheDocument();
   });
 
   it('shows the interval label in the column header', () => {
@@ -85,13 +85,13 @@ describe('ContractTable – data display', () => {
       },
     ];
     renderTable(quarterly);
-    expect(screen.getByText(/30.*Quarterly|Quarterly.*30/)).toBeInTheDocument();
+    expect(screen.getAllByText(/30.*Quarterly|Quarterly.*30/)[0]).toBeInTheDocument();
   });
 
   it('displays the status for each contract', () => {
     renderTable(sampleContracts);
-    expect(screen.getByText('Active')).toBeInTheDocument();
-    expect(screen.getByText('Inactive')).toBeInTheDocument();
+    expect(screen.getAllByText('Active')[0]).toBeInTheDocument();
+    expect(screen.getAllByText('Inactive')[0]).toBeInTheDocument();
   });
 
   it('displays the end date formatted for the active locale', () => {
@@ -101,12 +101,12 @@ describe('ContractTable – data display', () => {
       month: '2-digit',
       year: 'numeric',
     }).format(new Date('2026-12-31'));
-    expect(screen.getByText(formatted)).toBeInTheDocument();
+    expect(screen.getAllByText(formatted)[0]).toBeInTheDocument();
   });
 
   it('displays a dash when end date is null', () => {
     renderTable(sampleContracts);
-    expect(screen.getByText('—')).toBeInTheDocument();
+    expect(screen.getAllByText('—')[0]).toBeInTheDocument();
   });
 
   it('renders an empty-state message when no contracts are provided', () => {
@@ -125,21 +125,21 @@ describe('ContractTable – anonymization', () => {
 
   it('shows real names when isAnonymized=false', () => {
     renderTable(sampleContracts, { isAnonymized: false, getDisplayName });
-    expect(screen.getByText('Netflix')).toBeInTheDocument();
-    expect(screen.getByText('Rent')).toBeInTheDocument();
+    expect(screen.getAllByText('Netflix')[0]).toBeInTheDocument();
+    expect(screen.getAllByText('Rent')[0]).toBeInTheDocument();
   });
 
   it('shows fantasy names when isAnonymized=true', () => {
     renderTable(sampleContracts, { isAnonymized: true, getDisplayName });
     expect(screen.queryByText('Netflix')).not.toBeInTheDocument();
     expect(screen.queryByText('Rent')).not.toBeInTheDocument();
-    expect(screen.getByText(getDisplayName(sampleContracts[0]!))).toBeInTheDocument();
-    expect(screen.getByText(getDisplayName(sampleContracts[1]!))).toBeInTheDocument();
+    expect(screen.getAllByText(getDisplayName(sampleContracts[0]!))[0]).toBeInTheDocument();
+    expect(screen.getAllByText(getDisplayName(sampleContracts[1]!))[0]).toBeInTheDocument();
   });
 
   it('works without optional anonymization props (backwards compat)', () => {
     renderTable(sampleContracts);
-    expect(screen.getByText('Netflix')).toBeInTheDocument();
+    expect(screen.getAllByText('Netflix')[0]).toBeInTheDocument();
   });
 });
 
@@ -149,8 +149,8 @@ describe('ContractTable – inline delete confirmation', () => {
     renderTable(sampleContracts);
     const deleteButtons = screen.getAllByRole('button', { name: /delete/i });
     await user.click(deleteButtons[0]!);
-    expect(screen.getByRole('button', { name: /confirm/i })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /cancel/i })).toBeInTheDocument();
+    expect(screen.getAllByRole('button', { name: /confirm/i })[0]).toBeInTheDocument();
+    expect(screen.getAllByRole('button', { name: /cancel/i })[0]).toBeInTheDocument();
   });
 
   it('reverts to normal row state after clicking Cancel', async () => {
@@ -158,7 +158,7 @@ describe('ContractTable – inline delete confirmation', () => {
     renderTable(sampleContracts);
     const deleteButtons = screen.getAllByRole('button', { name: /delete/i });
     await user.click(deleteButtons[0]!);
-    await user.click(screen.getByRole('button', { name: /cancel/i }));
+    await user.click(screen.getAllByRole('button', { name: /cancel/i })[0]!);
     expect(screen.queryByRole('button', { name: /confirm/i })).not.toBeInTheDocument();
   });
 
@@ -168,7 +168,7 @@ describe('ContractTable – inline delete confirmation', () => {
     renderTable(sampleContracts, { onDelete });
     const deleteButtons = screen.getAllByRole('button', { name: /delete/i });
     await user.click(deleteButtons[0]!);
-    await user.click(screen.getByRole('button', { name: /confirm/i }));
+    await user.click(screen.getAllByRole('button', { name: /confirm/i })[0]!);
     expect(onDelete).toHaveBeenCalledWith(sampleContracts[0]!.id);
   });
 
@@ -177,8 +177,8 @@ describe('ContractTable – inline delete confirmation', () => {
     renderTable(sampleContracts);
     const deleteButtons = screen.getAllByRole('button', { name: /delete/i });
     await user.click(deleteButtons[0]!);
-    // Second row should still have its Delete button
-    expect(screen.getAllByRole('button', { name: /delete/i })).toHaveLength(1);
+    // Second contract should still have its Delete button in both card and table views
+    expect(screen.getAllByRole('button', { name: /delete/i })).toHaveLength(2);
   });
 });
 
@@ -351,9 +351,9 @@ describe('ContractTable – sort indicators', () => {
 describe('ContractTable – name cell rendering', () => {
   it('wraps the contract name inside a text element (not a raw text node)', () => {
     renderTable(sampleContracts);
-    const nameEl = screen.getByText('Netflix');
-    // After the compact refactor the name must live inside a DOM element, not be a bare text
-    // node directly inside the flex wrapper. Any wrapping tag satisfies this.
+    // Find the Netflix element that lives inside a table cell (table view)
+    const nameEls = screen.getAllByText('Netflix');
+    const nameEl = nameEls.find((el) => el.closest('td') !== null)!;
     expect(nameEl.tagName).not.toBe('DIV');
     expect(nameEl.closest('td')).toBeInTheDocument();
   });

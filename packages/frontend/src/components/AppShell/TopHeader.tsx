@@ -1,5 +1,5 @@
-import { Burger, ActionIcon, Anchor, Group, useMantineColorScheme } from '@mantine/core';
-import { Link } from 'react-router-dom';
+import { Burger, ActionIcon, Anchor, Group, Text, useMantineColorScheme } from '@mantine/core';
+import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { IconSun, IconMoon } from '@tabler/icons-react';
 import { LanguagePicker } from './LanguagePicker.js';
@@ -24,9 +24,30 @@ interface TopHeaderProps {
  * @param props - mobileOpened: whether the mobile sidebar is expanded; toggleMobile: callback
  *   to toggle it; showSignIn: whether to show a Sign In link for public pages
  */
+/**
+ * Returns the i18n key for the current page title based on the route pathname.
+ *
+ * @param pathname - the current location pathname
+ * @returns an i18n key string, or null if no dedicated title exists for the route
+ */
+function usePageTitle(pathname: string): string | null {
+  const { t } = useTranslation();
+  if (pathname === '/') return t('dashboard.title');
+  if (pathname.startsWith('/contracts/import')) return t('import.title');
+  if (pathname.startsWith('/contracts/new')) return t('contractNew.title');
+  if (/^\/contracts\/[^/]+\/edit/.test(pathname)) return t('contractEdit.title');
+  if (pathname.startsWith('/contracts')) return t('contractList.title');
+  if (pathname.startsWith('/account')) return t('accountSettings.title');
+  if (pathname.startsWith('/faq')) return t('nav.faq');
+  if (pathname.startsWith('/admin')) return t('accountsAdmin.title');
+  return null;
+}
+
 export function TopHeader({ mobileOpened, toggleMobile, showSignIn }: TopHeaderProps) {
   const { colorScheme, toggleColorScheme } = useMantineColorScheme();
   const { t } = useTranslation();
+  const { pathname } = useLocation();
+  const pageTitle = usePageTitle(pathname);
 
   return (
     <div className={classes.header}>
@@ -52,6 +73,12 @@ export function TopHeader({ mobileOpened, toggleMobile, showSignIn }: TopHeaderP
           <KlaroIcon size={28} />
         </Link>
       </Group>
+
+      {pageTitle && (
+        <Text fw={600} size="sm" hiddenFrom="sm" className={classes.pageTitle} truncate>
+          {pageTitle}
+        </Text>
+      )}
 
       <Group className={classes.right}>
         {showSignIn && (
