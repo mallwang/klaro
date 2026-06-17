@@ -20,7 +20,7 @@
     "lint:fix": "eslint . --fix",
     "format": "prettier --write \"packages/**/*.{ts,tsx,json}\"",
     "prepare": "husky",
-    "release": "release-it"
+    "release": "release-it --ci"
   },
   "lint-staged": {
     "packages/**/*.{ts,tsx}": [
