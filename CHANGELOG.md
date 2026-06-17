@@ -1,5 +1,12 @@
 # Changelog
 
+# [1.3.0](https://github.com/mallwang/personal-contract-management/compare/v1.2.0...v1.3.0) (2026-06-17)
+
+
+### Features
+
+* **frontend:** add mobile-responsive layout ([#38](https://github.com/mallwang/personal-contract-management/issues/38)) ([b6e4966](https://github.com/mallwang/personal-contract-management/commit/b6e49667549e8efc14524e02ee8b7ace5cee02b0))
+
 # [1.2.0](https://github.com/mallwang/klaro/compare/v1.1.0...v1.2.0) (2026-06-16)
 
 
