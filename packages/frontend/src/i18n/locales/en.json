@@ -162,6 +162,14 @@
     "anonymizeContract": "Anonymize this contract",
     "anonymizeContractHint": "Always hide the name of this contract in the list view"
   },
+  "authPage": {
+    "imageAlt": "Authentication illustration",
+    "tagline": "Manage your contracts with confidence.",
+    "signInHeading": "Welcome back!",
+    "signInSubtitle": "Sign in to manage your contracts.",
+    "forgotHeading": "Forgot your password?",
+    "forgotSubtitle": "Enter your email to get a reset link."
+  },
   "auth": {
     "signInTitle": "Sign in",
     "emailLabel": "Email",

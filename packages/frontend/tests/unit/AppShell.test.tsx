@@ -129,10 +129,10 @@ describe('AppShell', () => {
     expect(screen.getByText('Member')).toBeInTheDocument();
   });
 
-  // US11: Footer
-  it('renders a footer', () => {
+  // US11: No footer — links moved to header and sidebar
+  it('does not render a footer', () => {
     renderAppShell();
-    expect(screen.getByRole('contentinfo')).toBeInTheDocument();
+    expect(screen.queryByRole('contentinfo')).toBeNull();
   });
 
   // US1: Top-level header

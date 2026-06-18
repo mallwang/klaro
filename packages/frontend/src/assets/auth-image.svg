@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 900" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4C6EF5;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#228BE6;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="card1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.18" />
+      <stop offset="100%" style="stop-color:#ffffff;stop-opacity:0.06" />
+    </linearGradient>
+    <linearGradient id="card2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.14" />
+      <stop offset="100%" style="stop-color:#ffffff;stop-opacity:0.04" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="600" height="900" fill="url(#bg)" />
+
+  <!-- Decorative circles -->
+  <circle cx="520" cy="80" r="180" fill="white" fill-opacity="0.06" />
+  <circle cx="80" cy="820" r="220" fill="white" fill-opacity="0.06" />
+  <circle cx="300" cy="450" r="280" fill="white" fill-opacity="0.04" />
+
+  <!-- Large floating card -->
+  <rect x="80" y="200" width="440" height="260" rx="16" fill="url(#card1)" />
+  <!-- Card header bar -->
+  <rect x="80" y="200" width="440" height="52" rx="16" fill="white" fill-opacity="0.12" />
+  <circle cx="116" cy="226" r="8" fill="white" fill-opacity="0.5" />
+  <circle cx="144" cy="226" r="8" fill="white" fill-opacity="0.35" />
+  <circle cx="172" cy="226" r="8" fill="white" fill-opacity="0.2" />
+  <!-- Card content lines -->
+  <rect x="108" y="276" width="200" height="12" rx="6" fill="white" fill-opacity="0.35" />
+  <rect x="108" y="300" width="160" height="10" rx="5" fill="white" fill-opacity="0.22" />
+  <rect x="108" y="322" width="180" height="10" rx="5" fill="white" fill-opacity="0.22" />
+  <!-- Card value badge -->
+  <rect x="360" y="270" width="130" height="52" rx="12" fill="white" fill-opacity="0.18" />
+  <rect x="376" y="283" width="70" height="10" rx="5" fill="white" fill-opacity="0.5" />
+  <rect x="376" y="301" width="90" height="10" rx="5" fill="white" fill-opacity="0.3" />
+
+  <!-- Small stat cards row -->
+  <rect x="80" y="500" width="128" height="80" rx="12" fill="url(#card2)" />
+  <rect x="236" y="500" width="128" height="80" rx="12" fill="url(#card2)" />
+  <rect x="392" y="500" width="128" height="80" rx="12" fill="url(#card2)" />
+  <!-- Stat lines -->
+  <rect x="100" y="520" width="60" height="8" rx="4" fill="white" fill-opacity="0.4" />
+  <rect x="100" y="536" width="80" height="10" rx="5" fill="white" fill-opacity="0.6" />
+  <rect x="256" y="520" width="60" height="8" rx="4" fill="white" fill-opacity="0.4" />
+  <rect x="256" y="536" width="80" height="10" rx="5" fill="white" fill-opacity="0.6" />
+  <rect x="412" y="520" width="60" height="8" rx="4" fill="white" fill-opacity="0.4" />
+  <rect x="412" y="536" width="80" height="10" rx="5" fill="white" fill-opacity="0.6" />
+
+  <!-- Document icon (contract metaphor) -->
+  <g transform="translate(248, 100)">
+    <rect width="104" height="72" rx="10" fill="white" fill-opacity="0.15" />
+    <rect x="14" y="16" width="56" height="8" rx="4" fill="white" fill-opacity="0.5" />
+    <rect x="14" y="32" width="76" height="6" rx="3" fill="white" fill-opacity="0.3" />
+    <rect x="14" y="44" width="64" height="6" rx="3" fill="white" fill-opacity="0.3" />
+  </g>
+
+  <!-- Bottom tagline area -->
+  <rect x="80" y="620" width="440" height="2" rx="1" fill="white" fill-opacity="0.2" />
+  <rect x="160" y="646" width="280" height="14" rx="7" fill="white" fill-opacity="0.3" />
+  <rect x="200" y="668" width="200" height="10" rx="5" fill="white" fill-opacity="0.2" />
+</svg>

@@ -8,10 +8,12 @@ import { AuthError } from '../../../src/services/auth.js';
 
 vi.mock('../../../src/hooks/useAuth.js', () => ({
   useRequestPasswordReset: vi.fn(),
+  useCurrentUser: vi.fn(() => ({ data: null, isLoading: false })),
+  useSignIn: vi.fn(() => ({ mutate: vi.fn(), isPending: false, error: null })),
 }));
 
 import * as useAuth from '../../../src/hooks/useAuth.js';
-import { ForgotPassword } from '../../../src/pages/ForgotPassword.js';
+import { AuthPage } from '../../../src/pages/AuthPage.js';
 
 function renderForgotPasswordPage() {
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
@@ -19,26 +21,35 @@ function renderForgotPasswordPage() {
     <QueryClientProvider client={queryClient}>
       <MantineProvider>
         <MemoryRouter initialEntries={['/forgot-password']}>
-          <ForgotPassword />
+          <AuthPage initialView="forgot-password" />
         </MemoryRouter>
       </MantineProvider>
     </QueryClientProvider>,
   );
 }
 
-describe('ForgotPassword', () => {
+describe('ForgotPassword (via AuthPage)', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.mocked(useAuth.useCurrentUser).mockReturnValue({
+      data: null,
+      isLoading: false,
+    } as unknown as ReturnType<typeof useAuth.useCurrentUser>);
+    vi.mocked(useAuth.useSignIn).mockReturnValue({
+      mutate: vi.fn(),
+      isPending: false,
+      error: null,
+    } as unknown as ReturnType<typeof useAuth.useSignIn>);
   });
 
-  it('renders email form with title "Reset your password"', () => {
+  it('renders email form with heading "Forgot your password?"', () => {
     vi.mocked(useAuth.useRequestPasswordReset).mockReturnValue({
       mutateAsync: vi.fn(),
       isPending: false,
     } as unknown as ReturnType<typeof useAuth.useRequestPasswordReset>);
 
     renderForgotPasswordPage();
-    expect(screen.getByRole('heading', { name: /reset your password/i })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /forgot your password/i })).toBeInTheDocument();
     expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
   });
 

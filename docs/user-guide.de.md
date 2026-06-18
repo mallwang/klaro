@@ -323,13 +323,13 @@ Jeder Besucher muss sich anmelden. Verträge, Dashboards, Exporte und Importe si
 
 ### An- und Abmelden
 
-Wenn du die App öffnest und keine aktive Sitzung hast, landest du auf der Anmeldeseite. Gib deine E-Mail-Adresse und dein Passwort ein, um fortzufahren. Über die Schaltfläche **Abmelden** am unteren Rand der Seitenleiste beendest du deine Sitzung auf diesem Gerät.
+Wenn du die App öffnest und keine aktive Sitzung hast, landest du auf der Anmeldeseite. Die Seite zeigt ein zweispaltiges Layout: links ein dekoratives Bildfenster, rechts das Anmeldeformular (auf mobilen Geräten ist das Bildfenster ausgeblendet und das Formular nimmt die volle Breite ein). Gib deine E-Mail-Adresse und dein Passwort ein und klicke auf **Anmelden**, um fortzufahren. Über die Schaltfläche **Abmelden** am unteren Rand der Seitenleiste beendest du deine Sitzung auf diesem Gerät.
 
 Wenn du zu oft hintereinander das falsche Passwort eingibst, wird das Konto vorübergehend gesperrt — warte ein paar Minuten und versuche es dann erneut mit dem richtigen Passwort.
 
 ### Passwort vergessen
 
-Wenn du dein Passwort vergessen hast, klicke auf den Link **Passwort vergessen?** unter dem Anmeldeformular. Gib deine E-Mail-Adresse ein und klicke auf **Link zum Zurücksetzen senden**. Die App zeigt immer eine generische Erfolgsmeldung („Wenn ein Konto mit dieser E-Mail existiert, wurde ein Link zum Zurücksetzen des Passworts gesendet."), unabhängig davon, ob die E-Mail-Adresse registriert ist — dies verhindert, dass Angreifer herausfinden können, welche E-Mail-Adressen im System sind.
+Wenn du dein Passwort vergessen hast, klicke auf den Link **Passwort vergessen?** unter dem Anmeldeformular. Die Seite wechselt zum Formular „Passwort vergessen" — noch innerhalb desselben zweispaltigen Layouts — ohne die Seite neu zu laden. Gib deine E-Mail-Adresse ein und klicke auf **Link zum Zurücksetzen senden**. Die App zeigt immer eine generische Erfolgsmeldung („Wenn ein Konto mit dieser E-Mail existiert, wurde ein Link zum Zurücksetzen des Passworts gesendet."), unabhängig davon, ob die E-Mail-Adresse registriert ist — dies verhindert, dass Angreifer herausfinden können, welche E-Mail-Adressen im System sind.
 
 Prüfe deinen Posteingang auf eine E-Mail mit einem Zurücksetzungslink. Klicke auf den Link, um die Seite **Neues Passwort festlegen** zu öffnen. Gib ein neues Passwort ein (mindestens 8 Zeichen) und bestätige es, dann klicke auf **Passwort zurücksetzen**. Du wirst automatisch angemeldet und zum Dashboard weitergeleitet. Der Link läuft nach 1 Stunde ab und kann nur einmal verwendet werden. Wenn du einen weiteren Zurücksetzungslink anforderst, werden alle vorherigen Links ungültig.
 
