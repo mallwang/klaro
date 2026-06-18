@@ -162,6 +162,14 @@
     "anonymizeContract": "Diesen Vertrag anonymisieren",
     "anonymizeContractHint": "Den Namen dieses Vertrags in der Listenansicht immer verbergen"
   },
+  "authPage": {
+    "imageAlt": "Authentifizierungsillustration",
+    "tagline": "Verwalte deine Verträge mit Zuversicht.",
+    "signInHeading": "Willkommen zurück!",
+    "signInSubtitle": "Melde dich an, um deine Verträge zu verwalten.",
+    "forgotHeading": "Passwort vergessen?",
+    "forgotSubtitle": "Gib deine E-Mail ein, um einen Reset-Link zu erhalten."
+  },
   "auth": {
     "signInTitle": "Anmelden",
     "emailLabel": "E-Mail",

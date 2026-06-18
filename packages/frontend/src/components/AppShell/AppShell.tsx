@@ -2,13 +2,12 @@ import type { ReactNode } from 'react';
 import { AppShell as MantineAppShell, Box } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { NavbarSegmented } from './NavbarSegmented.js';
-import { FooterSimple } from './FooterSimple.js';
 import { TopHeader } from './TopHeader.js';
 import classes from './AppShell.module.css';
 
 /**
- * Root application shell composing the header, collapsible sidebar navigation, main content
- * area, and footer.
+ * Root application shell composing the header, collapsible sidebar navigation, and main
+ * content area.
  */
 
 interface AppShellProps {
@@ -26,7 +25,6 @@ export function AppShell({ children }: AppShellProps) {
   return (
     <MantineAppShell
       header={{ height: 60 }}
-      footer={{ height: 50 }}
       navbar={{ width: 280, breakpoint: 'sm', collapsed: { mobile: !mobileOpened } }}
       padding="md"
     >
@@ -41,10 +39,6 @@ export function AppShell({ children }: AppShellProps) {
       <MantineAppShell.Main className={classes.main}>
         <Box className={classes.content}>{children}</Box>
       </MantineAppShell.Main>
-
-      <MantineAppShell.Footer>
-        <FooterSimple />
-      </MantineAppShell.Footer>
     </MantineAppShell>
   );
 }

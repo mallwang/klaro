@@ -1,7 +1,7 @@
 import { Burger, ActionIcon, Anchor, Group, Text, useMantineColorScheme } from '@mantine/core';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { IconSun, IconMoon } from '@tabler/icons-react';
+import { IconSun, IconMoon, IconBrandGithub, IconBrandDocker } from '@tabler/icons-react';
 import { LanguagePicker } from './LanguagePicker.js';
 import { KlaroIcon } from '../KlaroIcon.js';
 import classes from './TopHeader.module.css';
@@ -86,6 +86,30 @@ export function TopHeader({ mobileOpened, toggleMobile, showSignIn }: TopHeaderP
             {t('auth.signInTitle')}
           </Anchor>
         )}
+        <ActionIcon
+          component="a"
+          href="https://github.com/mallwang/klaro"
+          target="_blank"
+          rel="noopener noreferrer"
+          size="lg"
+          variant="default"
+          radius="xl"
+          aria-label="GitHub repository"
+        >
+          <IconBrandGithub size={18} stroke={1.5} />
+        </ActionIcon>
+        <ActionIcon
+          component="a"
+          href="https://hub.docker.com/r/walefish/klaro"
+          target="_blank"
+          rel="noopener noreferrer"
+          size="lg"
+          variant="default"
+          radius="xl"
+          aria-label="Docker Hub"
+        >
+          <IconBrandDocker size={18} stroke={1.5} />
+        </ActionIcon>
         <LanguagePicker />
         <ActionIcon
           onClick={toggleColorScheme}

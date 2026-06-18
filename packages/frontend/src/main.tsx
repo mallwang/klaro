@@ -25,10 +25,9 @@ import { ContractList } from './pages/ContractList.js';
 import { ContractNew } from './pages/ContractNew.js';
 import { ContractEdit } from './pages/ContractEdit.js';
 import { ContractImport } from './pages/ContractImport.js';
-import { SignIn } from './pages/SignIn.js';
+import { AuthPage } from './pages/AuthPage.js';
 import { AcceptInvitation } from './pages/AcceptInvitation.js';
 import { EmailVerifyConfirm } from './pages/EmailVerifyConfirm.js';
-import { ForgotPassword } from './pages/ForgotPassword.js';
 import { ResetPassword } from './pages/ResetPassword.js';
 import { AccountSettings } from './pages/AccountSettings.js';
 import { Faq } from './pages/Faq.js';
@@ -63,7 +62,7 @@ function AuthenticatedShell({ children }: { readonly children: React.ReactNode }
 
   if (!user) {
     if (PUBLIC_PATHS.some((p) => location.pathname.startsWith(p))) {
-      return <PublicLayout showSignIn>{children}</PublicLayout>;
+      return <PublicLayout>{children}</PublicLayout>;
     }
     return <Navigate to="/sign-in" replace state={{ from: location }} />;
   }
@@ -99,10 +98,10 @@ createRoot(root).render(
         <QueryClientProvider client={queryClient}>
           <BrowserRouter>
             <Routes>
-              <Route path="/sign-in" element={<SignIn />} />
+              <Route path="/sign-in" element={<AuthPage initialView="sign-in" />} />
               <Route path="/invitations/:token" element={<AcceptInvitation />} />
               <Route path="/email-change/confirm/:token" element={<EmailVerifyConfirm />} />
-              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/forgot-password" element={<AuthPage initialView="forgot-password" />} />
               <Route path="/reset-password/:token" element={<ResetPassword />} />
               <Route
                 path="*"
