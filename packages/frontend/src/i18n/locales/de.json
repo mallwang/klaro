@@ -73,6 +73,7 @@
     "expiredContracts": "Abgelaufene Verträge",
     "noExpiredContracts": "Keine abgelaufenen Verträge.",
     "daysOverdue": "{{count}} Tage überfällig",
+    "inactiveContracts": "Inaktive Verträge",
     "loadError": "Dashboard-Daten konnten nicht geladen werden. Bitte Seite neu laden."
   },
   "contractList": {

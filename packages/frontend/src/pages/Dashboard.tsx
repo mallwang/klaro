@@ -5,10 +5,11 @@ import { useDashboard } from '../services/api.js';
 import { SpendingOverview } from '../components/SpendingOverview.js';
 import { UpcomingRenewals } from '../components/UpcomingRenewals.js';
 import { ExpiredContracts } from '../components/ExpiredContracts.js';
+import { InactiveContracts } from '../components/InactiveContracts.js';
 
 /**
- * Main dashboard page showing monthly spending overview, upcoming renewals, and expired
- * contracts for the authenticated user.
+ * Main dashboard page showing monthly spending overview, upcoming renewals, expired
+ * contracts, and a collapsed inactive-contracts section for the authenticated user.
  */
 
 export function Dashboard() {
@@ -60,6 +61,10 @@ export function Dashboard() {
 
       <section aria-label={t('dashboard.expiredContracts')}>
         <ExpiredContracts expiredContracts={data.expiredContracts} />
+      </section>
+
+      <section aria-label={t('dashboard.inactiveContracts')}>
+        <InactiveContracts inactiveContracts={data.inactiveContracts} />
       </section>
     </Stack>
   );

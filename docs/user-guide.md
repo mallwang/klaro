@@ -36,7 +36,7 @@ The app has a persistent navigation sidebar on the left. It is divided into two 
 
 | Page | URL | Purpose |
 |------|-----|---------|
-| Dashboard | `/` | Spending overview, renewals, expired contracts |
+| Dashboard | `/` | Spending overview, renewals, expired contracts, inactive contracts |
 | Contracts | `/contracts` | Full list; create, import, export |
 | My Account | `/account` | Display name, email, password, delete account |
 | FAQ | `/faq` | Frequently asked questions |
@@ -93,7 +93,11 @@ Any contract whose end date falls within the next 30 days appears here. Each row
 
 ### Expired contracts
 
-Contracts whose end date is in the past appear in an amber-highlighted panel. The panel shows how many days each contract is overdue. Click a row to go straight to the edit page.
+Active contracts whose end date is in the past appear in an amber-highlighted panel. The panel shows how many days each contract is overdue. Click a row to go straight to the edit page. Contracts you've set to **Inactive** never appear here, even with a past end date — see [Inactive contracts](#inactive-contracts) below.
+
+### Inactive contracts
+
+Any contract with status **Inactive** is kept out of your way in a separate, grayed-out "Inactive Contracts" section below Expired Contracts. It starts collapsed, showing only a count of how many inactive contracts you have; click the section header to expand it and see the full list, with a link to each contract's edit page. If you have no inactive contracts, this section doesn't appear at all.
 
 ---
 

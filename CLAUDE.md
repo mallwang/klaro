@@ -95,5 +95,5 @@ CI scan has run on a branch or PR.
 <!-- SPECKIT START -->
 For additional context about technologies to be used, project structure,
 shell commands, and other important information, read the current plan
-at specs/034-auth-page-redesign/plan.md
+at specs/035-dashboard-hide-inactive/plan.md
 <!-- SPECKIT END -->

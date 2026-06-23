@@ -1,0 +1,20 @@
+.accordion {
+  opacity: 0.85;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  padding: var(--mantine-spacing-xs) 0;
+  text-decoration: none;
+  color: inherit;
+  border-top: 1px solid var(--mantine-color-gray-2);
+}
+
+.item:first-child {
+  border-top: none;
+}
+
+.item:hover {
+  opacity: 0.8;
+}

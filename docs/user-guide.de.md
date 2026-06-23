@@ -36,7 +36,7 @@ Die App hat eine dauerhaft sichtbare Navigationsleiste auf der linken Seite. Sie
 
 | Seite | URL | Zweck |
 |-------|-----|-------|
-| Dashboard | `/` | Ausgabenübersicht, Verlängerungen, abgelaufene Verträge |
+| Dashboard | `/` | Ausgabenübersicht, Verlängerungen, abgelaufene Verträge, inaktive Verträge |
 | Verträge | `/contracts` | Vollständige Liste; Erstellen, Importieren, Exportieren |
 | Mein Konto | `/account` | Anzeigename, E-Mail, Passwort, Konto löschen |
 | FAQ | `/faq` | Häufig gestellte Fragen |
@@ -93,7 +93,11 @@ Alle Verträge, deren Enddatum innerhalb der nächsten 30 Tage liegt, erscheinen
 
 ### Abgelaufene Verträge
 
-Verträge, deren Enddatum in der Vergangenheit liegt, erscheinen in einem gelb hervorgehobenen Bereich. Es wird angezeigt, wie viele Tage jeder Vertrag überfällig ist. Klicke auf eine Zeile, um direkt zur Bearbeitungsseite zu gelangen.
+Aktive Verträge, deren Enddatum in der Vergangenheit liegt, erscheinen in einem gelb hervorgehobenen Bereich. Es wird angezeigt, wie viele Tage jeder Vertrag überfällig ist. Klicke auf eine Zeile, um direkt zur Bearbeitungsseite zu gelangen. Verträge mit dem Status **Inaktiv** erscheinen hier nie, auch nicht mit einem vergangenen Enddatum — siehe [Inaktive Verträge](#inaktive-verträge) unten.
+
+### Inaktive Verträge
+
+Verträge mit dem Status **Inaktiv** werden in einem separaten, grau dargestellten Bereich "Inaktive Verträge" unterhalb der abgelaufenen Verträge aus dem Fokus gehalten. Dieser Bereich ist standardmäßig eingeklappt und zeigt nur an, wie viele inaktive Verträge vorhanden sind; klicke auf die Überschrift, um ihn aufzuklappen und die vollständige Liste mit Links zu den jeweiligen Bearbeitungsseiten zu sehen. Hast du keine inaktiven Verträge, erscheint dieser Bereich gar nicht.
 
 ---
 

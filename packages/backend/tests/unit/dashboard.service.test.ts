@@ -492,15 +492,21 @@ describe('DashboardService – expiredContracts', () => {
     expect(result.expiredContracts).toHaveLength(0);
   });
 
-  it('includes both ACTIVE and INACTIVE contracts with a past end_date', () => {
-    insertContract(db, ownerId, { name: 'ActiveExpired', end_date: daysAgo(3), status: 'ACTIVE' });
+  it('excludes INACTIVE contracts even with a past end_date', () => {
     insertContract(db, ownerId, {
       name: 'InactiveExpired',
       end_date: daysAgo(7),
       status: 'INACTIVE',
     });
     const result = service.getDashboardData(ownerId);
-    expect(result.expiredContracts).toHaveLength(2);
+    expect(result.expiredContracts).toHaveLength(0);
+  });
+
+  it('includes ACTIVE contracts with a past end_date', () => {
+    insertContract(db, ownerId, { name: 'ActiveExpired', end_date: daysAgo(3), status: 'ACTIVE' });
+    const result = service.getDashboardData(ownerId);
+    expect(result.expiredContracts).toHaveLength(1);
+    expect(result.expiredContracts[0]?.name).toBe('ActiveExpired');
   });
 
   it('orders by end_date descending (most-recently-expired first)', () => {
@@ -527,5 +533,94 @@ describe('DashboardService – expiredContracts', () => {
     insertContract(db, ownerId, { name: 'Private', end_date: daysAgo(3), anonymize: 1 });
     const result = service.getDashboardData(ownerId);
     expect(result.expiredContracts[0]?.anonymize).toBe(true);
+  });
+});
+
+// ──────────────────────────────────────────────────────────────────────────────
+// Inactive Contracts
+// ──────────────────────────────────────────────────────────────────────────────
+
+describe('DashboardService – inactiveContracts', () => {
+  let db: Database.Database;
+  let service: DashboardService;
+  let ownerId: string;
+
+  function daysAgo(days: number): string {
+    const d = new Date();
+    d.setDate(d.getDate() - days);
+    return d.toISOString().slice(0, 10);
+  }
+
+  function daysFromNow(days: number): string {
+    const d = new Date();
+    d.setDate(d.getDate() + days);
+    return d.toISOString().slice(0, 10);
+  }
+
+  beforeEach(() => {
+    db = makeDb();
+    service = new DashboardService(db);
+    ownerId = insertOwner(db);
+  });
+
+  it('returns empty array when there are no inactive contracts', () => {
+    insertContract(db, ownerId, { status: 'ACTIVE' });
+    const result = service.getDashboardData(ownerId);
+    expect(result.inactiveContracts).toEqual([]);
+  });
+
+  it('returns inactive contracts regardless of end_date, including null end_date', () => {
+    insertContract(db, ownerId, { name: 'NoDate', status: 'INACTIVE', end_date: null });
+    insertContract(db, ownerId, { name: 'PastDate', status: 'INACTIVE', end_date: daysAgo(5) });
+    insertContract(db, ownerId, {
+      name: 'FutureDate',
+      status: 'INACTIVE',
+      end_date: daysFromNow(5),
+    });
+    const result = service.getDashboardData(ownerId);
+    expect(result.inactiveContracts).toHaveLength(3);
+    expect(result.inactiveContracts.map((c) => c.name).sort()).toEqual([
+      'FutureDate',
+      'NoDate',
+      'PastDate',
+    ]);
+  });
+
+  it('includes inactive LIFETIME contracts', () => {
+    insertContract(db, ownerId, {
+      name: 'LifetimeInactive',
+      status: 'INACTIVE',
+      billing_interval: 'LIFETIME',
+      end_date: null,
+    });
+    const result = service.getDashboardData(ownerId);
+    expect(result.inactiveContracts).toHaveLength(1);
+  });
+
+  it('excludes ACTIVE contracts', () => {
+    insertContract(db, ownerId, { name: 'Active', status: 'ACTIVE' });
+    const result = service.getDashboardData(ownerId);
+    expect(result.inactiveContracts).toEqual([]);
+  });
+
+  it('sorts inactive contracts by name', () => {
+    insertContract(db, ownerId, { name: 'Zebra', status: 'INACTIVE' });
+    insertContract(db, ownerId, { name: 'Alpha', status: 'INACTIVE' });
+    const result = service.getDashboardData(ownerId);
+    expect(result.inactiveContracts.map((c) => c.name)).toEqual(['Alpha', 'Zebra']);
+  });
+
+  it('maps anonymize column to boolean', () => {
+    insertContract(db, ownerId, { name: 'Private', status: 'INACTIVE', anonymize: 1 });
+    const result = service.getDashboardData(ownerId);
+    expect(result.inactiveContracts[0]?.anonymize).toBe(true);
+  });
+
+  it('only returns inactive contracts owned by the requesting user', () => {
+    const otherOwnerId = insertOwner(db);
+    insertContract(db, ownerId, { name: 'Mine', status: 'INACTIVE' });
+    insertContract(db, otherOwnerId, { name: 'TheirsNotMine', status: 'INACTIVE' });
+    const result = service.getDashboardData(ownerId);
+    expect(result.inactiveContracts.map((c) => c.name)).toEqual(['Mine']);
   });
 });

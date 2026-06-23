@@ -95,4 +95,23 @@ test.describe('Welcome Dashboard', () => {
     const section = page.getByRole('region', { name: /expired contracts/i });
     await expect(section.locator('.border-amber-200')).toHaveCount(0);
   });
+
+  test('US5 – inactive contracts section is collapsed by default and shows a count', async ({
+    page,
+  }) => {
+    const heading = page.getByRole('heading', { name: /inactive contracts/i });
+    await expect(heading).toBeVisible();
+    const toggle = page.getByRole('button', { name: /inactive contracts/i });
+    await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+  });
+
+  test('US5 – expanding inactive contracts reveals the inactive contract', async ({ page }) => {
+    await page.getByRole('button', { name: /inactive contracts/i }).click();
+    await expect(page.getByText('Old gym')).toBeVisible();
+  });
+
+  test('US5 – expired contracts never lists an inactive contract', async ({ page }) => {
+    const expiredSection = page.getByRole('region', { name: /expired contracts/i });
+    await expect(expiredSection.getByText('Old gym')).toHaveCount(0);
+  });
 });
