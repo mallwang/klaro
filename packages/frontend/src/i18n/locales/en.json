@@ -73,6 +73,7 @@
     "expiredContracts": "Expired Contracts",
     "noExpiredContracts": "No expired contracts.",
     "daysOverdue": "{{count}} days overdue",
+    "inactiveContracts": "Inactive Contracts",
     "loadError": "Failed to load dashboard data. Please refresh the page."
   },
   "contractList": {

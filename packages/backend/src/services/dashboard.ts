@@ -4,6 +4,7 @@ import type {
   CategorySummary,
   UpcomingRenewal,
   ExpiredContract,
+  InactiveContract,
 } from '@pcm/shared';
 import { CATEGORY_LABELS, type Category, type CancellationPeriodUnit } from '@pcm/shared';
 
@@ -80,7 +81,14 @@ export class DashboardService {
     const contractsByCategory = this.getContractsByCategory(ownerId);
     const upcomingRenewals = this.getUpcomingRenewals(ownerId);
     const expiredContracts = this.getExpiredContracts(ownerId);
-    return { totalMonthlySpending, contractsByCategory, upcomingRenewals, expiredContracts };
+    const inactiveContracts = this.getInactiveContracts(ownerId);
+    return {
+      totalMonthlySpending,
+      contractsByCategory,
+      upcomingRenewals,
+      expiredContracts,
+      inactiveContracts,
+    };
   }
 
   /**
@@ -216,10 +224,14 @@ export class DashboardService {
   }
 
   /**
-   * Returns non-lifetime contracts whose end date has passed, sorted by end date descending.
+   * Returns active, non-lifetime contracts whose end date has passed, sorted by end date
+   * descending.
    *
    * @param ownerId - The ID of the user
    * @returns An array of ExpiredContract objects with the number of days overdue
+   *
+   * Excludes INACTIVE contracts so that contracts the user has already deactivated don't
+   * compete for attention in this section; they surface instead via getInactiveContracts.
    */
   private getExpiredContracts(ownerId: string): ExpiredContract[] {
     const rows = this.db
@@ -240,6 +252,7 @@ export class DashboardService {
          WHERE end_date IS NOT NULL
            AND billing_interval != 'LIFETIME'
            AND end_date < DATE('now')
+           AND status = 'ACTIVE'
            AND user_id = ?
          ORDER BY end_date DESC`,
       )
@@ -263,5 +276,47 @@ export class DashboardService {
         useGenericIcon: row.use_generic_icon !== 0,
       };
     });
+  }
+
+  /**
+   * Returns all contracts with status INACTIVE for the user, sorted by name.
+   *
+   * @param ownerId - The ID of the user
+   * @returns An array of InactiveContract objects
+   *
+   * Unlike getExpiredContracts, this is not date-filtered — a contract's status is a
+   * manually-set field independent of its end date.
+   */
+  private getInactiveContracts(ownerId: string): InactiveContract[] {
+    const rows = this.db
+      .prepare<
+        [string],
+        {
+          id: string;
+          name: string;
+          category: string;
+          end_date: string | null;
+          anonymize: number;
+          logo_name: string | null;
+          use_generic_icon: number;
+        }
+      >(
+        `SELECT id, name, category, end_date, anonymize, logo_name, use_generic_icon
+         FROM contracts
+         WHERE status = 'INACTIVE'
+           AND user_id = ?
+         ORDER BY name COLLATE NOCASE`,
+      )
+      .all(ownerId);
+
+    return rows.map((row) => ({
+      id: row.id,
+      name: row.name,
+      category: row.category as Category,
+      endDate: row.end_date,
+      anonymize: row.anonymize !== 0,
+      logoName: row.logo_name ?? null,
+      useGenericIcon: row.use_generic_icon !== 0,
+    }));
   }
 }

@@ -35,8 +35,8 @@ the repo. Phase skipped.
 foundational dependency — its query change is self-contained — but the schema is grouped here
 because it is shared infrastructure, not story-specific behavior.)
 
-- [ ] T001 [P] Add `InactiveContractSchema` (id, name, category, endDate nullable, anonymize, logoName, useGenericIcon) to `packages/shared/src/schemas/dashboard.ts`
-- [ ] T002 [US2-dependency] Add `inactiveContracts: z.array(InactiveContractSchema)` field to `DashboardResponseSchema` in `packages/shared/src/schemas/dashboard.ts`, and export `InactiveContract` type (depends on T001)
+- [X] T001 [P] Add `InactiveContractSchema` (id, name, category, endDate nullable, anonymize, logoName, useGenericIcon) to `packages/shared/src/schemas/dashboard.ts`
+- [X] T002 [US2-dependency] Add `inactiveContracts: z.array(InactiveContractSchema)` field to `DashboardResponseSchema` in `packages/shared/src/schemas/dashboard.ts`, and export `InactiveContract` type (depends on T001)
 
 **Checkpoint**: Shared schema ready — both stories can now proceed (US1 doesn't need it, US2 does).
 
@@ -55,12 +55,12 @@ with a past end date; load the dashboard; confirm only the ACTIVE contract appea
 
 > Write these first; confirm they FAIL before touching the implementation.
 
-- [ ] T003 [US1] Add failing test in `packages/backend/src/services/dashboard.test.ts`: `getExpiredContracts`/`getDashboardData` excludes a contract with `status = 'INACTIVE'` and a past `end_date`
-- [ ] T004 [P] [US1] Add failing test in `packages/backend/src/services/dashboard.test.ts`: `getExpiredContracts`/`getDashboardData` still includes an ACTIVE contract with a past `end_date` (regression guard for existing behavior)
+- [X] T003 [US1] Add failing test in `packages/backend/src/services/dashboard.test.ts`: `getExpiredContracts`/`getDashboardData` excludes a contract with `status = 'INACTIVE'` and a past `end_date`
+- [X] T004 [P] [US1] Add failing test in `packages/backend/src/services/dashboard.test.ts`: `getExpiredContracts`/`getDashboardData` still includes an ACTIVE contract with a past `end_date` (regression guard for existing behavior)
 
 ### Implementation for User Story 1
 
-- [ ] T005 [US1] Add `AND status = 'ACTIVE'` to the SQL `WHERE` clause in `getExpiredContracts` in `packages/backend/src/services/dashboard.ts` (depends on T003, T004 failing first)
+- [X] T005 [US1] Add `AND status = 'ACTIVE'` to the SQL `WHERE` clause in `getExpiredContracts` in `packages/backend/src/services/dashboard.ts` (depends on T003, T004 failing first)
 
 **Checkpoint**: User Story 1 is fully functional and independently testable/deployable — this
 alone fixes the reported bug.
@@ -80,19 +80,19 @@ contracts are listed; remove all INACTIVE contracts and confirm the section disa
 
 > Write these first; confirm they FAIL before touching the implementation.
 
-- [ ] T006 [P] [US2] Add failing test in `packages/backend/src/services/dashboard.test.ts`: `getInactiveContracts`/`getDashboardData` returns all contracts with `status = 'INACTIVE'` for the user, including ones with a null `endDate`, sorted by name
-- [ ] T007 [P] [US2] Add failing test in `packages/backend/src/services/dashboard.test.ts`: `getInactiveContracts`/`getDashboardData` excludes other users' INACTIVE contracts (ownership scoping)
-- [ ] T008 [P] [US2] Add failing test file `packages/frontend/src/components/InactiveContracts.test.tsx`: renders `null`/nothing when `inactiveContracts` is empty
-- [ ] T009 [P] [US2] Add failing test case in `packages/frontend/src/components/InactiveContracts.test.tsx`: renders collapsed by default with a count matching the list length, and reveals all contract rows after the header is clicked
+- [X] T006 [P] [US2] Add failing test in `packages/backend/src/services/dashboard.test.ts`: `getInactiveContracts`/`getDashboardData` returns all contracts with `status = 'INACTIVE'` for the user, including ones with a null `endDate`, sorted by name
+- [X] T007 [P] [US2] Add failing test in `packages/backend/src/services/dashboard.test.ts`: `getInactiveContracts`/`getDashboardData` excludes other users' INACTIVE contracts (ownership scoping)
+- [X] T008 [P] [US2] Add failing test file `packages/frontend/src/components/InactiveContracts.test.tsx`: renders `null`/nothing when `inactiveContracts` is empty
+- [X] T009 [P] [US2] Add failing test case in `packages/frontend/src/components/InactiveContracts.test.tsx`: renders collapsed by default with a count matching the list length, and reveals all contract rows after the header is clicked
 
 ### Implementation for User Story 2
 
-- [ ] T010 [US2] Implement private `getInactiveContracts(ownerId)` query in `packages/backend/src/services/dashboard.ts` per `data-model.md` (mirrors `getExpiredContracts`'s row-mapping shape, no `daysOverdue`) (depends on T001, T006, T007 failing first)
-- [ ] T011 [US2] Wire `getInactiveContracts` into `getDashboardData` in `packages/backend/src/services/dashboard.ts`, adding `inactiveContracts` to the returned object (depends on T002, T010)
-- [ ] T012 [US2] Create `packages/frontend/src/components/InactiveContracts.tsx`: Mantine `Accordion` (collapsed by default, muted/gray styling per the existing `Faq.tsx` pattern), header shows count, panel lists contracts (respecting per-contract `anonymize` per the project's anonymization invariant), returns `null` when the list is empty (depends on T008, T009 failing first)
-- [ ] T013 [US2] Add `dashboard.inactiveContracts` and related i18n keys (section title, count label) to `packages/frontend/src/locales/en/translation.json`
-- [ ] T014 [P] [US2] Add matching German i18n keys to `packages/frontend/src/locales/de/translation.json`
-- [ ] T015 [US2] Render `<InactiveContracts inactiveContracts={data.inactiveContracts} />` in a new `<section>` below the existing "Expired Contracts" section in `packages/frontend/src/pages/Dashboard.tsx` (depends on T012, T013, T014)
+- [X] T010 [US2] Implement private `getInactiveContracts(ownerId)` query in `packages/backend/src/services/dashboard.ts` per `data-model.md` (mirrors `getExpiredContracts`'s row-mapping shape, no `daysOverdue`) (depends on T001, T006, T007 failing first)
+- [X] T011 [US2] Wire `getInactiveContracts` into `getDashboardData` in `packages/backend/src/services/dashboard.ts`, adding `inactiveContracts` to the returned object (depends on T002, T010)
+- [X] T012 [US2] Create `packages/frontend/src/components/InactiveContracts.tsx`: Mantine `Accordion` (collapsed by default, muted/gray styling per the existing `Faq.tsx` pattern), header shows count, panel lists contracts (respecting per-contract `anonymize` per the project's anonymization invariant), returns `null` when the list is empty (depends on T008, T009 failing first)
+- [X] T013 [US2] Add `dashboard.inactiveContracts` and related i18n keys (section title, count label) to `packages/frontend/src/locales/en/translation.json`
+- [X] T014 [P] [US2] Add matching German i18n keys to `packages/frontend/src/locales/de/translation.json`
+- [X] T015 [US2] Render `<InactiveContracts inactiveContracts={data.inactiveContracts} />` in a new `<section>` below the existing "Expired Contracts" section in `packages/frontend/src/pages/Dashboard.tsx` (depends on T012, T013, T014)
 
 **Checkpoint**: Both user stories are independently functional; full feature is complete.
 
@@ -100,10 +100,10 @@ contracts are listed; remove all INACTIVE contracts and confirm the section disa
 
 ## Phase 5: Polish & Cross-Cutting Concerns
 
-- [ ] T016 [P] Update `README.md` and `README.de.md` to document the narrowed "Expired Contracts" behavior and the new "Inactive Contracts" section, per CLAUDE.md documentation requirements
-- [ ] T017 [P] Update `docs/user-guide.md` and `docs/user-guide.de.md` with the new "Inactive Contracts" section behavior (how to reach it, that it's collapsed/empty-omitted), per CLAUDE.md documentation requirements
-- [ ] T018 Verify/extend JSDoc on `getExpiredContracts`, the new `getInactiveContracts`, and `InactiveContracts.tsx` per CLAUDE.md JSDoc requirements
-- [ ] T019 Run `quickstart.md` validation steps end-to-end against a local dev environment
+- [X] T016 [P] Update `README.md` and `README.de.md` to document the narrowed "Expired Contracts" behavior and the new "Inactive Contracts" section, per CLAUDE.md documentation requirements
+- [X] T017 [P] Update `docs/user-guide.md` and `docs/user-guide.de.md` with the new "Inactive Contracts" section behavior (how to reach it, that it's collapsed/empty-omitted), per CLAUDE.md documentation requirements
+- [X] T018 Verify/extend JSDoc on `getExpiredContracts`, the new `getInactiveContracts`, and `InactiveContracts.tsx` per CLAUDE.md JSDoc requirements
+- [X] T019 Run `quickstart.md` validation steps end-to-end against a local dev environment
 
 ---
 

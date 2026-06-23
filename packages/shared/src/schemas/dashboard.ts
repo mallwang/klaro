@@ -44,14 +44,29 @@ export const ExpiredContractSchema = z.object({
   useGenericIcon: z.boolean(),
 });
 
+export const InactiveContractSchema = z.object({
+  id: z.string().uuid(),
+  name: z.string(),
+  category: CategoryEnum,
+  endDate: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/)
+    .nullable(),
+  anonymize: z.boolean(),
+  logoName: z.string().nullable(),
+  useGenericIcon: z.boolean(),
+});
+
 export const DashboardResponseSchema = z.object({
   totalMonthlySpending: z.number().nonnegative(),
   contractsByCategory: z.array(CategorySummarySchema),
   upcomingRenewals: z.array(UpcomingRenewalSchema),
   expiredContracts: z.array(ExpiredContractSchema),
+  inactiveContracts: z.array(InactiveContractSchema),
 });
 
 export type CategorySummary = z.infer<typeof CategorySummarySchema>;
 export type UpcomingRenewal = z.infer<typeof UpcomingRenewalSchema>;
 export type ExpiredContract = z.infer<typeof ExpiredContractSchema>;
+export type InactiveContract = z.infer<typeof InactiveContractSchema>;
 export type DashboardResponse = z.infer<typeof DashboardResponseSchema>;

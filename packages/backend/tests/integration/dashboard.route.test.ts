@@ -82,6 +82,7 @@ describe('GET /api/dashboard', () => {
       contractsByCategory: [],
       upcomingRenewals: [],
       expiredContracts: [],
+      inactiveContracts: [],
     });
   });
 
@@ -342,6 +343,19 @@ describe('Cross-account dashboard isolation', () => {
     expect(bodyB.expiredContracts.map((c) => c.name)).toEqual(['B Expired']);
   });
 
+  it("inactiveContracts panel never includes another user's contracts", async () => {
+    insertContract(db, userA, { name: 'A Inactive', status: 'INACTIVE' });
+    insertContract(db, userB, { name: 'B Inactive', status: 'INACTIVE' });
+
+    const resA = await injectAs(sessionA, { method: 'GET', url: '/api/dashboard' });
+    const bodyA = resA.json<{ inactiveContracts: Array<{ name: string }> }>();
+    expect(bodyA.inactiveContracts.map((c) => c.name)).toEqual(['A Inactive']);
+
+    const resB = await injectAs(sessionB, { method: 'GET', url: '/api/dashboard' });
+    const bodyB = resB.json<{ inactiveContracts: Array<{ name: string }> }>();
+    expect(bodyB.inactiveContracts.map((c) => c.name)).toEqual(['B Inactive']);
+  });
+
   it("an account with no contracts sees an entirely empty dashboard regardless of other accounts' data", async () => {
     insertContract(db, userA, {
       name: 'A Only',
@@ -357,12 +371,14 @@ describe('Cross-account dashboard isolation', () => {
       contractsByCategory: Array<unknown>;
       upcomingRenewals: Array<unknown>;
       expiredContracts: Array<unknown>;
+      inactiveContracts: Array<unknown>;
     }>();
     expect(bodyB).toMatchObject({
       totalMonthlySpending: 0,
       contractsByCategory: [],
       upcomingRenewals: [],
       expiredContracts: [],
+      inactiveContracts: [],
     });
   });
 });
