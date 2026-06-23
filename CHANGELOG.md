@@ -1,5 +1,13 @@
 # Changelog
 
+# [1.4.0](https://github.com/mallwang/klaro/compare/v1.3.0...v1.4.0) (2026-06-23)
+
+
+### Features
+
+* **dashboard:** exclude inactive contracts from expired contracts panel ([#40](https://github.com/mallwang/klaro/issues/40)) ([25c507a](https://github.com/mallwang/klaro/commit/25c507a03532a4302e231e4fcec1cbd43f1c72fe))
+* **frontend:** overhaul public pages with two-column auth layout and unified header ([#39](https://github.com/mallwang/klaro/issues/39)) ([2903a71](https://github.com/mallwang/klaro/commit/2903a71ea57d8c4becfa11383ad5908392a4bbca))
+
 # [1.3.0](https://github.com/mallwang/personal-contract-management/compare/v1.2.0...v1.3.0) (2026-06-17)
 
 
