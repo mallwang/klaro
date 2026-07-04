@@ -10,6 +10,9 @@ import {
   invitationEmailStrings,
   passwordResetEmailStrings,
   summaryEmailStrings,
+  signupVerificationEmailStrings,
+  adminSignupNotificationEmailStrings,
+  signupRejectionEmailStrings,
 } from './mailer.strings.js';
 
 /**
@@ -240,6 +243,67 @@ export class MailerService {
     const { subject, text, html } = passwordResetEmailStrings[this.resolveLocale(locale)]({
       link,
       expiryDate,
+    });
+    await this.send({ to, subject, text, html });
+  }
+
+  /**
+   * Sends the sign-up verification link to a newly submitted address.
+   *
+   * @param to - The submitted email address that must be verified
+   * @param link - The one-time verification URL
+   * @param expiresAt - ISO timestamp after which the verification link is no longer valid
+   * @param locale - The locale to use for the email content; defaults to 'en'
+   */
+  async sendSignupVerificationEmail(
+    to: string,
+    link: string,
+    expiresAt: string,
+    locale: string = 'en',
+  ): Promise<void> {
+    const expiryDate = new Date(expiresAt).toISOString().slice(0, 10);
+    const { subject, text, html } = signupVerificationEmailStrings[this.resolveLocale(locale)]({
+      link,
+      expiryDate,
+    });
+    await this.send({ to, subject, text, html });
+  }
+
+  /**
+   * Notifies an administrator that a new sign-up request is awaiting review.
+   *
+   * @param to - The administrator's email address
+   * @param signupEmail - The email address of the visitor requesting an account
+   * @param link - The URL to the admin accounts page
+   * @param locale - The locale to use for the email content; defaults to 'en'
+   */
+  async sendAdminSignupNotificationEmail(
+    to: string,
+    signupEmail: string,
+    link: string,
+    locale: string = 'en',
+  ): Promise<void> {
+    const { subject, text, html } = adminSignupNotificationEmailStrings[this.resolveLocale(locale)](
+      { signupEmail, link },
+    );
+    await this.send({ to, subject, text, html });
+  }
+
+  /**
+   * Notifies a requester that their sign-up request was rejected, stating the reason or that
+   * none was given.
+   *
+   * @param to - The requester's email address
+   * @param reason - The rejecting admin's free-text reason, if any
+   * @param locale - The locale to use for the email content; defaults to 'en'
+   */
+  async sendSignupRejectionEmail(
+    to: string,
+    reason: string | undefined,
+    locale: string = 'en',
+  ): Promise<void> {
+    const { subject, text, html } = signupRejectionEmailStrings[this.resolveLocale(locale)]({
+      reason,
     });
     await this.send({ to, subject, text, html });
   }

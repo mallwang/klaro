@@ -21,7 +21,7 @@
 
 **Purpose**: Confirm a clean baseline before touching shared infrastructure. No new dependencies are introduced (per plan.md Principle III — YAGNI).
 
-- [ ] T001 Run the existing backend and frontend test suites (`pnpm --filter backend test`, `pnpm --filter frontend test`) on a clean `036-self-service-signup` checkout to confirm a passing baseline before adding signup code
+- [X] T001 Run the existing backend and frontend test suites (`pnpm --filter backend test`, `pnpm --filter frontend test`) on a clean `036-self-service-signup` checkout to confirm a passing baseline before adding signup code
 
 ---
 
@@ -31,12 +31,12 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T002 [P] Create `SignupRequestStatus` enum in `packages/shared/src/types/signup.ts` (`UNVERIFIED`/`PENDING_REVIEW`/`REJECTED`, mirroring `types/invitation.ts`)
-- [ ] T003 [P] Create `SignupRequestSchema`, `CreateSignupRequestBodySchema`, `RejectSignupRequestBodySchema` in `packages/shared/src/schemas/signup.ts` (snake_case-row ↔ camelCase-API mapping, mirroring `schemas/invitation.ts`)
-- [ ] T004 Export the new types/schemas from `packages/shared/src/index.ts` (depends on T002, T003)
-- [ ] T005 Add the `signup_requests` table DDL and `idx_signup_requests_email` unique index to `packages/backend/src/db/schema.sql` per [data-model.md](data-model.md)
-- [ ] T006 Add the `signup_requests` migration and `SignupRequestRow` type to `packages/backend/src/db/client.ts` (depends on T005)
-- [ ] T007 Create `packages/backend/src/services/signup-request.service.ts` with a shared blacklist-lookup helper that checks `users` (active/archived), `invitations` (`PENDING`), and `signup_requests` (any status) for a given email (depends on T004, T006)
+- [X] T002 [P] Create `SignupRequestStatus` enum in `packages/shared/src/types/signup.ts` (`UNVERIFIED`/`PENDING_REVIEW`/`REJECTED`, mirroring `types/invitation.ts`)
+- [X] T003 [P] Create `SignupRequestSchema`, `CreateSignupRequestBodySchema`, `RejectSignupRequestBodySchema` in `packages/shared/src/schemas/signup.ts` (snake_case-row ↔ camelCase-API mapping, mirroring `schemas/invitation.ts`)
+- [X] T004 Export the new types/schemas from `packages/shared/src/index.ts` (depends on T002, T003)
+- [X] T005 Add the `signup_requests` table DDL and `idx_signup_requests_email` unique index to `packages/backend/src/db/schema.sql` per [data-model.md](data-model.md)
+- [X] T006 Add the `signup_requests` migration and `SignupRequestRow` type to `packages/backend/src/db/client.ts` (depends on T005)
+- [X] T007 Create `packages/backend/src/services/signup-request.service.ts` with a shared blacklist-lookup helper that checks `users` (active/archived), `invitations` (`PENDING`), and `signup_requests` (any status) for a given email (depends on T004, T006)
 
 **Checkpoint**: Foundation ready — user story implementation can now begin
 
@@ -52,19 +52,19 @@
 
 > Write these tests FIRST; ensure they FAIL before implementation
 
-- [ ] T008 [P] [US1] Write failing tests for `POST /api/signup` in `packages/backend/tests/integration/signup.route.test.ts` (201 success; 409 duplicate/blacklisted email; 400 weak password; 502 when the verification email fails to send)
-- [ ] T009 [P] [US1] Write failing tests for `create()` in `packages/backend/tests/unit/signup-request.service.test.ts` (token generation/expiry, blacklist lookup across users/invitations/signup_requests, duplicate rejection)
-- [ ] T010 [P] [US1] Write failing test for `sendSignupVerificationEmail` in `packages/backend/tests/unit/mailer.service.test.ts` (stub-transport pattern, per-locale content, link format)
+- [X] T008 [P] [US1] Write failing tests for `POST /api/signup` in `packages/backend/tests/integration/signup.route.test.ts` (201 success; 409 duplicate/blacklisted email; 400 weak password; 502 when the verification email fails to send)
+- [X] T009 [P] [US1] Write failing tests for `create()` in `packages/backend/tests/unit/signup-request.service.test.ts` (token generation/expiry, blacklist lookup across users/invitations/signup_requests, duplicate rejection)
+- [X] T010 [P] [US1] Write failing test for `sendSignupVerificationEmail` in `packages/backend/tests/unit/mailer.service.test.ts` (stub-transport pattern, per-locale content, link format)
 
 ### Implementation for User Story 1
 
-- [ ] T011 [US1] Implement `sendSignupVerificationEmail` in `packages/backend/src/services/mailer.service.ts` (depends on T010)
-- [ ] T012 [US1] Implement `create()` in `packages/backend/src/services/signup-request.service.ts`: run the blacklist check, generate `randomBytes(32).toString('hex')` token + expiry, hash the password via `password.ts`, insert the row (depends on T007, T009)
-- [ ] T013 [US1] Create `packages/backend/src/routes/signup.ts` with the `POST /api/signup` handler calling `create()` and `sendSignupVerificationEmail` (depends on T011, T012)
-- [ ] T014 [US1] Register `signupRoutes` and add `/api/signup` to the auth hook's public-route allowlist in `packages/backend/src/server.ts` (depends on T013)
-- [ ] T015 [P] [US1] Create `packages/frontend/src/services/signup.ts` with a `submitSignup()` fetch wrapper (mirrors `services/invitations.ts`)
-- [ ] T016 [US1] Create `packages/frontend/src/hooks/useSignupRequests.ts` with a submit mutation (depends on T015)
-- [ ] T017 [US1] Add the `'sign-up'` view (email + password form, confirmation state, duplicate/blacklist/weak-password error display) to `packages/frontend/src/pages/AuthPage.tsx` (depends on T016)
+- [X] T011 [US1] Implement `sendSignupVerificationEmail` in `packages/backend/src/services/mailer.service.ts` (depends on T010)
+- [X] T012 [US1] Implement `create()` in `packages/backend/src/services/signup-request.service.ts`: run the blacklist check, generate `randomBytes(32).toString('hex')` token + expiry, hash the password via `password.ts`, insert the row (depends on T007, T009)
+- [X] T013 [US1] Create `packages/backend/src/routes/signup.ts` with the `POST /api/signup` handler calling `create()` and `sendSignupVerificationEmail` (depends on T011, T012)
+- [X] T014 [US1] Register `signupRoutes` and add `/api/signup` to the auth hook's public-route allowlist in `packages/backend/src/server.ts` (depends on T013)
+- [X] T015 [P] [US1] Create `packages/frontend/src/services/signup.ts` with a `submitSignup()` fetch wrapper (mirrors `services/invitations.ts`)
+- [X] T016 [US1] Create `packages/frontend/src/hooks/useSignupRequests.ts` with a submit mutation (depends on T015)
+- [X] T017 [US1] Add the `'sign-up'` view (email + password form, confirmation state, duplicate/blacklist/weak-password error display) to `packages/frontend/src/pages/AuthPage.tsx` (depends on T016)
 
 **Checkpoint**: User Story 1 is fully functional and independently testable (backend via `curl` per quickstart.md Scenario 1, frontend via the welcome page's "Sign up" entry point)
 
@@ -78,20 +78,20 @@
 
 ### Tests for User Story 2 ⚠️
 
-- [ ] T018 [P] [US2] Write failing tests for `POST /api/signup/:token/verify` in `packages/backend/tests/integration/signup.route.test.ts` (200 success + admin notification sent; 410 already-used; 410 expired; 404 unknown token)
-- [ ] T019 [P] [US2] Write failing tests for `verify()` and the expired-`UNVERIFIED` sweep in `packages/backend/tests/unit/signup-request.service.test.ts`
-- [ ] T020 [P] [US2] Write failing test for `sendAdminSignupNotificationEmail` in `packages/backend/tests/unit/mailer.service.test.ts` (one email per active admin, linking to `/admin/accounts`)
+- [X] T018 [P] [US2] Write failing tests for `POST /api/signup/:token/verify` in `packages/backend/tests/integration/signup.route.test.ts` (200 success + admin notification sent; 410 already-used; 410 expired; 404 unknown token)
+- [X] T019 [P] [US2] Write failing tests for `verify()` and the expired-`UNVERIFIED` sweep in `packages/backend/tests/unit/signup-request.service.test.ts`
+- [X] T020 [P] [US2] Write failing test for `sendAdminSignupNotificationEmail` in `packages/backend/tests/unit/mailer.service.test.ts` (one email per active admin, linking to `/admin/accounts`)
 
 ### Implementation for User Story 2
 
-- [ ] T021 [US2] Implement `sendAdminSignupNotificationEmail` in `packages/backend/src/services/mailer.service.ts` (depends on T020)
-- [ ] T022 [US2] Implement `verify()` in `packages/backend/src/services/signup-request.service.ts`: validate token (not-found/already-used/expired), transition `UNVERIFIED` → `PENDING_REVIEW`, set `verified_at`, query `role = 'ADMIN' AND status = 'ACTIVE'` users (depends on T012, T019)
-- [ ] T023 [US2] Add the expired-`UNVERIFIED` sweep to backend startup in `packages/backend/src/db/client.ts`, alongside the existing invitation sweep (FR-016) (depends on T006)
-- [ ] T024 [US2] Add the `POST /api/signup/:token/verify` handler to `packages/backend/src/routes/signup.ts`, calling `verify()` then `sendAdminSignupNotificationEmail` per admin (failures logged, not rolled back) (depends on T021, T022)
-- [ ] T025 [US2] Add `/api/signup/:token/verify` to the auth hook's public-route allowlist and wire the startup sweep call in `packages/backend/src/server.ts` (depends on T023, T024)
-- [ ] T026 [P] [US2] Create `packages/frontend/src/pages/SignupVerifyConfirm.tsx` (loading → success/expired/not-found states, structurally parallel to `EmailVerifyConfirm.tsx`)
-- [ ] T027 [US2] Add `verifySignup()` to `packages/frontend/src/services/signup.ts` and a verify mutation to `packages/frontend/src/hooks/useSignupRequests.ts` (depends on T015, T016)
-- [ ] T028 [US2] Add the public `/signup/verify/:token` route (outside `RequireAuth`) in `packages/frontend/src/main.tsx` (depends on T026, T027)
+- [X] T021 [US2] Implement `sendAdminSignupNotificationEmail` in `packages/backend/src/services/mailer.service.ts` (depends on T020)
+- [X] T022 [US2] Implement `verify()` in `packages/backend/src/services/signup-request.service.ts`: validate token (not-found/already-used/expired), transition `UNVERIFIED` → `PENDING_REVIEW`, set `verified_at`, query `role = 'ADMIN' AND status = 'ACTIVE'` users (depends on T012, T019)
+- [X] T023 [US2] Add the expired-`UNVERIFIED` sweep to backend startup in `packages/backend/src/db/client.ts`, alongside the existing invitation sweep (FR-016) (depends on T006)
+- [X] T024 [US2] Add the `POST /api/signup/:token/verify` handler to `packages/backend/src/routes/signup.ts`, calling `verify()` then `sendAdminSignupNotificationEmail` per admin (failures logged, not rolled back) (depends on T021, T022)
+- [X] T025 [US2] Add `/api/signup/:token/verify` to the auth hook's public-route allowlist and wire the startup sweep call in `packages/backend/src/server.ts` (depends on T023, T024)
+- [X] T026 [P] [US2] Create `packages/frontend/src/pages/SignupVerifyConfirm.tsx` (loading → success/expired/not-found states, structurally parallel to `EmailVerifyConfirm.tsx`)
+- [X] T027 [US2] Add `verifySignup()` to `packages/frontend/src/services/signup.ts` and a verify mutation to `packages/frontend/src/hooks/useSignupRequests.ts` (depends on T015, T016)
+- [X] T028 [US2] Add the public `/signup/verify/:token` route (outside `RequireAuth`) in `packages/frontend/src/main.tsx` (depends on T026, T027)
 
 **Checkpoint**: User Stories 1 and 2 both work independently
 
@@ -105,16 +105,16 @@
 
 ### Tests for User Story 3 ⚠️
 
-- [ ] T029 [P] [US3] Write failing tests for `GET /api/signup-requests` and `POST /api/signup-requests/:token/approve` in `packages/backend/tests/integration/signup.route.test.ts` (list shape incl. status/submission date; approve creates user + sends welcome email; non-admin forbidden; unverified request cannot be approved → 409)
-- [ ] T030 [P] [US3] Write failing tests for `list()` and `approve()` in `packages/backend/tests/unit/signup-request.service.test.ts` (only `PENDING_REVIEW` approvable; transaction creates user + deletes row)
+- [X] T029 [P] [US3] Write failing tests for `GET /api/signup-requests` and `POST /api/signup-requests/:token/approve` in `packages/backend/tests/integration/signup.route.test.ts` (list shape incl. status/submission date; approve creates user + sends welcome email; non-admin forbidden; unverified request cannot be approved → 409)
+- [X] T030 [P] [US3] Write failing tests for `list()` and `approve()` in `packages/backend/tests/unit/signup-request.service.test.ts` (only `PENDING_REVIEW` approvable; transaction creates user + deletes row)
 
 ### Implementation for User Story 3
 
-- [ ] T031 [US3] Add a create-from-verified-signup helper to `packages/backend/src/services/user.service.ts` that reuses the existing `create()` path with the request's already-hashed password (no re-hashing) (depends on T030)
-- [ ] T032 [US3] Implement `list()` and `approve()` in `packages/backend/src/services/signup-request.service.ts`: `approve()` re-checks `status === 'PENDING_REVIEW'` inside the transaction, creates the `users` row via T031's helper, and deletes the `signup_requests` row (depends on T022, T031)
-- [ ] T033 [US3] Add `GET /api/signup-requests` and `POST /api/signup-requests/:token/approve` handlers to `packages/backend/src/routes/signup.ts` (admin-only), calling the existing `sendWelcomeEmail` on approval (depends on T032)
-- [ ] T034 [US3] Add `listSignupRequests()`/`approveSignupRequest()` to `packages/frontend/src/services/signup.ts` and corresponding query/mutation to `packages/frontend/src/hooks/useSignupRequests.ts` (depends on T027)
-- [ ] T035 [US3] Add the "Sign-up requests" table (email, status, submission date, approve action; unverified rows visibly non-actionable) to `packages/frontend/src/pages/admin/AccountsAdmin.tsx` (depends on T034)
+- [X] T031 [US3] Add a create-from-verified-signup helper to `packages/backend/src/services/user.service.ts` that reuses the existing `create()` path with the request's already-hashed password (no re-hashing) (depends on T030)
+- [X] T032 [US3] Implement `list()` and `approve()` in `packages/backend/src/services/signup-request.service.ts`: `approve()` re-checks `status === 'PENDING_REVIEW'` inside the transaction, creates the `users` row via T031's helper, and deletes the `signup_requests` row (depends on T022, T031)
+- [X] T033 [US3] Add `GET /api/signup-requests` and `POST /api/signup-requests/:token/approve` handlers to `packages/backend/src/routes/signup.ts` (admin-only), calling the existing `sendWelcomeEmail` on approval (depends on T032)
+- [X] T034 [US3] Add `listSignupRequests()`/`approveSignupRequest()` to `packages/frontend/src/services/signup.ts` and corresponding query/mutation to `packages/frontend/src/hooks/useSignupRequests.ts` (depends on T027)
+- [X] T035 [US3] Add the "Sign-up requests" table (email, status, submission date, approve action; unverified rows visibly non-actionable) to `packages/frontend/src/pages/admin/AccountsAdmin.tsx` (depends on T034)
 
 **Checkpoint**: User Stories 1–3 complete — this is the MVP (self-service sign-up with admin approval works end-to-end)
 
@@ -128,17 +128,17 @@
 
 ### Tests for User Story 4 ⚠️
 
-- [ ] T036 [P] [US4] Write failing tests for `POST /api/signup-requests/:token/reject` and `DELETE /api/signup-requests/:token` in `packages/backend/tests/integration/signup.route.test.ts` (reject with/without reason; reject-then-resubmit-blocked 409; delete-clears-blacklist; concurrent double-decision → 409)
-- [ ] T037 [P] [US4] Write failing tests for `reject()` and `delete()` in `packages/backend/tests/unit/signup-request.service.test.ts`
-- [ ] T038 [P] [US4] Write failing test for `sendSignupRejectionEmail` in `packages/backend/tests/unit/mailer.service.test.ts` (reason present vs. absent wording)
+- [X] T036 [P] [US4] Write failing tests for `POST /api/signup-requests/:token/reject` and `DELETE /api/signup-requests/:token` in `packages/backend/tests/integration/signup.route.test.ts` (reject with/without reason; reject-then-resubmit-blocked 409; delete-clears-blacklist; concurrent double-decision → 409)
+- [X] T037 [P] [US4] Write failing tests for `reject()` and `delete()` in `packages/backend/tests/unit/signup-request.service.test.ts`
+- [X] T038 [P] [US4] Write failing test for `sendSignupRejectionEmail` in `packages/backend/tests/unit/mailer.service.test.ts` (reason present vs. absent wording)
 
 ### Implementation for User Story 4
 
-- [ ] T039 [US4] Implement `sendSignupRejectionEmail` in `packages/backend/src/services/mailer.service.ts` (depends on T038)
-- [ ] T040 [US4] Implement `reject()` and `delete()` in `packages/backend/src/services/signup-request.service.ts`: `reject()` re-checks `status === 'PENDING_REVIEW'` inside the transaction and sets `REJECTED`/`rejection_reason`/`decided_at`; `delete()` removes the row unconditionally (depends on T032, T037)
-- [ ] T041 [US4] Add `POST /api/signup-requests/:token/reject` and `DELETE /api/signup-requests/:token` handlers to `packages/backend/src/routes/signup.ts` (admin-only), calling `sendSignupRejectionEmail` on reject (depends on T039, T040)
-- [ ] T042 [US4] Add `rejectSignupRequest()`/`deleteSignupRequest()` to `packages/frontend/src/services/signup.ts` and corresponding mutations to `packages/frontend/src/hooks/useSignupRequests.ts` (depends on T034)
-- [ ] T043 [US4] Add reject (with reason prompt) and delete actions to the "Sign-up requests" table in `packages/frontend/src/pages/admin/AccountsAdmin.tsx` (depends on T035, T042)
+- [X] T039 [US4] Implement `sendSignupRejectionEmail` in `packages/backend/src/services/mailer.service.ts` (depends on T038)
+- [X] T040 [US4] Implement `reject()` and `delete()` in `packages/backend/src/services/signup-request.service.ts`: `reject()` re-checks `status === 'PENDING_REVIEW'` inside the transaction and sets `REJECTED`/`rejection_reason`/`decided_at`; `delete()` removes the row unconditionally (depends on T032, T037)
+- [X] T041 [US4] Add `POST /api/signup-requests/:token/reject` and `DELETE /api/signup-requests/:token` handlers to `packages/backend/src/routes/signup.ts` (admin-only), calling `sendSignupRejectionEmail` on reject (depends on T039, T040)
+- [X] T042 [US4] Add `rejectSignupRequest()`/`deleteSignupRequest()` to `packages/frontend/src/services/signup.ts` and corresponding mutations to `packages/frontend/src/hooks/useSignupRequests.ts` (depends on T034)
+- [X] T043 [US4] Add reject (with reason prompt) and delete actions to the "Sign-up requests" table in `packages/frontend/src/pages/admin/AccountsAdmin.tsx` (depends on T035, T042)
 
 **Checkpoint**: All four user stories independently functional
 
@@ -148,10 +148,10 @@
 
 **Purpose**: End-to-end validation and required documentation updates (per project CLAUDE.md)
 
-- [ ] T044 [P] Write `packages/frontend/tests/e2e/signup-flow.spec.ts` (extends `invitation-flow.spec.ts`'s pattern): visitor signs up → verifies via captured stub-mail link → admin approves → new user signs in (Stories 1–3); a second, shorter test covers reject → resubmission-blocked → delete → resubmission-allowed (Story 4)
-- [ ] T045 [P] Update `README.md` and `README.de.md` to document public sign-up + admin approval
-- [ ] T046 [P] Update `docs/user-guide.md` and `docs/user-guide.de.md` to document sign-up, verification, and admin approve/reject/blacklist behavior, including the sole-admin-style blocking conditions (e.g. unverified rows cannot be approved/rejected)
-- [ ] T047 Run all `quickstart.md` scenarios end-to-end against a dev server to confirm the full spec is validated
+- [X] T044 [P] Write `packages/frontend/tests/e2e/signup-flow.spec.ts` (extends `invitation-flow.spec.ts`'s pattern): visitor signs up → verifies via captured stub-mail link → admin approves → new user signs in (Stories 1–3); a second, shorter test covers reject → resubmission-blocked → delete → resubmission-allowed (Story 4)
+- [X] T045 [P] Update `README.md` and `README.de.md` to document public sign-up + admin approval
+- [X] T046 [P] Update `docs/user-guide.md` and `docs/user-guide.de.md` to document sign-up, verification, and admin approve/reject/blacklist behavior, including the sole-admin-style blocking conditions (e.g. unverified rows cannot be approved/rejected)
+- [X] T047 Run all `quickstart.md` scenarios end-to-end against a dev server to confirm the full spec is validated
 
 ---
 

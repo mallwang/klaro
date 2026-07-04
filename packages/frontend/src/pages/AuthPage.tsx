@@ -14,16 +14,17 @@ import {
 } from '@mantine/core';
 import { AuthError } from '../services/auth.js';
 import { useCurrentUser, useSignIn, useRequestPasswordReset } from '../hooks/useAuth.js';
+import { useSubmitSignup } from '../hooks/useSignupRequests.js';
 import { AuthImageLayout } from '../components/AuthImageLayout.js';
 
 /**
- * Combined sign-in and forgot-password page rendered within the two-column
- * AuthImageLayout. A view state variable toggles between the two forms without
- * a page reload. Both the /sign-in and /forgot-password routes render this
+ * Combined sign-in, forgot-password, and sign-up page rendered within the two-column
+ * AuthImageLayout. A view state variable toggles between the three forms without
+ * a page reload. The /sign-in, /forgot-password, and /sign-up routes all render this
  * component with the appropriate initialView prop.
  */
 
-type AuthView = 'sign-in' | 'forgot-password';
+type AuthView = 'sign-in' | 'forgot-password' | 'sign-up';
 
 interface AuthPageProps {
   /** Which form to display on first render. */
@@ -62,6 +63,13 @@ export function AuthPage({ initialView }: AuthPageProps) {
   const [forgotGenericError, setForgotGenericError] = useState<string | null>(null);
   const [forgotSuccess, setForgotSuccess] = useState(false);
 
+  // Sign-up form state
+  const { mutate: submitSignup, isPending: isSigningUp } = useSubmitSignup();
+  const [signupEmail, setSignupEmail] = useState('');
+  const [signupPassword, setSignupPassword] = useState('');
+  const [signupError, setSignupError] = useState<string | null>(null);
+  const [signupSuccess, setSignupSuccess] = useState(false);
+
   if (isCheckingSession) return null;
   if (currentUser) return <Navigate to="/" replace />;
 
@@ -82,6 +90,27 @@ export function AuthPage({ initialView }: AuthPageProps) {
       if (signInError.status === 401) return t('auth.errorInvalidCredentials');
     }
     return t('auth.errorGeneric');
+  }
+
+  function resolveSignupError(error: unknown): string {
+    if (error instanceof AuthError) {
+      if (error.status === 409) return t('signUp.duplicateEmailError');
+      if (error.status === 400) return t('signUp.weakPasswordError');
+      if (error.status === 502) return t('signUp.mailerError');
+    }
+    return t('signUp.errorGeneric');
+  }
+
+  function handleSignup(e: React.FormEvent) {
+    e.preventDefault();
+    setSignupError(null);
+    submitSignup(
+      { email: signupEmail.trim(), password: signupPassword },
+      {
+        onSuccess: () => setSignupSuccess(true),
+        onError: (err) => setSignupError(resolveSignupError(err)),
+      },
+    );
   }
 
   async function handleForgotPassword(e: React.FormEvent) {
@@ -107,58 +136,78 @@ export function AuthPage({ initialView }: AuthPageProps) {
     }
   }
 
+  const headings: Record<AuthView, string> = {
+    'sign-in': t('authPage.signInHeading'),
+    'forgot-password': t('authPage.forgotHeading'),
+    'sign-up': t('authPage.signUpHeading'),
+  };
+  const subtitles: Record<AuthView, string> = {
+    'sign-in': t('authPage.signInSubtitle'),
+    'forgot-password': t('authPage.forgotSubtitle'),
+    'sign-up': t('authPage.signUpSubtitle'),
+  };
+
   return (
     <AuthImageLayout>
       <Stack gap={0} w={400}>
         <Title order={2} ta="center">
-          {view === 'sign-in' ? t('authPage.signInHeading') : t('authPage.forgotHeading')}
+          {headings[view]}
         </Title>
         <Text c="dimmed" size="sm" ta="center" mt={5} mb="lg">
-          {view === 'sign-in' ? t('authPage.signInSubtitle') : t('authPage.forgotSubtitle')}
+          {subtitles[view]}
         </Text>
         <Paper withBorder shadow="md" p="xl" radius="md">
-          {view === 'sign-in' ? (
-            <>
-              <form onSubmit={handleSignIn}>
-                <Stack gap="md">
-                  {signInErrorMessage() && (
-                    <Alert role="alert" color="red">
-                      {signInErrorMessage()}
-                    </Alert>
-                  )}
-                  <TextInput
-                    id="email"
-                    label={t('auth.emailLabel')}
-                    type="email"
-                    autoComplete="username"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                  />
-                  <PasswordInput
-                    id="password"
-                    label={t('auth.passwordLabel')}
-                    autoComplete="current-password"
-                    required
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                  />
-                  <Button type="submit" fullWidth loading={isSignInPending}>
-                    {isSignInPending ? t('auth.submitting') : t('auth.submitLabel')}
-                  </Button>
-                  <Anchor
-                    component="button"
-                    type="button"
-                    size="sm"
-                    ta="center"
-                    onClick={() => setView('forgot-password')}
-                  >
-                    {t('auth.forgotPasswordLink')}
-                  </Anchor>
-                </Stack>
-              </form>
-            </>
-          ) : (
+          {view === 'sign-in' && (
+            <form onSubmit={handleSignIn}>
+              <Stack gap="md">
+                {signInErrorMessage() && (
+                  <Alert role="alert" color="red">
+                    {signInErrorMessage()}
+                  </Alert>
+                )}
+                <TextInput
+                  id="email"
+                  label={t('auth.emailLabel')}
+                  type="email"
+                  autoComplete="username"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+                <PasswordInput
+                  id="password"
+                  label={t('auth.passwordLabel')}
+                  autoComplete="current-password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+                <Button type="submit" fullWidth loading={isSignInPending}>
+                  {isSignInPending ? t('auth.submitting') : t('auth.submitLabel')}
+                </Button>
+                <Anchor
+                  component="button"
+                  type="button"
+                  size="sm"
+                  ta="center"
+                  onClick={() => setView('forgot-password')}
+                >
+                  {t('auth.forgotPasswordLink')}
+                </Anchor>
+                <Anchor
+                  component="button"
+                  type="button"
+                  size="sm"
+                  ta="center"
+                  onClick={() => setView('sign-up')}
+                >
+                  {t('auth.signUpLink')}
+                </Anchor>
+              </Stack>
+            </form>
+          )}
+
+          {view === 'forgot-password' && (
             <>
               {forgotSuccess ? (
                 <Alert color="green" mb="md" role="alert">
@@ -202,6 +251,60 @@ export function AuthPage({ initialView }: AuthPageProps) {
                 onClick={() => setView('sign-in')}
               >
                 {t('forgotPassword.backToSignIn')}
+              </Anchor>
+            </>
+          )}
+
+          {view === 'sign-up' && (
+            <>
+              {signupSuccess ? (
+                <Alert color="green" mb="md" role="alert">
+                  <Text fw={600}>{t('signUp.successTitle')}</Text>
+                  <Text size="sm">{t('signUp.successMessage')}</Text>
+                </Alert>
+              ) : (
+                <form onSubmit={handleSignup}>
+                  <Stack gap="md">
+                    {signupError && (
+                      <Alert role="alert" color="red">
+                        {signupError}
+                      </Alert>
+                    )}
+                    <TextInput
+                      id="signup-email"
+                      label={t('signUp.emailLabel')}
+                      type="email"
+                      autoComplete="email"
+                      required
+                      value={signupEmail}
+                      onChange={(e) => setSignupEmail(e.target.value)}
+                    />
+                    <PasswordInput
+                      id="signup-password"
+                      label={t('signUp.passwordLabel')}
+                      autoComplete="new-password"
+                      required
+                      minLength={8}
+                      value={signupPassword}
+                      onChange={(e) => setSignupPassword(e.target.value)}
+                    />
+                    <Button type="submit" fullWidth loading={isSigningUp}>
+                      {isSigningUp ? t('signUp.submitting') : t('signUp.submitLabel')}
+                    </Button>
+                  </Stack>
+                </form>
+              )}
+              <Anchor
+                component="button"
+                type="button"
+                size="sm"
+                ta="center"
+                mt="md"
+                display="block"
+                w="100%"
+                onClick={() => setView('sign-in')}
+              >
+                {t('signUp.backToSignIn')}
               </Anchor>
             </>
           )}

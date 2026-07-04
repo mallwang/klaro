@@ -169,7 +169,9 @@
     "signInHeading": "Welcome back!",
     "signInSubtitle": "Sign in to manage your contracts.",
     "forgotHeading": "Forgot your password?",
-    "forgotSubtitle": "Enter your email to get a reset link."
+    "forgotSubtitle": "Enter your email to get a reset link.",
+    "signUpHeading": "Create your account",
+    "signUpSubtitle": "Sign up to request access."
   },
   "auth": {
     "signInTitle": "Sign in",
@@ -182,7 +184,8 @@
     "errorGeneric": "Sign-in failed. Please try again.",
     "signOut": "Sign out",
     "signingOut": "Signing out…",
-    "forgotPasswordLink": "Forgot password?"
+    "forgotPasswordLink": "Forgot password?",
+    "signUpLink": "Don't have an account? Sign up"
   },
   "accountsAdmin": {
     "title": "Manage accounts",
@@ -254,7 +257,23 @@
     "testEmailSending": "Sending…",
     "testEmailSuccess": "Test email sent successfully.",
     "testEmailError": "Failed to send test email. Please check your SMTP configuration.",
-    "testEmailMailerError": "SMTP transport rejected the message. Please check your SMTP configuration."
+    "testEmailMailerError": "SMTP transport rejected the message. Please check your SMTP configuration.",
+    "approveButton": "Approve",
+    "rejectButton": "Reject",
+    "signupRequestsTitle": "Sign-up requests",
+    "signupRequestsDescription": "Public sign-up requests awaiting email verification or admin review.",
+    "columnSignupStatus": "Status",
+    "signupStatusUnverified": "Unverified",
+    "signupStatusPendingReview": "Awaiting approval",
+    "signupStatusRejected": "Rejected",
+    "noSignupRequests": "No sign-up requests yet.",
+    "signupRejectionReason": "Reason",
+    "signupApproveSuccess": "Sign-up approved. The new account has been created.",
+    "signupRejectSuccess": "Sign-up rejected.",
+    "signupNotPendingError": "This request is no longer awaiting review.",
+    "signupActionError": "The action could not be completed.",
+    "rejectModalTitle": "Reject sign-up request",
+    "rejectReasonLabel": "Reason (optional)"
   },
   "acceptInvitation": {
     "title": "Set up your account",
@@ -418,5 +437,26 @@
         "answer": "Klaro is open source. Head to the GitHub repository at github.com/mallwang/klaro to open an issue for bug reports or feature requests, or to browse existing discussions. Pull requests are welcome too."
       }
     ]
+  },
+  "signUp": {
+    "emailLabel": "Email",
+    "passwordLabel": "Password",
+    "submitLabel": "Sign up",
+    "submitting": "Submitting…",
+    "successTitle": "Check your email",
+    "successMessage": "We've sent a verification link to your email address. Click it to move your request into the review queue.",
+    "duplicateEmailError": "This email address cannot be used to sign up right now.",
+    "weakPasswordError": "Please choose a stronger password (at least 8 characters).",
+    "mailerError": "The verification email could not be sent. Please check the email address and try again.",
+    "errorGeneric": "Sign-up failed. Please try again.",
+    "backToSignIn": "Back to sign in"
+  },
+  "signupVerify": {
+    "loading": "Verifying your sign-up…",
+    "success": "Your email address has been verified. An administrator will review your request.",
+    "toSignIn": "Go to sign in",
+    "expired": "This link has expired. You may sign up again with the same email address.",
+    "alreadyUsed": "This link has already been used.",
+    "notFound": "This link is not valid."
   }
 }

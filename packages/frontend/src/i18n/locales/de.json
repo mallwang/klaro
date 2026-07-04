@@ -169,7 +169,9 @@
     "signInHeading": "Willkommen zurück!",
     "signInSubtitle": "Melde dich an, um deine Verträge zu verwalten.",
     "forgotHeading": "Passwort vergessen?",
-    "forgotSubtitle": "Gib deine E-Mail ein, um einen Reset-Link zu erhalten."
+    "forgotSubtitle": "Gib deine E-Mail ein, um einen Reset-Link zu erhalten.",
+    "signUpHeading": "Konto erstellen",
+    "signUpSubtitle": "Melden Sie sich an, um Zugang zu beantragen."
   },
   "auth": {
     "signInTitle": "Anmelden",
@@ -182,7 +184,8 @@
     "errorGeneric": "Anmeldung fehlgeschlagen. Bitte versuchen Sie es erneut.",
     "signOut": "Abmelden",
     "signingOut": "Abmeldung läuft…",
-    "forgotPasswordLink": "Passwort vergessen?"
+    "forgotPasswordLink": "Passwort vergessen?",
+    "signUpLink": "Noch kein Konto? Jetzt anmelden"
   },
   "accountsAdmin": {
     "title": "Konten verwalten",
@@ -254,7 +257,23 @@
     "testEmailSending": "Sending…",
     "testEmailSuccess": "Test email sent successfully.",
     "testEmailError": "Failed to send test email. Please check your SMTP configuration.",
-    "testEmailMailerError": "SMTP transport rejected the message. Please check your SMTP configuration."
+    "testEmailMailerError": "SMTP transport rejected the message. Please check your SMTP configuration.",
+    "approveButton": "Genehmigen",
+    "rejectButton": "Ablehnen",
+    "signupRequestsTitle": "Anmeldeanfragen",
+    "signupRequestsDescription": "Öffentliche Anmeldeanfragen, die auf E-Mail-Bestätigung oder Admin-Prüfung warten.",
+    "columnSignupStatus": "Status",
+    "signupStatusUnverified": "Unbestätigt",
+    "signupStatusPendingReview": "Wartet auf Genehmigung",
+    "signupStatusRejected": "Abgelehnt",
+    "noSignupRequests": "Noch keine Anmeldeanfragen.",
+    "signupRejectionReason": "Grund",
+    "signupApproveSuccess": "Anmeldung genehmigt. Das neue Konto wurde erstellt.",
+    "signupRejectSuccess": "Anmeldung abgelehnt.",
+    "signupNotPendingError": "Diese Anfrage wartet nicht mehr auf Prüfung.",
+    "signupActionError": "Die Aktion konnte nicht abgeschlossen werden.",
+    "rejectModalTitle": "Anmeldeanfrage ablehnen",
+    "rejectReasonLabel": "Grund (optional)"
   },
   "acceptInvitation": {
     "title": "Konto einrichten",
@@ -418,5 +437,26 @@
         "answer": "Klaro ist Open Source. Besuchen Sie das GitHub-Repository unter github.com/mallwang/klaro, um einen Issue für Fehlerberichte oder Feature-Wünsche zu öffnen oder bestehende Diskussionen zu durchsuchen. Pull Requests sind ebenfalls willkommen."
       }
     ]
+  },
+  "signUp": {
+    "emailLabel": "E-Mail",
+    "passwordLabel": "Passwort",
+    "submitLabel": "Anmelden",
+    "submitting": "Wird gesendet…",
+    "successTitle": "Prüfen Sie Ihr Postfach",
+    "successMessage": "Wir haben einen Bestätigungslink an Ihre E-Mail-Adresse gesendet. Klicken Sie darauf, um Ihre Anfrage in die Prüf-Warteschlange zu verschieben.",
+    "duplicateEmailError": "Diese E-Mail-Adresse kann derzeit nicht für eine Anmeldung verwendet werden.",
+    "weakPasswordError": "Bitte wählen Sie ein stärkeres Passwort (mindestens 8 Zeichen).",
+    "mailerError": "Die Bestätigungs-E-Mail konnte nicht gesendet werden. Bitte prüfen Sie die E-Mail-Adresse und versuchen Sie es erneut.",
+    "errorGeneric": "Anmeldung fehlgeschlagen. Bitte versuchen Sie es erneut.",
+    "backToSignIn": "Zurück zur Anmeldung"
+  },
+  "signupVerify": {
+    "loading": "Anmeldung wird überprüft…",
+    "success": "Ihre E-Mail-Adresse wurde bestätigt. Ein Administrator wird Ihre Anfrage prüfen.",
+    "toSignIn": "Zur Anmeldung",
+    "expired": "Dieser Link ist abgelaufen. Sie können sich mit derselben E-Mail-Adresse erneut anmelden.",
+    "alreadyUsed": "Dieser Link wurde bereits verwendet.",
+    "notFound": "Dieser Link ist ungültig."
   }
 }

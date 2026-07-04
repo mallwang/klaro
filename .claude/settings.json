@@ -42,7 +42,9 @@
       "mcp__sonarqube__change_sonar_issue_status",
       "mcp__sonarqube__analyze_code_snippet",
       "Bash(.specify/scripts/bash/setup-tasks.sh --json)",
-      "Bash(.specify/extensions/git/scripts/bash/auto-commit.sh after_tasks)"
+      "Bash(.specify/extensions/git/scripts/bash/auto-commit.sh after_tasks)",
+      "Bash(.specify/scripts/bash/check-prerequisites.sh --json --require-tasks --include-tasks)",
+      "Bash(.specify/extensions/git/scripts/bash/auto-commit.sh after_implement)"
     ],
     "deny": [
       "Read(packages/backend/.env)",
