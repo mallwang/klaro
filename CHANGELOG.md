@@ -1,5 +1,12 @@
 # Changelog
 
+# [1.5.0](https://github.com/mallwang/klaro/compare/v1.4.0...v1.5.0) (2026-07-04)
+
+
+### Features
+
+* **signup:** add public self-service sign-up with admin review ([#41](https://github.com/mallwang/klaro/issues/41)) ([39a4c71](https://github.com/mallwang/klaro/commit/39a4c712840427854f395360973a2ea15b013e49))
+
 # [1.4.0](https://github.com/mallwang/klaro/compare/v1.3.0...v1.4.0) (2026-06-23)
 
 
