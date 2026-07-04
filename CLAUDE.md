@@ -95,5 +95,5 @@ CI scan has run on a branch or PR.
 <!-- SPECKIT START -->
 For additional context about technologies to be used, project structure,
 shell commands, and other important information, read the current plan
-at specs/035-dashboard-hide-inactive/plan.md
+at /home/markus/projects/personal-contract-management/specs/036-self-service-signup/plan.md
 <!-- SPECKIT END -->
