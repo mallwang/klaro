@@ -50,6 +50,30 @@ function daysFromNow(days: number): string {
   return d.toISOString().slice(0, 10);
 }
 
+// Computes an end_date such that the resulting cancellation deadline (end_date minus the
+// given period) lands exactly `deadlineDaysFromToday` days from today. Deriving the target
+// this way — instead of picking end_date via independent calendar-month arithmetic — avoids
+// off-by-one flakiness near the 30-day grace-period boundary caused by month-length variance
+// (e.g. "4 months out, 3-month cancellation" nets to "1 month out", but a calendar month is
+// 28-31 days, not always <= 30).
+function endDateForDeadlineDaysFromToday(
+  deadlineDaysFromToday: number,
+  period: { value: number; unit: 'MONTHS' | 'YEARS' },
+): string {
+  const today = new Date();
+  const deadline = new Date(
+    Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate()),
+  );
+  deadline.setUTCDate(deadline.getUTCDate() + deadlineDaysFromToday);
+  const endDate = new Date(deadline);
+  if (period.unit === 'MONTHS') {
+    endDate.setUTCMonth(endDate.getUTCMonth() + period.value);
+  } else {
+    endDate.setUTCFullYear(endDate.getUTCFullYear() + period.value);
+  }
+  return endDate.toISOString().slice(0, 10);
+}
+
 describe('GET /api/dashboard', () => {
   let db: Database.Database;
   let app: FastifyInstance;
@@ -176,12 +200,9 @@ describe('GET /api/dashboard', () => {
   });
 
   it('returns upcomingRenewals for contract with 3-month cancellation and 4-month end date', async () => {
-    const endDate = new Date();
-    endDate.setMonth(endDate.getMonth() + 4);
-    const endDateStr = endDate.toISOString().slice(0, 10);
     insertContract(db, ownerId, {
       name: '3MonthCancellation',
-      end_date: endDateStr,
+      end_date: endDateForDeadlineDaysFromToday(30, { value: 3, unit: 'MONTHS' }),
       cancellation_period_value: 3,
       cancellation_period_unit: 'MONTHS',
     });
