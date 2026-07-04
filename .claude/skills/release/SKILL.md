@@ -32,11 +32,24 @@ List the dirty files from the output so the developer knows what to address.
 
 Run:
 ```bash
-pnpm run release -- --dry-run
+pnpm exec release-it --ci --dry-run
 ```
 
+**Do not** use `pnpm run release -- --dry-run`. The `release` script is `release-it --ci`,
+and pnpm forwards extra args with a literal `--` separator, producing
+`release-it --ci -- --dry-run`. release-it's CLI parser then treats `--dry-run` as a
+positional argument (an invalid version-increment override) instead of the dry-run flag,
+so it silently performs a **real** release — commit, tag, and push included. Calling
+`release-it` directly via `pnpm exec` avoids the extra `--` entirely.
+
 Display the **full output** to the developer. This shows the proposed version bump and
-the changelog entries that will be included.
+the changelog entries that will be included. Every git-mutating line (npm version, git
+commit, git tag, git push) must be prefixed with `!` in the output, meaning release-it is
+only describing the action, not executing it. If any of those lines appear with a ✔
+checkmark instead of a leading `!`, the dry run actually executed — stop immediately and
+tell the developer:
+> "The dry-run executed a real release instead of previewing one. Do not proceed — inspect
+> `git log` and `git tag` for unexpected new commits/tags before doing anything else."
 
 If the output contains "Nothing to release" or indicates no releasable commits exist,
 abort with:
@@ -54,7 +67,7 @@ Ask the developer:
 
 Run:
 ```bash
-pnpm run release
+pnpm exec release-it --ci
 ```
 
 Wait for the command to complete. Display the output.
