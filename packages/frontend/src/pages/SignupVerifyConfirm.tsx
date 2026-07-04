@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Center, Paper, Loader, Alert, Text, Button, Stack } from '@mantine/core';
 import { AuthError } from '../services/auth.js';
 import { verifySignup } from '../services/signup.js';
-import { PublicLayout } from '../components/PublicLayout.js';
+import { AuthImageLayout } from '../components/AuthImageLayout.js';
 
 /**
  * Sign-up verification confirmation page. Automatically verifies the sign-up request using
@@ -40,7 +40,7 @@ export function SignupVerifyConfirm() {
   }, [token]);
 
   return (
-    <PublicLayout>
+    <AuthImageLayout>
       <Paper withBorder shadow="md" p="xl" w={400} radius="md">
         {state === 'loading' && (
           <Center>
@@ -60,6 +60,6 @@ export function SignupVerifyConfirm() {
         {state === 'already-used' && <Alert color="yellow">{t('signupVerify.alreadyUsed')}</Alert>}
         {state === 'not-found' && <Alert color="red">{t('signupVerify.notFound')}</Alert>}
       </Paper>
-    </PublicLayout>
+    </AuthImageLayout>
   );
 }
