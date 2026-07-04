@@ -14,7 +14,7 @@ data/
 *.db
 *.db-journal
 .vite/
-playwright/.auth/
+**/playwright/.auth/
 test-results/
 playwright-report/
 .DS_Store

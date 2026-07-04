@@ -4,6 +4,7 @@ import {
   runMigrations,
   purgeExpiredArchivedAccounts,
   purgeStaleInvitations,
+  sweepExpiredSignupRequests,
 } from './db/client.js';
 import { buildServer } from './server.js';
 import { MailerService } from './services/mailer.service.js';
@@ -27,6 +28,7 @@ if (bootstrap) {
 }
 purgeExpiredArchivedAccounts(db);
 purgeStaleInvitations(db);
+sweepExpiredSignupRequests(db);
 
 let mailer: MailerService | undefined;
 try {

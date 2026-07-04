@@ -337,6 +337,19 @@ If you've forgotten your password, click the **Forgot password?** link below the
 
 Check your inbox for an email with a reset link. Click the link to open the **Set a new password** page. Enter a new password (at least 8 characters) and confirm it, then click **Reset password**. You'll be signed in automatically and redirected to the dashboard. The link expires after 1 hour and can only be used once. If you request another reset, any previous links are invalidated.
 
+### Public self-service sign-up
+
+If you don't have an invitation, click **Don't have an account? Sign up** below the sign-in form. The page switches to the sign-up form — still within the same two-column layout — without reloading. Enter an email address and a password (at least 8 characters) and click **Sign up**.
+
+If the email address is available, you'll see a **Check your email** confirmation and a verification link is sent to that address. Open the link to confirm your address; your request then moves into an administrator's review queue and every administrator is notified by email. You'll be able to sign in once an administrator approves your request — see [Reviewing sign-up requests](#reviewing-sign-up-requests-administrators-only) below.
+
+The sign-up form is rejected with a generic error in these cases:
+
+- The email address already belongs to an active or archived account, a pending invitation, or another sign-up request (verified, unverified, or previously rejected) — the exact reason is never revealed, to avoid leaking which addresses are registered.
+- The password doesn't meet the minimum length.
+
+The verification link expires after 7 days; an expired, never-opened request is cleared automatically, freeing the address for a fresh attempt. A link that has already been used shows a distinct "already used" message.
+
 ### The first account
 
 The very first time the app starts on a fresh installation, it automatically creates an **administrator** account and prints its email address and a one-time password to the server log (visible with `docker compose logs` or in the terminal running the backend). Sign in with those credentials and **change the password immediately** from My Account.
@@ -397,6 +410,24 @@ The invitations table shows all past invitations and their status:
 | Cancelled | You withdrew the invitation |
 
 For pending and expired invitations, two actions are available: **Resend** (sends a fresh link) and **Withdraw** (cancels the invitation).
+
+### Reviewing sign-up requests (administrators only)
+
+Below the invitations section on the **Accounts** admin page, a **Sign-up requests** table lists everyone who has submitted a public sign-up request (see [Public self-service sign-up](#public-self-service-sign-up)), along with their status and submission date:
+
+| Status | Meaning |
+|--------|---------|
+| Unverified | Submitted, but the visitor hasn't opened their verification email yet |
+| Awaiting approval | Verified — visible and actionable for an administrator |
+| Rejected | An administrator rejected the request; the reason (if any) is shown |
+
+> **Blocking condition**: only requests **awaiting approval** can be approved or rejected — unverified rows are shown for visibility but their action buttons have no effect until the visitor verifies their email. This mirrors the sole-admin guard elsewhere in the app: an action is deliberately withheld until its precondition is met.
+
+- **Approve** — creates an active member account using the email and password the visitor submitted, and sends them the same welcome email an invited member would receive. The request disappears from this table once approved.
+- **Reject** — opens a prompt for an optional reason, then marks the request rejected and emails the visitor with that reason (or a generic message if none was given). The rejected entry stays in the table — and the email address stays blocked from a new sign-up attempt — until you delete it.
+- **Delete** — removes the entry regardless of its status. For a rejected request, this is the only way to free the email address for a future sign-up attempt.
+
+If two administrators act on the same request at the same time, the second action is rejected with a message reporting the request's current status.
 
 ### Managing accounts (administrators only)
 

@@ -246,10 +246,28 @@ describe('DashboardService – upcomingRenewals', () => {
     return d.toISOString().slice(0, 10);
   }
 
-  function yearsFromNow(years: number): string {
-    const d = new Date();
-    d.setFullYear(d.getFullYear() + years);
-    return d.toISOString().slice(0, 10);
+  // Computes an end_date such that the resulting cancellation deadline (end_date minus the
+  // given period) lands exactly `deadlineDaysFromToday` days from today. Deriving the target
+  // this way — instead of picking end_date via independent calendar-month arithmetic — avoids
+  // off-by-one flakiness near the 30-day grace-period boundary caused by month-length variance
+  // (e.g. "4 months out, 3-month cancellation" nets to "1 month out", but a calendar month is
+  // 28-31 days, not always <= 30).
+  function endDateForDeadlineDaysFromToday(
+    deadlineDaysFromToday: number,
+    period: { value: number; unit: 'MONTHS' | 'YEARS' },
+  ): string {
+    const today = new Date();
+    const deadline = new Date(
+      Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate()),
+    );
+    deadline.setUTCDate(deadline.getUTCDate() + deadlineDaysFromToday);
+    const endDate = new Date(deadline);
+    if (period.unit === 'MONTHS') {
+      endDate.setUTCMonth(endDate.getUTCMonth() + period.value);
+    } else {
+      endDate.setUTCFullYear(endDate.getUTCFullYear() + period.value);
+    }
+    return endDate.toISOString().slice(0, 10);
   }
 
   beforeEach(() => {
@@ -291,7 +309,7 @@ describe('DashboardService – upcomingRenewals', () => {
   it('includes a contract with 3-month cancellation when end_date is 4 months out', () => {
     insertContract(db, ownerId, {
       name: '3mo-4mo',
-      end_date: monthsFromNow(4),
+      end_date: endDateForDeadlineDaysFromToday(30, { value: 3, unit: 'MONTHS' }),
       cancellation_period_value: 3,
       cancellation_period_unit: 'MONTHS',
     });
@@ -347,7 +365,7 @@ describe('DashboardService – upcomingRenewals', () => {
   it('includes a contract with 1-year cancellation when end_date is 13 months out', () => {
     insertContract(db, ownerId, {
       name: '1yr-13mo',
-      end_date: monthsFromNow(13),
+      end_date: endDateForDeadlineDaysFromToday(30, { value: 1, unit: 'YEARS' }),
       cancellation_period_value: 1,
       cancellation_period_unit: 'YEARS',
     });

@@ -222,6 +222,37 @@ export class UserService {
   }
 
   /**
+   * Creates a new active member account from an approved sign-up request, reusing its
+   * already-hashed password rather than re-hashing the plaintext (which the service never
+   * sees again once the request was submitted).
+   *
+   * @param email - The email address from the approved sign-up request
+   * @param passwordHash - The pre-computed scrypt hash stored on the sign-up request
+   * @param passwordSalt - The pre-computed scrypt salt stored on the sign-up request
+   * @returns The newly inserted UserRow
+   */
+  createFromVerifiedSignup(email: string, passwordHash: string, passwordSalt: string): UserRow {
+    const now = new Date().toISOString();
+    const id = randomUUID();
+    const displayName = email.split('@')[0] ?? email;
+    this.db
+      .prepare(
+        `INSERT INTO users (id, email, display_name, password_hash, password_salt, role, status, created_at, updated_at)
+         VALUES (@id, @email, @display_name, @password_hash, @password_salt, 'MEMBER', 'ACTIVE', @created_at, @updated_at)`,
+      )
+      .run({
+        id,
+        email,
+        display_name: displayName,
+        password_hash: passwordHash,
+        password_salt: passwordSalt,
+        created_at: now,
+        updated_at: now,
+      });
+    return this.db.prepare<[string], UserRow>(`SELECT * FROM users WHERE id = ?`).get(id)!;
+  }
+
+  /**
    * Returns the count of currently active administrator accounts.
    *
    * @returns The number of users with role ADMIN and status ACTIVE

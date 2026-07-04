@@ -391,3 +391,65 @@ export const summaryEmailStrings: Record<
   en: (args) => buildSummaryHtml({ ...args, locale: 'en' }),
   de: (args) => buildSummaryHtml({ ...args, locale: 'de' }),
 };
+
+// ─── Sign-up verification email ───────────────────────────────────────────────
+
+export const signupVerificationEmailStrings: Record<
+  SupportedEmailLanguage,
+  (args: { link: string; expiryDate: string }) => EmailContent
+> = {
+  en: ({ link, expiryDate }) => ({
+    subject: 'Confirm your sign-up',
+    text: `Thanks for signing up.\n\nClick the link below to confirm your email address:\n\n${link}\n\nThis link expires on ${expiryDate}. It can only be used once.\n\nIf you did not request this, you can ignore this email.`,
+    html: `<p>Thanks for signing up.</p><p>Click the link below to confirm your email address:</p><p><a href="${link}">${link}</a></p><p>This link expires on <strong>${expiryDate}</strong>. It can only be used once.</p><p>If you did not request this, you can ignore this email.</p>`,
+  }),
+  de: ({ link, expiryDate }) => ({
+    subject: 'Bestätigen Sie Ihre Anmeldung',
+    text: `Vielen Dank für Ihre Anmeldung.\n\nKlicken Sie auf den Link unten, um Ihre E-Mail-Adresse zu bestätigen:\n\n${link}\n\nDieser Link läuft am ${expiryDate} ab. Er kann nur einmal verwendet werden.\n\nFalls Sie dies nicht angefordert haben, können Sie diese E-Mail ignorieren.`,
+    html: `<p>Vielen Dank für Ihre Anmeldung.</p><p>Klicken Sie auf den Link unten, um Ihre E-Mail-Adresse zu bestätigen:</p><p><a href="${link}">${link}</a></p><p>Dieser Link läuft am <strong>${expiryDate}</strong> ab. Er kann nur einmal verwendet werden.</p><p>Falls Sie dies nicht angefordert haben, können Sie diese E-Mail ignorieren.</p>`,
+  }),
+};
+
+// ─── Admin sign-up notification email ─────────────────────────────────────────
+
+export const adminSignupNotificationEmailStrings: Record<
+  SupportedEmailLanguage,
+  (args: { signupEmail: string; link: string }) => EmailContent
+> = {
+  en: ({ signupEmail, link }) => ({
+    subject: 'New sign-up request awaiting approval',
+    text: `A new visitor has requested an account: ${signupEmail}\n\nReview and approve or reject the request here:\n\n${link}`,
+    html: `<p>A new visitor has requested an account: <strong>${signupEmail}</strong></p><p>Review and approve or reject the request here:</p><p><a href="${link}">${link}</a></p>`,
+  }),
+  de: ({ signupEmail, link }) => ({
+    subject: 'Neue Anmeldeanfrage wartet auf Genehmigung',
+    text: `Ein neuer Besucher hat ein Konto angefragt: ${signupEmail}\n\nÜberprüfen und genehmigen oder lehnen Sie die Anfrage hier ab:\n\n${link}`,
+    html: `<p>Ein neuer Besucher hat ein Konto angefragt: <strong>${signupEmail}</strong></p><p>Überprüfen und genehmigen oder lehnen Sie die Anfrage hier ab:</p><p><a href="${link}">${link}</a></p>`,
+  }),
+};
+
+// ─── Sign-up rejection email ───────────────────────────────────────────────────
+
+export const signupRejectionEmailStrings: Record<
+  SupportedEmailLanguage,
+  (args: { reason: string | undefined }) => EmailContent
+> = {
+  en: ({ reason }) => {
+    const reasonLine = reason ? `The reason given was: ${reason}` : 'No reason was given.';
+    return {
+      subject: 'Your sign-up request was not approved',
+      text: `Your request to create an account was not approved.\n\n${reasonLine}`,
+      html: `<p>Your request to create an account was not approved.</p><p>${reasonLine}</p>`,
+    };
+  },
+  de: ({ reason }) => {
+    const reasonLine = reason
+      ? `Der angegebene Grund war: ${reason}`
+      : 'Es wurde kein Grund angegeben.';
+    return {
+      subject: 'Ihre Anmeldeanfrage wurde nicht genehmigt',
+      text: `Ihre Anfrage zur Kontoerstellung wurde nicht genehmigt.\n\n${reasonLine}`,
+      html: `<p>Ihre Anfrage zur Kontoerstellung wurde nicht genehmigt.</p><p>${reasonLine}</p>`,
+    };
+  },
+};

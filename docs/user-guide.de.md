@@ -337,6 +337,19 @@ Wenn du dein Passwort vergessen hast, klicke auf den Link **Passwort vergessen?*
 
 Prüfe deinen Posteingang auf eine E-Mail mit einem Zurücksetzungslink. Klicke auf den Link, um die Seite **Neues Passwort festlegen** zu öffnen. Gib ein neues Passwort ein (mindestens 8 Zeichen) und bestätige es, dann klicke auf **Passwort zurücksetzen**. Du wirst automatisch angemeldet und zum Dashboard weitergeleitet. Der Link läuft nach 1 Stunde ab und kann nur einmal verwendet werden. Wenn du einen weiteren Zurücksetzungslink anforderst, werden alle vorherigen Links ungültig.
 
+### Öffentliche Selbstregistrierung
+
+Wenn du keine Einladung hast, klicke unter dem Anmeldeformular auf **Noch kein Konto? Registrieren**. Die Seite wechselt zum Registrierungsformular — noch innerhalb desselben zweispaltigen Layouts — ohne neu zu laden. Gib eine E-Mail-Adresse und ein Passwort (mindestens 8 Zeichen) ein und klicke auf **Registrieren**.
+
+Ist die E-Mail-Adresse verfügbar, siehst du die Bestätigung **Prüfe deine E-Mails**, und ein Bestätigungslink wird an diese Adresse gesendet. Öffne den Link, um deine Adresse zu bestätigen; deine Anfrage wandert danach in die Prüfwarteschlange eines Administrators, und alle Administratoren werden per E-Mail benachrichtigt. Du kannst dich anmelden, sobald ein Administrator deine Anfrage genehmigt hat — siehe [Registrierungsanfragen prüfen](#registrierungsanfragen-prüfen-nur-administratoren) weiter unten.
+
+Das Registrierungsformular wird in folgenden Fällen mit einer generischen Fehlermeldung abgelehnt:
+
+- Die E-Mail-Adresse gehört bereits zu einem aktiven oder archivierten Konto, einer ausstehenden Einladung oder einer anderen Registrierungsanfrage (bestätigt, unbestätigt oder zuvor abgelehnt) — der genaue Grund wird nie preisgegeben, um nicht zu verraten, welche Adressen registriert sind.
+- Das Passwort erfüllt nicht die Mindestlänge.
+
+Der Bestätigungslink läuft nach 7 Tagen ab; eine abgelaufene, nie geöffnete Anfrage wird automatisch entfernt und gibt die Adresse für einen neuen Versuch frei. Ein bereits verwendeter Link zeigt eine eigene Meldung „bereits verwendet".
+
 ### Das erste Konto
 
 Beim allerersten Start der App auf einer frischen Installation wird automatisch ein **Administratorkonto** angelegt; dessen E-Mail-Adresse und ein Einmalpasswort werden im Server-Log ausgegeben (sichtbar mit `docker compose logs` oder im Terminal, in dem das Backend läuft). Melde dich mit diesen Zugangsdaten an und **ändere das Passwort sofort** über „Mein Konto".
@@ -397,6 +410,24 @@ Die Einladungstabelle zeigt alle bisherigen Einladungen und ihren Status:
 | Widerrufen | Du hast die Einladung zurückgezogen |
 
 Für ausstehende und abgelaufene Einladungen stehen zwei Aktionen zur Verfügung: **Erneut senden** (sendet einen neuen Link) und **Widerrufen** (bricht die Einladung ab).
+
+### Registrierungsanfragen prüfen (nur Administratoren)
+
+Unterhalb des Einladungsbereichs auf der Admin-Seite **Konten** listet eine Tabelle **Registrierungsanfragen** alle Personen, die eine öffentliche Registrierungsanfrage eingereicht haben (siehe [Öffentliche Selbstregistrierung](#öffentliche-selbstregistrierung)), zusammen mit Status und Einreichungsdatum:
+
+| Status | Bedeutung |
+|--------|----------|
+| Unbestätigt | Eingereicht, aber die Person hat die Bestätigungs-E-Mail noch nicht geöffnet |
+| Wartet auf Genehmigung | Bestätigt — für einen Administrator sichtbar und bearbeitbar |
+| Abgelehnt | Ein Administrator hat die Anfrage abgelehnt; der Grund (falls angegeben) wird angezeigt |
+
+> **Blockierende Bedingung**: Nur Anfragen, die auf Genehmigung warten, können genehmigt oder abgelehnt werden — unbestätigte Einträge werden zur Übersicht angezeigt, ihre Aktionsschaltflächen haben aber keine Wirkung, bis die Person ihre E-Mail-Adresse bestätigt hat. Dies entspricht dem Prinzip des Alleiniger-Administrator-Schutzes an anderer Stelle in der App: Eine Aktion wird bewusst zurückgehalten, bis ihre Voraussetzung erfüllt ist.
+
+- **Genehmigen** — legt ein aktives Mitgliedskonto mit der von der Person angegebenen E-Mail-Adresse und dem Passwort an und sendet ihr dieselbe Willkommens-E-Mail wie einem eingeladenen Mitglied. Die Anfrage verschwindet nach der Genehmigung aus dieser Tabelle.
+- **Ablehnen** — öffnet ein Eingabefeld für eine optionale Begründung, markiert die Anfrage dann als abgelehnt und sendet der Person eine E-Mail mit dieser Begründung (oder einer allgemeinen Nachricht, falls keine angegeben wurde). Der abgelehnte Eintrag bleibt in der Tabelle bestehen — und die E-Mail-Adresse bleibt für eine neue Registrierung gesperrt —, bis du ihn löschst.
+- **Löschen** — entfernt den Eintrag unabhängig vom Status. Bei einer abgelehnten Anfrage ist dies die einzige Möglichkeit, die E-Mail-Adresse für einen zukünftigen Registrierungsversuch freizugeben.
+
+Handeln zwei Administratoren gleichzeitig an derselben Anfrage, wird die zweite Aktion mit einer Meldung zum aktuellen Status der Anfrage abgelehnt.
 
 ### Konten verwalten (nur Administratoren)
 

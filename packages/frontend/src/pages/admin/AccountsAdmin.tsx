@@ -20,7 +20,7 @@ import {
   Box,
   Card,
 } from '@mantine/core';
-import type { Account, Invitation } from '@pcm/shared';
+import type { Account, Invitation, SignupRequest } from '@pcm/shared';
 import { AuthError } from '../../services/auth.js';
 import { getLogoCacheInfo, pruneLogoCache, sendTestEmail } from '../../services/users.js';
 import { useCurrentUser } from '../../hooks/useAuth.js';
@@ -37,6 +37,12 @@ import {
   useCancelInvitation,
   useResendInvitation,
 } from '../../hooks/useInvitations.js';
+import {
+  useSignupRequests,
+  useApproveSignupRequest,
+  useRejectSignupRequest,
+  useDeleteSignupRequest,
+} from '../../hooks/useSignupRequests.js';
 import { showSuccess, showError } from '../../lib/notifications.js';
 
 /**
@@ -405,6 +411,240 @@ function InvitationsTable() {
           </Table.ScrollContainer>
         </Paper>
       </Box>
+    </>
+  );
+}
+
+/**
+ * Renders a status badge for a sign-up request.
+ *
+ * @param request - the sign-up request whose status to display
+ * @returns a coloured Badge element
+ */
+function SignupStatusBadge({ request }: Readonly<{ request: SignupRequest }>) {
+  const { t } = useTranslation();
+  const config: Record<string, { color: string; label: string }> = {
+    UNVERIFIED: { color: 'gray', label: t('accountsAdmin.signupStatusUnverified') },
+    PENDING_REVIEW: { color: 'yellow', label: t('accountsAdmin.signupStatusPendingReview') },
+    REJECTED: { color: 'red', label: t('accountsAdmin.signupStatusRejected') },
+  };
+  const c = config[request.status];
+  if (!c) return <span>{request.status}</span>;
+  return (
+    <Badge color={c.color} variant="light">
+      {c.label}
+    </Badge>
+  );
+}
+
+/**
+ * Renders the sign-up requests table with approve/reject/delete actions. Unverified rows are
+ * visibly non-actionable since only PENDING_REVIEW requests can be approved or rejected.
+ */
+function SignupRequestsTable() {
+  const { t } = useTranslation();
+  const { data: requests, isLoading } = useSignupRequests();
+  const { mutate: approveRequest } = useApproveSignupRequest();
+  const { mutate: rejectRequest } = useRejectSignupRequest();
+  const { mutate: deleteRequest } = useDeleteSignupRequest();
+  const [rejectToken, setRejectToken] = useState<string | null>(null);
+  const [rejectReason, setRejectReason] = useState('');
+
+  function resolveActionError(error: unknown): string {
+    if (error instanceof AuthError && error.status === 409) {
+      return t('accountsAdmin.signupNotPendingError');
+    }
+    return t('accountsAdmin.signupActionError');
+  }
+
+  function handleApprove(token: string) {
+    approveRequest(token, {
+      onSuccess: () => showSuccess(t('accountsAdmin.signupApproveSuccess')),
+      onError: (err) => showError(resolveActionError(err)),
+    });
+  }
+
+  function openRejectModal(token: string) {
+    setRejectToken(token);
+    setRejectReason('');
+  }
+
+  function handleConfirmReject() {
+    if (!rejectToken) return;
+    rejectRequest(
+      { token: rejectToken, reason: rejectReason.trim() || undefined },
+      {
+        onSuccess: () => showSuccess(t('accountsAdmin.signupRejectSuccess')),
+        onError: (err) => showError(resolveActionError(err)),
+      },
+    );
+    setRejectToken(null);
+  }
+
+  function handleDelete(token: string) {
+    deleteRequest(token, {
+      onError: () => showError(t('accountsAdmin.signupActionError')),
+    });
+  }
+
+  if (isLoading)
+    return (
+      <Center py="md">
+        <Text c="dimmed">{t('common.loading')}</Text>
+      </Center>
+    );
+  if (!requests || requests.length === 0) {
+    return (
+      <Text size="sm" c="dimmed" py="sm">
+        {t('accountsAdmin.noSignupRequests')}
+      </Text>
+    );
+  }
+
+  return (
+    <>
+      {/* Card list — mobile only */}
+      <Box hiddenFrom="sm">
+        <Stack gap="sm">
+          {requests.map((req) => {
+            const canAct = req.status === 'PENDING_REVIEW';
+            return (
+              <Card key={req.token} withBorder padding="sm" radius="md">
+                <Group justify="space-between" align="flex-start" wrap="nowrap">
+                  <Text size="sm" fw={500} truncate style={{ minWidth: 0, flex: 1 }}>
+                    {req.email}
+                  </Text>
+                  <SignupStatusBadge request={req} />
+                </Group>
+                <Text size="xs" c="dimmed" mt={4}>
+                  {t('accountsAdmin.columnSentAt')}: {localeDate(req.createdAt)}
+                </Text>
+                {req.status === 'REJECTED' && req.rejectionReason && (
+                  <Text size="xs" c="dimmed">
+                    {t('accountsAdmin.signupRejectionReason')}: {req.rejectionReason}
+                  </Text>
+                )}
+                <Group gap="xs" mt="sm">
+                  {canAct && (
+                    <>
+                      <Button
+                        size="compact-sm"
+                        variant="default"
+                        onClick={() => handleApprove(req.token)}
+                      >
+                        {t('accountsAdmin.approveButton')}
+                      </Button>
+                      <Button
+                        size="compact-sm"
+                        variant="default"
+                        color="red"
+                        onClick={() => openRejectModal(req.token)}
+                      >
+                        {t('accountsAdmin.rejectButton')}
+                      </Button>
+                    </>
+                  )}
+                  <Button
+                    size="compact-sm"
+                    variant="default"
+                    color="red"
+                    onClick={() => handleDelete(req.token)}
+                  >
+                    {t('accountsAdmin.deleteButton')}
+                  </Button>
+                </Group>
+              </Card>
+            );
+          })}
+        </Stack>
+      </Box>
+
+      {/* Full table — tablet and desktop */}
+      <Box visibleFrom="sm">
+        <Paper withBorder>
+          <Table.ScrollContainer minWidth={600}>
+            <Table withTableBorder={false}>
+              <Table.Thead>
+                <Table.Tr>
+                  <Table.Th>{t('accountsAdmin.columnEmail')}</Table.Th>
+                  <Table.Th>{t('accountsAdmin.columnSignupStatus')}</Table.Th>
+                  <Table.Th>{t('accountsAdmin.columnSentAt')}</Table.Th>
+                  <Table.Th>{t('accountsAdmin.columnActions')}</Table.Th>
+                </Table.Tr>
+              </Table.Thead>
+              <Table.Tbody>
+                {requests.map((req) => {
+                  const canAct = req.status === 'PENDING_REVIEW';
+                  return (
+                    <Table.Tr key={req.token}>
+                      <Table.Td>{req.email}</Table.Td>
+                      <Table.Td>
+                        <SignupStatusBadge request={req} />
+                      </Table.Td>
+                      <Table.Td>{localeDate(req.createdAt)}</Table.Td>
+                      <Table.Td>
+                        <Group gap="xs">
+                          {canAct && (
+                            <>
+                              <Button
+                                size="compact-sm"
+                                variant="default"
+                                onClick={() => handleApprove(req.token)}
+                              >
+                                {t('accountsAdmin.approveButton')}
+                              </Button>
+                              <Button
+                                size="compact-sm"
+                                variant="default"
+                                color="red"
+                                onClick={() => openRejectModal(req.token)}
+                              >
+                                {t('accountsAdmin.rejectButton')}
+                              </Button>
+                            </>
+                          )}
+                          <Button
+                            size="compact-sm"
+                            variant="default"
+                            color="red"
+                            onClick={() => handleDelete(req.token)}
+                          >
+                            {t('accountsAdmin.deleteButton')}
+                          </Button>
+                        </Group>
+                      </Table.Td>
+                    </Table.Tr>
+                  );
+                })}
+              </Table.Tbody>
+            </Table>
+          </Table.ScrollContainer>
+        </Paper>
+      </Box>
+
+      <Modal
+        opened={rejectToken !== null}
+        onClose={() => setRejectToken(null)}
+        title={t('accountsAdmin.rejectModalTitle')}
+        centered
+      >
+        <Stack gap="md">
+          <TextInput
+            id="reject-reason"
+            label={t('accountsAdmin.rejectReasonLabel')}
+            value={rejectReason}
+            onChange={(e) => setRejectReason(e.target.value)}
+          />
+          <Group justify="flex-end" gap="sm">
+            <Button variant="default" onClick={() => setRejectToken(null)}>
+              {t('common.cancel')}
+            </Button>
+            <Button color="red" onClick={handleConfirmReject}>
+              {t('accountsAdmin.rejectButton')}
+            </Button>
+          </Group>
+        </Stack>
+      </Modal>
     </>
   );
 }
@@ -825,6 +1065,18 @@ export function AccountsAdmin() {
       </form>
 
       <InvitationsTable />
+
+      <Divider my="md" />
+
+      {/* Sign-up requests section — public self-service sign-ups awaiting admin review */}
+      <Stack gap={4}>
+        <Title order={3}>{t('accountsAdmin.signupRequestsTitle')}</Title>
+        <Text size="sm" c="dimmed">
+          {t('accountsAdmin.signupRequestsDescription')}
+        </Text>
+      </Stack>
+
+      <SignupRequestsTable />
 
       <Divider my="md" />
 

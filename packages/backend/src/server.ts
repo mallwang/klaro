@@ -12,6 +12,7 @@ import { contractRoutes } from './routes/contracts.js';
 import { authRoutes } from './routes/auth.js';
 import { userRoutes } from './routes/users.js';
 import { invitationRoutes } from './routes/invitations.js';
+import { signupRoutes } from './routes/signup.js';
 import { profileRoutes } from './routes/profile.js';
 import { adminRoutes } from './routes/admin.js';
 import { logosRoutes } from './routes/logos.js';
@@ -48,6 +49,8 @@ const PUBLIC_ROUTES: Array<(method: string, path: string) => boolean> = [
   (m, p) => m === 'POST' && /^\/api\/invitations\/[^/]+\/accept$/.test(p),
   (m, p) => m === 'POST' && /^\/api\/profile\/email-change\/[^/]+\/confirm$/.test(p),
   (m, p) => m === 'GET' && p === '/api/logos',
+  (m, p) => m === 'POST' && p === '/api/signup',
+  (m, p) => m === 'POST' && /^\/api\/signup\/[^/]+\/verify$/.test(p),
 ];
 
 /**
@@ -126,6 +129,7 @@ export async function buildServer(
   await fastify.register(dashboardRoutes);
   await fastify.register(contractRoutes);
   await fastify.register(invitationRoutes);
+  await fastify.register(signupRoutes);
   await fastify.register(profileRoutes);
   await fastify.register(adminRoutes);
   await fastify.register(logosRoutes);

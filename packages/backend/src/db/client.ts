@@ -363,6 +363,21 @@ export function purgeStaleInvitations(instance: Database.Database): number {
   return result.changes;
 }
 
+/**
+ * Deletes expired, never-verified sign-up requests, freeing their email addresses for a
+ * fresh attempt (FR-016). Intended to run once at server startup, alongside the invitation
+ * purge. Unlike a REJECTED row, an expired UNVERIFIED row was never reviewed, so there is no
+ * decision to preserve.
+ */
+export function sweepExpiredSignupRequests(instance: Database.Database): number {
+  const result = instance
+    .prepare(
+      `DELETE FROM signup_requests WHERE status = 'UNVERIFIED' AND verification_expires_at < ?`,
+    )
+    .run(new Date().toISOString());
+  return result.changes;
+}
+
 export interface InvitationRow {
   token: string;
   email: string;
@@ -425,4 +440,17 @@ export interface EmailVerificationRow {
   purpose: 'email-change' | 'password-reset';
   expires_at: string;
   created_at: string;
+}
+
+export interface SignupRequestRow {
+  token: string;
+  email: string;
+  password_hash: string;
+  password_salt: string;
+  status: string;
+  verification_expires_at: string;
+  rejection_reason: string | null;
+  created_at: string;
+  verified_at: string | null;
+  decided_at: string | null;
 }

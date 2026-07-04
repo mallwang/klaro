@@ -28,6 +28,7 @@ import { ContractImport } from './pages/ContractImport.js';
 import { AuthPage } from './pages/AuthPage.js';
 import { AcceptInvitation } from './pages/AcceptInvitation.js';
 import { EmailVerifyConfirm } from './pages/EmailVerifyConfirm.js';
+import { SignupVerifyConfirm } from './pages/SignupVerifyConfirm.js';
 import { ResetPassword } from './pages/ResetPassword.js';
 import { AccountSettings } from './pages/AccountSettings.js';
 import { Faq } from './pages/Faq.js';
@@ -99,6 +100,8 @@ createRoot(root).render(
           <BrowserRouter>
             <Routes>
               <Route path="/sign-in" element={<AuthPage initialView="sign-in" />} />
+              <Route path="/sign-up" element={<AuthPage initialView="sign-up" />} />
+              <Route path="/signup/verify/:token" element={<SignupVerifyConfirm />} />
               <Route path="/invitations/:token" element={<AcceptInvitation />} />
               <Route path="/email-change/confirm/:token" element={<EmailVerifyConfirm />} />
               <Route path="/forgot-password" element={<AuthPage initialView="forgot-password" />} />

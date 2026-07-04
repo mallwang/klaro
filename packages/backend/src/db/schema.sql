@@ -72,3 +72,20 @@ CREATE TABLE IF NOT EXISTS logo_cache (
   content_type TEXT NOT NULL,
   cached_at    INTEGER NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS signup_requests (
+  token                    TEXT PRIMARY KEY,
+  email                    TEXT NOT NULL CHECK(length(email) <= 320),
+  password_hash            TEXT NOT NULL,
+  password_salt            TEXT NOT NULL,
+  status                   TEXT NOT NULL DEFAULT 'UNVERIFIED'
+                             CHECK(status IN ('UNVERIFIED','PENDING_REVIEW','REJECTED')),
+  verification_expires_at  TEXT NOT NULL,
+  rejection_reason         TEXT,
+  created_at               TEXT NOT NULL,
+  verified_at              TEXT,
+  decided_at               TEXT
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_signup_requests_email
+  ON signup_requests(email COLLATE NOCASE);

@@ -339,6 +339,97 @@ describe('MailerService.sendPasswordResetEmail', () => {
   });
 });
 
+describe('MailerService.sendSignupVerificationEmail', () => {
+  const from = 'noreply@example.test';
+  const to = 'newsignup@example.test';
+  const link = 'https://example.test/signup/verify/abc123';
+  const expiresAt = '2026-06-20T12:00:00.000Z';
+
+  it('sends to the correct recipient with the link and expiry in the body', async () => {
+    const { transport, captured } = makeCapturingTransport();
+
+    const mailer = new MailerService({ transport, from });
+    await mailer.sendSignupVerificationEmail(to, link, expiresAt);
+
+    const msg = assertCapturedEmail(captured, to, link);
+    expect(msg.text).toContain('2026-06-20');
+    expect(msg.html).toContain('2026-06-20');
+  });
+
+  it('throws a typed MailerError when the transport reports a send failure', async () => {
+    const transport = makeStubTransport(new Error('SMTP connection refused'));
+    const mailer = new MailerService({ transport, from });
+
+    await expect(mailer.sendSignupVerificationEmail(to, link, expiresAt)).rejects.toBeInstanceOf(
+      MailerError,
+    );
+  });
+});
+
+describe('MailerService.sendAdminSignupNotificationEmail', () => {
+  const from = 'noreply@example.test';
+  const to = 'admin@example.test';
+  const signupEmail = 'newsignup@example.test';
+  const link = 'https://example.test/admin/accounts';
+
+  it('sends one email per admin, linking to the admin accounts page', async () => {
+    const { transport, captured } = makeCapturingTransport();
+
+    const mailer = new MailerService({ transport, from });
+    await mailer.sendAdminSignupNotificationEmail(to, signupEmail, link);
+
+    const msg = assertCapturedEmail(captured, to, link);
+    expect(msg.text).toContain(signupEmail);
+    expect(msg.html).toContain(signupEmail);
+  });
+
+  it('throws a typed MailerError when the transport reports a send failure', async () => {
+    const transport = makeStubTransport(new Error('SMTP connection refused'));
+    const mailer = new MailerService({ transport, from });
+
+    await expect(
+      mailer.sendAdminSignupNotificationEmail(to, signupEmail, link),
+    ).rejects.toBeInstanceOf(MailerError);
+  });
+});
+
+describe('MailerService.sendSignupRejectionEmail', () => {
+  const from = 'noreply@example.test';
+  const to = 'rejected@example.test';
+
+  it('includes the reason in the body when one is given', async () => {
+    const { transport, captured } = makeCapturingTransport();
+
+    const mailer = new MailerService({ transport, from });
+    await mailer.sendSignupRejectionEmail(to, 'Could not verify identity');
+
+    const msg = captured[0] as { to: string; text: string; html: string };
+    expect(msg.to).toBe(to);
+    expect(msg.text).toContain('Could not verify identity');
+    expect(msg.html).toContain('Could not verify identity');
+  });
+
+  it('states that no reason was given when reason is absent', async () => {
+    const { transport, captured } = makeCapturingTransport();
+
+    const mailer = new MailerService({ transport, from });
+    await mailer.sendSignupRejectionEmail(to, undefined);
+
+    const msg = captured[0] as { text: string; html: string };
+    expect(msg.text.toLowerCase()).toContain('no reason');
+    expect(msg.html.toLowerCase()).toContain('no reason');
+  });
+
+  it('throws a typed MailerError when the transport reports a send failure', async () => {
+    const transport = makeStubTransport(new Error('SMTP connection refused'));
+    const mailer = new MailerService({ transport, from });
+
+    await expect(mailer.sendSignupRejectionEmail(to, 'some reason')).rejects.toBeInstanceOf(
+      MailerError,
+    );
+  });
+});
+
 // ─── Locale variants ──────────────────────────────────────────────────────────
 
 describe('MailerService – German locale (locale: "de")', () => {
