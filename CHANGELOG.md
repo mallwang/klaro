@@ -1,5 +1,12 @@
 # Changelog
 
+# [1.6.0](https://github.com/mallwang/klaro/compare/v1.5.0...v1.6.0) (2026-07-19)
+
+
+### Features
+
+* **admin:** add admin diagnostics page with system health checks ([#42](https://github.com/mallwang/klaro/issues/42)) ([a82ebb4](https://github.com/mallwang/klaro/commit/a82ebb407c34bd33740369ab143ece746003e33d))
+
 # [1.5.0](https://github.com/mallwang/klaro/compare/v1.4.0...v1.5.0) (2026-07-04)
 
 
