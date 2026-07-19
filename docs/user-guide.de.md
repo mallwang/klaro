@@ -25,6 +25,7 @@ Klaro ist eine lokale Web-App, die alle deine Verträge — Streaming-Dienste, V
 13. [Eine selbst gehostete Instanz aktualisieren](#13-eine-selbst-gehostete-instanz-aktualisieren)
 14. [Feldreferenz](#14-feldreferenz)
 15. [FAQ](#15-faq)
+16. [Admin-Diagnose](#16-admin-diagnose)
 
 ---
 
@@ -600,3 +601,27 @@ Die FAQ-Inhalte folgen der aktiven App-Sprache. Wenn du die Sprache wechselst (s
 ### FAQ-Inhalte aktualisieren
 
 Fragen und Antworten sind in den Übersetzungsdateien der App gespeichert (`en.json` und `de.json`). Um einen Eintrag hinzuzufügen, zu bearbeiten oder zu entfernen, ändere das Array `faq.items` in der entsprechenden Datei — Änderungen am Anwendungscode sind nicht erforderlich. Ein Neuerstellen der App ist nötig, damit die Änderungen wirksam werden.
+
+## 16. Admin-Diagnose
+
+Die Diagnose-Seite gibt Administratoren einen schnellen Überblick über den Systemzustand — nützlich bei der Fehlersuche in einer Bereitstellung oder beim Melden eines Problems.
+
+**Erreichbarkeit**: Wechsle in der Seitennavigation in den Bereich **Admin** und klicke auf **Diagnose** (unter **Konten verwalten**), oder navigiere direkt zu `/admin/diagnostics`. Diese Seite ist **nur für Administratoren** zugänglich: abgemeldete Besucher werden zur Anmeldung weitergeleitet, angemeldete Nicht-Administratoren zum Dashboard (und sehen den Admin-Bereich gar nicht erst).
+
+### Was angezeigt wird
+
+Die Seite ist in drei Abschnitte gegliedert:
+
+- **Versionen** — die laufende Anwendungsversion, die Version der SQLite-Datenbank-Engine und die Node.js-Laufzeitversion.
+- **Systemprüfungen** — Plattform und CPU-Architektur; ob die App in einem Container läuft; ob ein Reverse-Proxy erkannt wurde (und welcher Forwarded-Header dies verraten hat); ausgehender Internetzugang; DNS-Auflösung; WebSocket-Unterstützungsstatus; die aktuelle Serverzeit in UTC und lokaler Zeit; die Uhrenabweichung gegenüber einer vertrauenswürdigen externen Zeitquelle; ob die konfigurierte öffentliche Domain (`APP_URL`) mit dem Host der eingehenden Anfrage übereinstimmt; und ob die Verbindung über HTTPS erfolgt.
+- **Umgebungsvariablen** — der konfigurierte SMTP-Host, -Port, -Absenderadresse und -Absendername; sowie ob die logo.dev-Anbieter-Logo-Integration konfiguriert ist.
+
+> **Konfigurationswerte, kein Versandtest**: Die SMTP-Felder zeigen die tatsächlich konfigurierten Werte für Host/Port/Absenderadresse/Absendername (nützlich, um einen Tippfehler oder veralteten Wert zu erkennen), versuchen aber nie einen echten Versand — das logo.dev-Feld zeigt nur konfiguriert/nicht konfiguriert. Um den tatsächlichen SMTP-Versand zu prüfen, verwende stattdessen **Testmail senden** auf der Konten-Seite.
+
+Jede Prüfung zeigt ein farbiges Status-Badge — grün für OK, gelb für eine Warnung (z. B. eine abweichende Domain, eine Uhrenabweichung über dem Schwellenwert oder eine fehlende SMTP-Einstellung), rot für eine fehlgeschlagene oder abgelaufene Prüfung. Eine einzelne langsame oder fehlgeschlagene Prüfung (z. B. fehlender Internetzugang) verhindert nie, dass der Rest der Seite geladen wird — jede Live-Prüfung hat ihr eigenes Timeout (standardmäßig 5 Sekunden).
+
+Auf dieser Seite werden niemals geheime Werte angezeigt (SMTP-Benutzername/-Passwort, Datenbankdateipfad, Tokens) — nur nicht-geheime Konfiguration wie der SMTP-Host und die Absenderadresse.
+
+### Fallback ohne JavaScript
+
+Dieselben Informationen sind auch als reine HTML-Seite unter derselben Adresse (`/admin/diagnostics`) verfügbar, direkt erreichbar (z. B. über `curl` oder einen Browser mit deaktiviertem JavaScript) — nützlich, wenn das JavaScript-Bundle der Haupt-App nicht geladen werden kann. Sie zeigt dieselben Abschnitte „Versionen" und „Systemprüfungen" ohne clientseitiges Skript.

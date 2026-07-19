@@ -25,6 +25,7 @@ Klaro is a local web app that keeps all your contracts — streaming services, i
 13. [Updating a self-hosted instance](#13-updating-a-self-hosted-instance)
 14. [Contract fields reference](#14-contract-fields-reference)
 15. [FAQ](#15-faq)
+16. [Admin Diagnostics](#16-admin-diagnostics)
 
 ---
 
@@ -600,3 +601,27 @@ FAQ content follows the active application language. When you switch the languag
 ### Updating FAQ content
 
 Questions and answers are stored in the application's translation files (`en.json` and `de.json`). To add, edit, or remove an entry, modify the `faq.items` array in the relevant file — no changes to application code are needed. A rebuild is required for the changes to take effect.
+
+## 16. Admin Diagnostics
+
+The Diagnostics page gives administrators a quick, at-a-glance view of system health — useful when troubleshooting a deployment or reporting an issue.
+
+**How to reach it**: Switch to the **Admin** segment in the sidebar and click **Diagnostics** (below **Manage Accounts**), or navigate directly to `/admin/diagnostics`. This page is **admin-only**: signed-out visitors are redirected to sign-in, and signed-in non-administrators are redirected to the dashboard (and don't see the Admin segment at all).
+
+### What it shows
+
+The page is grouped into three sections:
+
+- **Versions** — the running application version, the SQLite database engine version, and the Node.js runtime version.
+- **System Checks** — platform and CPU architecture; whether the app is running inside a container; whether a reverse proxy was detected (and which forwarded header revealed it); outbound internet access; DNS resolution; WebSocket support status; the server's current time in UTC and local time; clock drift versus a trusted external time source; whether the configured public domain (`APP_URL`) matches the incoming request's host; and whether the connection is HTTPS.
+- **Environment Variables** — the configured SMTP host, port, from address, and from name; and whether the logo.dev provider-logo integration is configured.
+
+> **Configuration values, not a delivery test**: the SMTP fields show the actual configured host/port/from-address/from-name (useful for spotting a typo or stale value) but never attempt a real send — the logo.dev field only reports configured/not configured. To verify SMTP delivery actually works, use **Send test email** on the Accounts page instead.
+
+Each check shows a coloured status badge — green for OK, yellow for a warning (e.g. a domain mismatch, clock drift beyond the threshold, or a missing SMTP setting), red for a failed or timed-out check. A single slow or failing check (e.g. no outbound internet access) never prevents the rest of the page from loading — every live check has its own timeout (5 seconds by default).
+
+No secret values (the SMTP username/password, database file path, tokens) are ever shown on this page — only non-secret configuration such as the SMTP host and from address.
+
+### No-JavaScript fallback
+
+The same information is also available as a plain HTML page at the same address (`/admin/diagnostics`), reachable directly (e.g. via `curl` or a browser with JavaScript disabled) — useful when the main app's JavaScript bundle fails to load. It shows the identical Versions and System Checks sections with no client-side script required.

@@ -35,7 +35,7 @@ Existing three-package workspace: `packages/shared/src`, `packages/backend/src` 
 **Purpose**: Confirm environment-variable surface for the feature; no new dependencies or
 tooling changes required.
 
-- [ ] T001 [P] Document `DIAGNOSTICS_CHECK_TIMEOUT_MS` (default `5000`) and
+- [X] T001 [P] Document `DIAGNOSTICS_CHECK_TIMEOUT_MS` (default `5000`) and
       `DIAGNOSTICS_CLOCK_DRIFT_THRESHOLD_MS` (default `5000`) in
       `packages/backend/.env.example` with a short comment referencing their purpose
 
@@ -51,35 +51,35 @@ check logic lives here — that belongs to each story's phase.
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete.
 
-- [ ] T002 [P] Define `CheckStatus`, `CheckResult`, `VersionsGroup`, `SystemChecksGroup`,
+- [X] T002 [P] Define `CheckStatus`, `CheckResult`, `VersionsGroup`, `SystemChecksGroup`,
       `DiagnosticsReport` TypeScript interfaces in `packages/shared/src/types/diagnostics.ts`
       per `data-model.md`, re-exported from `packages/shared/src/index.ts`
-- [ ] T003 [P] Define the corresponding zod schema (`DiagnosticsReportSchema` and nested
+- [X] T003 [P] Define the corresponding zod schema (`DiagnosticsReportSchema` and nested
       schemas) in `packages/shared/src/schemas/diagnostics.ts`, re-exported from
       `packages/shared/src/index.ts`, mirroring the type/schema split used in
       `packages/shared/src/types/invitation.ts` / `packages/shared/src/schemas/invitation.ts`
-- [ ] T004 Implement the per-check timeout + isolation utility (`runCheck(fn, timeoutMs)`
+- [X] T004 Implement the per-check timeout + isolation utility (`runCheck(fn, timeoutMs)`
       wrapping a check in `Promise.race` against a timer, resolving to
       `{ status: 'timed-out', detail }` on timeout and `{ status: 'failed', detail }` on thrown
       error rather than rejecting) in `packages/backend/src/services/diagnostics.service.ts`;
       reads `DIAGNOSTICS_CHECK_TIMEOUT_MS` (default `5000`) from `process.env`
-- [ ] T005 Export `APP_VERSION` from `packages/backend/src/server.ts` (currently a module-local
+- [X] T005 Export `APP_VERSION` from `packages/backend/src/server.ts` (currently a module-local
       `const`, line ~27-30) so `diagnostics.service.ts` can import it instead of re-reading
       `package.json`
-- [ ] T006 Scaffold `buildDiagnosticsReport()` in
+- [X] T006 Scaffold `buildDiagnosticsReport()` in
       `packages/backend/src/services/diagnostics.service.ts` returning a `DiagnosticsReport`
       with `generatedAt`, `versions.appVersion` (from T005), `versions.runtimeVersion`
       (`process.version`), and placeholder/`ok` stub values for all other fields (each story
       below replaces its stubs with real check logic) — uses `Promise.allSettled` per FR-017
-- [ ] T007 Create `packages/backend/src/routes/diagnostics.ts` with
+- [X] T007 Create `packages/backend/src/routes/diagnostics.ts` with
       `GET /api/admin/diagnostics`, gated by an inline `onRequest` hook checking
       `request.user?.role !== 'ADMIN'` → `403 Forbidden`, mirroring
       `packages/backend/src/routes/admin.ts:29-34`; calls `buildDiagnosticsReport()` and returns
       it as JSON
-- [ ] T008 Register `diagnosticsRoutes` in `packages/backend/src/server.ts` (import + `await
+- [X] T008 Register `diagnosticsRoutes` in `packages/backend/src/server.ts` (import + `await
       fastify.register(diagnosticsRoutes)` alongside the other route registrations at
       `server.ts:127-135`)
-- [ ] T009 [P] Integration test scaffold in
+- [X] T009 [P] Integration test scaffold in
       `packages/backend/tests/integration/diagnostics.route.test.ts`: admin session → `200` with
       a body matching `DiagnosticsReportSchema`; non-admin session → `403`; unauthenticated →
       `401`; mirrors setup/fixtures from `packages/backend/tests/integration/admin.route.test.ts`
@@ -104,41 +104,41 @@ display").
 
 ### Tests for User Story 1 ⚠️
 
-- [ ] T010 [P] [US1] Unit test for the `dbVersion` check function (queries
+- [X] T010 [P] [US1] Unit test for the `dbVersion` check function (queries
       `SELECT sqlite_version()`, returns `failed` on query error) in
       `packages/backend/tests/unit/diagnostics.service.test.ts` — write first, confirm it fails
 
 ### Implementation for User Story 1
 
-- [ ] T011 [US1] Implement `checkDbVersion(db)` in
+- [X] T011 [US1] Implement `checkDbVersion(db)` in
       `packages/backend/src/services/diagnostics.service.ts`: runs
       `db.prepare('SELECT sqlite_version() AS version').get()` via the existing `fastify.db`
       decorator, returns `{ status: 'ok', detail: version }` or `{ status: 'failed', detail:
       '<reason>' }` on error; wire into `buildDiagnosticsReport()` replacing the `versions.dbVersion`
       stub from T006 (depends on T004, T010)
-- [ ] T012 [US1] Populate `systemChecks.platform` (`os.platform()`) and `systemChecks.architecture`
+- [X] T012 [US1] Populate `systemChecks.platform` (`os.platform()`) and `systemChecks.architecture`
       (`os.arch()`) in `buildDiagnosticsReport()`, `packages/backend/src/services/diagnostics.service.ts`
       (depends on T006)
-- [ ] T013 [P] [US1] Create `packages/frontend/src/services/diagnostics.ts`: `fetchDiagnostics()`
+- [X] T013 [P] [US1] Create `packages/frontend/src/services/diagnostics.ts`: `fetchDiagnostics()`
       fetch wrapper (`credentials: 'include'`, parses response with
       `DiagnosticsReportSchema.parse`, throws `AuthError` via the `readErrorMessage` helper
       pattern from `packages/frontend/src/services/users.ts`) hitting `GET /api/admin/diagnostics`
-- [ ] T014 [P] [US1] Create `packages/frontend/src/hooks/useDiagnostics.ts`: TanStack Query
+- [X] T014 [P] [US1] Create `packages/frontend/src/hooks/useDiagnostics.ts`: TanStack Query
       `useQuery` hook wrapping `fetchDiagnostics()`, mirroring
       `packages/frontend/src/hooks/useAccounts.ts` (depends on T013)
-- [ ] T015 [US1] Create `packages/frontend/src/pages/admin/DiagnosticsAdmin.tsx`: renders two
+- [X] T015 [US1] Create `packages/frontend/src/pages/admin/DiagnosticsAdmin.tsx`: renders two
       labeled sections ("Versions", "System Checks") from `useDiagnostics()`, with per-field
       loading/error states; Versions section shows `appVersion`, `dbVersion.detail`,
       `runtimeVersion` (depends on T014)
-- [ ] T016 [US1] Register the route in `packages/frontend/src/main.tsx`: import
+- [X] T016 [US1] Register the route in `packages/frontend/src/main.tsx`: import
       `DiagnosticsAdmin` (alongside the `AccountsAdmin` import, ~line 35) and add
       `<Route path="/admin/diagnostics" element={<RequireAdmin><DiagnosticsAdmin /></RequireAdmin>} />`
       inside the admin routes block (~lines 121-128) (depends on T015)
-- [ ] T017 [P] [US1] Frontend test in `packages/frontend/tests/unit/DiagnosticsAdmin.test.tsx`:
+- [X] T017 [P] [US1] Frontend test in `packages/frontend/tests/unit/DiagnosticsAdmin.test.tsx`:
       mocks `useDiagnostics`, asserts both section headings render and versions display correctly,
       mirroring `packages/frontend/tests/unit/AccountsAdmin.test.tsx` (MantineProvider +
       Notifications + MemoryRouter + QueryClientProvider wrapper) (depends on T015)
-- [ ] T018 [US1] Implement `GET /admin/diagnostics` no-JS HTML fallback route in
+- [X] T018 [US1] Implement `GET /admin/diagnostics` no-JS HTML fallback route in
       `packages/backend/src/routes/diagnostics.ts`: same admin `onRequest` gate as T007, calls
       `buildDiagnosticsReport()`, renders a hand-written HTML document (inline `<style>`, no
       `<script>`) with "Versions" and "System Checks" sections; register alongside the JSON route
@@ -162,42 +162,42 @@ mismatched domain → `domainMatch` shows `warning` with both values visible (pe
 
 ### Tests for User Story 2 ⚠️
 
-- [ ] T019 [P] [US2] Unit tests for `checkContainerized()` (detects `/.dockerenv` or
+- [X] T019 [P] [US2] Unit tests for `checkContainerized()` (detects `/.dockerenv` or
       `docker`/`kubepods` in `/proc/1/cgroup` via `node:fs`, returns `false`-detail on read error)
       in `packages/backend/tests/unit/diagnostics.service.test.ts` — write first, confirm it fails
-- [ ] T020 [P] [US2] Unit tests for `checkReverseProxy(headers)` (detects
+- [X] T020 [P] [US2] Unit tests for `checkReverseProxy(headers)` (detects
       `x-forwarded-for`/`x-real-ip`/`x-forwarded-proto`/`x-forwarded-host`, reports "not detected"
       when none present) in `packages/backend/tests/unit/diagnostics.service.test.ts` — write
       first, confirm it fails
-- [ ] T021 [P] [US2] Unit tests for `checkDomainMatch(configuredUrl, hostHeader)` (warning on
+- [X] T021 [P] [US2] Unit tests for `checkDomainMatch(configuredUrl, hostHeader)` (warning on
       mismatch, ok on match, both values in detail) in
       `packages/backend/tests/unit/diagnostics.service.test.ts` — write first, confirm it fails
-- [ ] T022 [P] [US2] Unit tests for `checkHttps(request)` (true when
+- [X] T022 [P] [US2] Unit tests for `checkHttps(request)` (true when
       `x-forwarded-proto === 'https'` or `request.protocol === 'https'`) in
       `packages/backend/tests/unit/diagnostics.service.test.ts` — write first, confirm it fails
 
 ### Implementation for User Story 2
 
-- [ ] T023 [P] [US2] Implement `checkContainerized()` in
+- [X] T023 [P] [US2] Implement `checkContainerized()` in
       `packages/backend/src/services/diagnostics.service.ts` per research.md §6 (depends on T019)
-- [ ] T024 [P] [US2] Implement `checkReverseProxy(headers)` in
+- [X] T024 [P] [US2] Implement `checkReverseProxy(headers)` in
       `packages/backend/src/services/diagnostics.service.ts` per research.md §2 (depends on T020)
-- [ ] T025 [US2] Implement `checkDomainMatch(configuredUrl, hostHeader)` in
+- [X] T025 [US2] Implement `checkDomainMatch(configuredUrl, hostHeader)` in
       `packages/backend/src/services/diagnostics.service.ts`, comparing `process.env.APP_URL`
       hostname against the request's `Host`/`x-forwarded-host` per research.md §3 (depends on
       T021)
-- [ ] T026 [US2] Implement `checkHttps(request)` in
+- [X] T026 [US2] Implement `checkHttps(request)` in
       `packages/backend/src/services/diagnostics.service.ts` per research.md §3 (depends on T022)
-- [ ] T027 [US2] Implement the static `websocketSupport` check (env-var-driven `WEBSOCKET_ENABLED`
+- [X] T027 [US2] Implement the static `websocketSupport` check (env-var-driven `WEBSOCKET_ENABLED`
       constant, currently `false`) in `packages/backend/src/services/diagnostics.service.ts` per
       research.md §7
-- [ ] T028 [US2] Thread the Fastify `request` object into `buildDiagnosticsReport(request)` and
+- [X] T028 [US2] Thread the Fastify `request` object into `buildDiagnosticsReport(request)` and
       wire T023–T027 into `systemChecks.containerized`, `reverseProxyDetected`, `domainMatch`,
       `https`, `websocketSupport`, replacing the T006 stubs, in
       `packages/backend/src/services/diagnostics.service.ts` and update the call sites in
       `packages/backend/src/routes/diagnostics.ts` (both JSON and HTML routes) (depends on
       T023-T027)
-- [ ] T029 [US2] Update `packages/frontend/src/pages/admin/DiagnosticsAdmin.tsx` System Checks
+- [X] T029 [US2] Update `packages/frontend/src/pages/admin/DiagnosticsAdmin.tsx` System Checks
       section to render `platform`, `architecture`, `containerized`, `reverseProxyDetected`,
       `domainMatch`, `https`, `websocketSupport` with status-colored badges (ok/warning/failed/
       timed-out) (depends on T028, T015)
@@ -220,17 +220,17 @@ checks").
 
 ### Tests for User Story 3 ⚠️
 
-- [ ] T030 [P] [US3] Unit tests for `checkInternetAccess()` (HTTPS HEAD to `example.com`, wrapped
+- [X] T030 [P] [US3] Unit tests for `checkInternetAccess()` (HTTPS HEAD to `example.com`, wrapped
       in the T004 timeout utility; success/failure/timeout paths) in
       `packages/backend/tests/unit/diagnostics.service.test.ts` — write first, confirm it fails
-- [ ] T031 [P] [US3] Unit tests for `checkDnsResolution()` (`node:dns/promises` `lookup()` against
+- [X] T031 [P] [US3] Unit tests for `checkDnsResolution()` (`node:dns/promises` `lookup()` against
       `example.com`, resolved IP in detail on success, `failed` on lookup error) in
       `packages/backend/tests/unit/diagnostics.service.test.ts` — write first, confirm it fails
-- [ ] T032 [P] [US3] Unit tests for `checkClockDrift(remoteDateHeader)` (drift computed from the
+- [X] T032 [P] [US3] Unit tests for `checkClockDrift(remoteDateHeader)` (drift computed from the
       HTTPS response `Date` header vs. local time, `warning` when drift exceeds
       `DIAGNOSTICS_CLOCK_DRIFT_THRESHOLD_MS`) in
       `packages/backend/tests/unit/diagnostics.service.test.ts` — write first, confirm it fails
-- [ ] T033 [P] [US3] Integration test in
+- [X] T033 [P] [US3] Integration test in
       `packages/backend/tests/integration/diagnostics.route.test.ts`: simulate a slow/hanging
       external check (mock or stub the outbound call) and assert the endpoint still responds
       `200` within the timeout budget with that check marked `timed-out` while other fields
@@ -238,24 +238,24 @@ checks").
 
 ### Implementation for User Story 3
 
-- [ ] T034 [P] [US3] Implement `checkInternetAccess()` in
+- [X] T034 [P] [US3] Implement `checkInternetAccess()` in
       `packages/backend/src/services/diagnostics.service.ts` using `node:https` HEAD request,
       wrapped via the T004 `runCheck` timeout utility, per research.md §4 (depends on T004, T030)
-- [ ] T035 [P] [US3] Implement `checkDnsResolution()` in
+- [X] T035 [P] [US3] Implement `checkDnsResolution()` in
       `packages/backend/src/services/diagnostics.service.ts` using `node:dns/promises`
       `lookup()`, wrapped via the T004 `runCheck` timeout utility, per research.md §4 (depends
       on T004, T031)
-- [ ] T036 [US3] Implement `checkClockDrift(remoteDateHeader)` in
+- [X] T036 [US3] Implement `checkClockDrift(remoteDateHeader)` in
       `packages/backend/src/services/diagnostics.service.ts`, reusing the `Date` response header
       from T034's HTTPS request per research.md §5; reads
       `DIAGNOSTICS_CLOCK_DRIFT_THRESHOLD_MS` (default `5000`) from `process.env` (depends on
       T034, T032)
-- [ ] T037 [US3] Compute `systemChecks.serverTime` (`{ utc, local }` ISO strings) in
+- [X] T037 [US3] Compute `systemChecks.serverTime` (`{ utc, local }` ISO strings) in
       `buildDiagnosticsReport()`, `packages/backend/src/services/diagnostics.service.ts`
-- [ ] T038 [US3] Wire T034–T037 into `buildDiagnosticsReport()` replacing the `internetAccess`,
+- [X] T038 [US3] Wire T034–T037 into `buildDiagnosticsReport()` replacing the `internetAccess`,
       `dnsResolution`, `clockDrift`, `serverTime` stubs from T006, run via `Promise.allSettled`
       alongside the US2 checks (depends on T034-T037, T033)
-- [ ] T039 [US3] Update `packages/frontend/src/pages/admin/DiagnosticsAdmin.tsx` System Checks
+- [X] T039 [US3] Update `packages/frontend/src/pages/admin/DiagnosticsAdmin.tsx` System Checks
       section to render `internetAccess`, `dnsResolution`, `serverTime`, `clockDrift` with
       status-colored badges, completing the full grouped layout (depends on T038, T029)
 
@@ -269,23 +269,23 @@ budget, with failure isolation per check.
 
 **Purpose**: Documentation, quickstart validation, and quality gates across all three stories.
 
-- [ ] T040 [P] Update `README.md` and `README.de.md` with a short Admin Diagnostics feature
+- [X] T040 [P] Update `README.md` and `README.de.md` with a short Admin Diagnostics feature
       mention (consistent between both files, per repo documentation requirements)
-- [ ] T041 [P] Add a new section to `docs/user-guide.md` and `docs/user-guide.de.md` documenting
+- [X] T041 [P] Add a new section to `docs/user-guide.md` and `docs/user-guide.de.md` documenting
       the diagnostics page (what it shows, how to reach `/admin/diagnostics`, that it's
       admin-only, and the no-JS fallback), consistent between both files
-- [ ] T042 [P] Add/verify JSDoc on every new/changed function in
+- [X] T042 [P] Add/verify JSDoc on every new/changed function in
       `packages/backend/src/services/diagnostics.service.ts`,
       `packages/backend/src/routes/diagnostics.ts`,
       `packages/frontend/src/services/diagnostics.ts`,
       `packages/frontend/src/hooks/useDiagnostics.ts`, and file-level JSDoc blocks on each new
       module, per CLAUDE.md documentation requirements
-- [ ] T043 Run `pnpm --filter backend test -- diagnostics` and
+- [X] T043 Run `pnpm --filter backend test -- diagnostics` and
       `pnpm --filter frontend test -- Diagnostics`, confirm all tests pass
-- [ ] T044 Run through `quickstart.md` manually end-to-end (admin-only access, grouped display,
+- [X] T044 Run through `quickstart.md` manually end-to-end (admin-only access, grouped display,
       proxy/domain/HTTPS checks, external connectivity checks, no-JS fallback) and confirm every
       validation step passes
-- [ ] T045 Verify no secret values (SMTP credentials, DB path, tokens) appear anywhere in the
+- [X] T045 Verify no secret values (SMTP credentials, DB path, tokens) appear anywhere in the
       diagnostics JSON or HTML output (FR-015/SC-005) by inspecting a full response
 
 ---

@@ -16,6 +16,7 @@ import { signupRoutes } from './routes/signup.js';
 import { profileRoutes } from './routes/profile.js';
 import { adminRoutes } from './routes/admin.js';
 import { logosRoutes } from './routes/logos.js';
+import { diagnosticsRoutes } from './routes/diagnostics.js';
 import { AuthService, SESSION_COOKIE_NAME, toSessionUser } from './services/auth.service.js';
 import type { MailerService } from './services/mailer.service.js';
 
@@ -27,7 +28,7 @@ import type { MailerService } from './services/mailer.service.js';
 const rootPkg = JSON.parse(
   readFileSync(join(dirname(fileURLToPath(import.meta.url)), '../../../package.json'), 'utf-8'),
 ) as { version?: string };
-const APP_VERSION = rootPkg.version ?? 'unknown';
+export const APP_VERSION = rootPkg.version ?? 'unknown';
 
 export { SESSION_COOKIE_NAME, toSessionUser };
 
@@ -133,6 +134,7 @@ export async function buildServer(
   await fastify.register(profileRoutes);
   await fastify.register(adminRoutes);
   await fastify.register(logosRoutes);
+  await fastify.register(diagnosticsRoutes);
 
   const staticDir =
     options.staticDir ??
