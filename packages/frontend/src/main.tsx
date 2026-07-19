@@ -33,6 +33,7 @@ import { ResetPassword } from './pages/ResetPassword.js';
 import { AccountSettings } from './pages/AccountSettings.js';
 import { Faq } from './pages/Faq.js';
 import { AccountsAdmin } from './pages/admin/AccountsAdmin.js';
+import { DiagnosticsAdmin } from './pages/admin/DiagnosticsAdmin.js';
 import { AppShell } from './components/AppShell/AppShell.js';
 import { PublicLayout } from './components/PublicLayout.js';
 import { RequireAdmin } from './components/RequireAdmin.js';
@@ -123,6 +124,14 @@ createRoot(root).render(
                         element={
                           <RequireAdmin>
                             <AccountsAdmin />
+                          </RequireAdmin>
+                        }
+                      />
+                      <Route
+                        path="/admin/diagnostics"
+                        element={
+                          <RequireAdmin>
+                            <DiagnosticsAdmin />
                           </RequireAdmin>
                         }
                       />

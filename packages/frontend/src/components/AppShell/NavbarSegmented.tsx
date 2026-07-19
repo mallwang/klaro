@@ -18,6 +18,7 @@ import {
   IconUser,
   IconUsers,
   IconLogout,
+  IconStethoscope,
 } from '@tabler/icons-react';
 import { useCurrentUser, useSignOut } from '../../hooks/useAuth.js';
 import classes from './NavbarSegmented.module.css';
@@ -77,6 +78,7 @@ export function NavbarSegmented({ onNavigate }: NavbarSegmentedProps) {
 
   const adminLinks: NavItem[] = [
     { label: t('nav.accounts'), to: '/admin/accounts', icon: <IconUsers size={18} /> },
+    { label: t('nav.diagnostics'), to: '/admin/diagnostics', icon: <IconStethoscope size={18} /> },
   ];
 
   /**
