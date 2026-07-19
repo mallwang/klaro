@@ -44,7 +44,9 @@
       "Bash(.specify/scripts/bash/setup-tasks.sh --json)",
       "Bash(.specify/extensions/git/scripts/bash/auto-commit.sh after_tasks)",
       "Bash(.specify/scripts/bash/check-prerequisites.sh --json --require-tasks --include-tasks)",
-      "Bash(.specify/extensions/git/scripts/bash/auto-commit.sh after_implement)"
+      "Bash(.specify/extensions/git/scripts/bash/auto-commit.sh after_implement)",
+      "Bash(.specify/extensions/git/scripts/bash/create-new-feature.sh --json)",
+      "Bash(.specify/extensions/git/scripts/bash/auto-commit.sh after_specify)"
     ],
     "deny": [
       "Read(packages/backend/.env)",
