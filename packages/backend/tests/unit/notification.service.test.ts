@@ -230,6 +230,51 @@ describe('NotificationService.sendSummaryEmailForUser', () => {
     expect(capturedLocales[0]).toBe('de');
     db.close();
   });
+
+  it('orders contracts by monthly cost descending', async () => {
+    const db = makeDb();
+    const userId = insertUser(db, { enabled: true, frequency: 'WEEKLY' });
+    insertContract(db, userId, { name: 'Mid Contract', amount: 50 });
+    insertContract(db, userId, { name: 'Cheap Contract', amount: 12 });
+    insertContract(db, userId, { name: 'Expensive Contract', amount: 120 });
+    const { mailer, captured } = makeCapturingMailer();
+    const service = new NotificationService(db, mailer, 'http://localhost:5173');
+
+    await service.sendSummaryEmailForUser(userId);
+
+    const costs = captured[0]!.contracts.map((c) => c.monthlyCost);
+    expect(costs).toEqual([120, 50, 12]);
+    db.close();
+  });
+
+  it('breaks ties by contract name ascending, case-insensitive', async () => {
+    const db = makeDb();
+    const userId = insertUser(db, { enabled: true, frequency: 'WEEKLY' });
+    insertContract(db, userId, { name: 'zebra', amount: 25 });
+    insertContract(db, userId, { name: 'Apple', amount: 25 });
+    const { mailer, captured } = makeCapturingMailer();
+    const service = new NotificationService(db, mailer, 'http://localhost:5173');
+
+    await service.sendSummaryEmailForUser(userId);
+
+    const names = captured[0]!.contracts.map((c) => c.name);
+    expect(names).toEqual(['Apple', 'zebra']);
+    db.close();
+  });
+
+  it('does not reorder when there are zero or one active contracts', async () => {
+    const db = makeDb();
+    const userId = insertUser(db, { enabled: true, frequency: 'WEEKLY' });
+    insertContract(db, userId, { name: 'Only Contract', amount: 30 });
+    const { mailer, captured } = makeCapturingMailer();
+    const service = new NotificationService(db, mailer, 'http://localhost:5173');
+
+    await service.sendSummaryEmailForUser(userId);
+
+    expect(captured[0]!.contracts).toHaveLength(1);
+    expect(captured[0]!.contracts[0]!.name).toBe('Only Contract');
+    db.close();
+  });
 });
 
 // ── NotificationService – sendSummaryEmails ───────────────────────────────────

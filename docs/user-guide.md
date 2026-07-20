@@ -482,7 +482,7 @@ Toggle the switch off and click **Save**. The next send datetime disappears and 
 ### What the email contains
 
 - **Total monthly spending** — sum of all active contracts normalised to a monthly cost.
-- **Per-contract breakdown** — name, billing interval, and monthly-equivalent cost for each active contract.
+- **Per-contract breakdown** — name, billing interval, and monthly-equivalent cost for each active contract, listed ordered by monthly cost descending (highest first); contracts of equal cost are ordered alphabetically by name.
 - **Upcoming renewals** — contracts whose end date falls within the next 30 days, sorted by date.
 - **Dashboard link** — a direct link back to the app.
 - **Call to action** — context-aware message:
