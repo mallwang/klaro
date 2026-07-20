@@ -482,7 +482,7 @@ Deaktiviere den Schalter und klicke auf **Speichern**. Der nächste Sendezeitpun
 ### Inhalt der E-Mail
 
 - **Gesamte monatliche Ausgaben** — Summe aller aktiven Verträge, normiert auf einen monatlichen Kostenwert.
-- **Aufschlüsselung pro Vertrag** — Name, Abrechnungsintervall und monatliches Äquivalent für jeden aktiven Vertrag.
+- **Aufschlüsselung pro Vertrag** — Name, Abrechnungsintervall und monatliches Äquivalent für jeden aktiven Vertrag, absteigend nach monatlichen Kosten sortiert (höchste zuerst); Verträge mit gleichen Kosten werden alphabetisch nach Name sortiert.
 - **Bevorstehende Verlängerungen** — Verträge, deren Enddatum innerhalb der nächsten 30 Tage liegt, sortiert nach Datum.
 - **Dashboard-Link** — direkter Link zurück zur App.
 - **Handlungsaufruf** — kontextsensitive Nachricht:

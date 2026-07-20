@@ -138,6 +138,9 @@ export class NotificationService {
    * Public so callers can trigger a test send without waiting for a cron tick.
    *
    * @param userId - The ID of the user to send the summary email to
+   *
+   * The returned/sent `contracts` rows are ordered by monthly cost descending, with ties
+   * (equal monthly cost) broken by contract name ascending, case-insensitive.
    */
   async sendSummaryEmailForUser(userId: string): Promise<void> {
     const user = this.db
@@ -169,12 +172,18 @@ export class NotificationService {
 
     const totalMonthlySpending = contractRows.reduce((sum, r) => sum + r.monthly_cost, 0);
 
-    const contracts = contractRows.map((r) => ({
-      name: r.name,
-      billingInterval: r.billing_interval as BillingInterval,
-      monthlyCost: r.monthly_cost,
-      anonymize: r.anonymize !== 0,
-    }));
+    const contracts = contractRows
+      .map((r) => ({
+        name: r.name,
+        billingInterval: r.billing_interval as BillingInterval,
+        monthlyCost: r.monthly_cost,
+        anonymize: r.anonymize !== 0,
+      }))
+      .sort(
+        (a, b) =>
+          b.monthlyCost - a.monthlyCost ||
+          a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }),
+      );
 
     const renewalRows = this.db
       .prepare<[string], RenewalDbRow>(

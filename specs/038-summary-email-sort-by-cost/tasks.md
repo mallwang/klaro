@@ -46,19 +46,19 @@ of contract name; confirm tied costs fall back to alphabetical order.
 
 > **NOTE: Write these tests FIRST, ensure they FAIL before implementation (Constitution Principle I)**
 
-- [ ] T001 [US1] Add test "orders contracts by monthly cost descending" to the
+- [X] T001 [US1] Add test "orders contracts by monthly cost descending" to the
   `describe('NotificationService.sendSummaryEmailForUser')` block in
   `packages/backend/tests/unit/notification.service.test.ts`: seed a user with three active
   contracts with distinct monthly costs (e.g. €12, €50, €120) inserted in a non-cost-sorted
   order, call `sendSummaryEmailForUser`, and assert the captured `SummaryEmailData.contracts`
   array's `monthlyCost` values are in non-increasing order (€120, €50, €12).
-- [ ] T002 [US1] Add test "breaks ties by contract name ascending, case-insensitive" to the
+- [X] T002 [US1] Add test "breaks ties by contract name ascending, case-insensitive" to the
   same `describe` block in
   `packages/backend/tests/unit/notification.service.test.ts`: seed two active contracts with
   equal `monthlyCost` but names in reverse alphabetical order (mixed case, e.g. "zebra" and
   "Apple"), call `sendSummaryEmailForUser`, and assert the captured `contracts` array lists
   "Apple" before "zebra".
-- [ ] T003 [P] [US1] Add test "does not reorder when there are zero or one active contracts"
+- [X] T003 [P] [US1] Add test "does not reorder when there are zero or one active contracts"
   to `packages/backend/tests/unit/notification.service.test.ts`: verify the existing
   no-contracts case (already covered by "sets ctaState to no-contracts...") and add a
   single-contract case asserting the `contracts` array still contains exactly that one row.
@@ -67,20 +67,20 @@ of contract name; confirm tied costs fall back to alphabetical order.
 
 ### Implementation for User Story 1
 
-- [ ] T004 [US1] In `packages/backend/src/services/notification.service.ts`, sort the
+- [X] T004 [US1] In `packages/backend/src/services/notification.service.ts`, sort the
   `contracts` array built at lines 172-177 (the `contractRows.map(...)` result assigned to
   `contracts`) by `monthlyCost` descending, with a case-insensitive ascending `name` tie-break
   comparator (e.g. `contracts.sort((a, b) => b.monthlyCost - a.monthlyCost || a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }))`).
   Do not change `totalMonthlySpending`, the `renewalRows`/`upcomingRenewals` computation, or
   any other field on `SummaryEmailData`.
-- [ ] T005 [US1] Update the JSDoc on `sendSummaryEmailForUser` in
+- [X] T005 [US1] Update the JSDoc on `sendSummaryEmailForUser` in
   `packages/backend/src/services/notification.service.ts` (currently at lines 136-141) to
   note that the returned/sent contract rows are ordered by monthly cost descending (ties
   broken by name), per Constitution's JSDoc requirement for changed function implementations.
-- [ ] T006 [US1] Run `pnpm --filter backend test -- notification.service.test.ts` and confirm
+- [X] T006 [US1] Run `pnpm --filter backend test -- notification.service.test.ts` and confirm
   T001–T003 now pass, and run `pnpm --filter backend test` to confirm no other backend test
   (e.g. `mailer.service.test.ts`, `mailer.strings.test.ts`) regresses.
-- [ ] T007 [US1] Run `pnpm --filter backend exec tsc --noEmit` (or the project's configured
+- [X] T007 [US1] Run `pnpm --filter backend exec tsc --noEmit` (or the project's configured
   type-check script) to confirm strict-mode type safety is preserved (Constitution Principle II).
 
 **Checkpoint**: User Story 1 is fully functional and independently testable — the summary
@@ -92,26 +92,26 @@ email's active-contract table is sorted by monthly cost descending with a determ
 
 **Purpose**: Documentation updates required by CLAUDE.md/constitution, and quality validation.
 
-- [ ] T008 [P] Update the **Summary email** bullet in `README.md` (line 27, under Features) to
+- [X] T008 [P] Update the **Summary email** bullet in `README.md` (line 27, under Features) to
   state that the per-contract breakdown is ordered by monthly cost, highest first.
-- [ ] T009 [P] Update the corresponding **Zusammenfassungs-E-Mail** bullet in `README.de.md`
+- [X] T009 [P] Update the corresponding **Zusammenfassungs-E-Mail** bullet in `README.de.md`
   (line 27) with the equivalent German wording, keeping the two files consistent.
-- [ ] T010 [P] Update the "What the email contains" section in `docs/user-guide.md`
+- [X] T010 [P] Update the "What the email contains" section in `docs/user-guide.md`
   (the **Per-contract breakdown** bullet at line 485, under `## 11. Summary Email`) to state
   that contracts are listed ordered by monthly cost descending, with contracts of equal cost
   ordered alphabetically by name.
-- [ ] T011 [P] Update the equivalent **Zusammenfassungs-E-Mail** section in
+- [X] T011 [P] Update the equivalent **Zusammenfassungs-E-Mail** section in
   `docs/user-guide.de.md` (`## 11. Zusammenfassungs-E-Mail`) with the same information in
   German, keeping both user-guide files consistent.
-- [ ] T012 Run `pnpm --filter backend lint` (or repo-configured ESLint script) over
+- [X] T012 Run `pnpm --filter backend lint` (or repo-configured ESLint script) over
   `packages/backend/src/services/notification.service.ts` and
   `packages/backend/tests/unit/notification.service.test.ts` to confirm no new lint findings.
-- [ ] T013 Analyze the modified files with SonarQube per `CLAUDE.md`'s SonarCloud workflow
+- [X] T013 Analyze the modified files with SonarQube per `CLAUDE.md`'s SonarCloud workflow
   (`mcp__sonarqube__analyze_code_snippet` or
   `mcp__sonarqube__search_sonar_issues_in_projects` for project key
   `mallwang_personal-contract-management`) and confirm no new bugs, security hotspots, or
   critical code smells on `notification.service.ts`.
-- [ ] T014 Execute the manual validation steps in [quickstart.md](./quickstart.md) (seed three
+- [X] T014 Execute the manual validation steps in [quickstart.md](./quickstart.md) (seed three
   differently-priced contracts, confirm HTML and plain-text rendition order match) to confirm
   SC-001 through SC-004.
 
